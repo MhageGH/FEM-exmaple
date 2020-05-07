@@ -18,8 +18,9 @@ namespace WindowsFormsApp1
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var offset = new PointF(10, 30);
+            var offset = new PointF(50, 50);
             float rate = 200;
+            float y_max = 2.0f;
             var triangles = new Triangle[fem.elements.Length];
             for (int i = 0; i < triangles.Length; ++i)
             {
@@ -27,7 +28,7 @@ namespace WindowsFormsApp1
                 var colors = new Color[3];
                 for (int j = 0; j < points.Length; ++j)
                 {
-                    points[j] = new PointF(offset.X + rate * fem.nodes[fem.elements[i][j]].X, offset.Y + rate * fem.nodes[fem.elements[i][j]].Y);
+                    points[j] = new PointF(offset.X + rate * fem.nodes[fem.elements[i][j]].X, offset.Y + rate * (y_max - fem.nodes[fem.elements[i][j]].Y));
                     var t = fem.temperatures[fem.elements[i][j]];
                     Color color0, color1;
                     double s;
@@ -72,7 +73,7 @@ namespace WindowsFormsApp1
         public FEM()
         {
             const float width = 2.0f, height = 2.0f;
-            const int N = 8;
+            const int N = 20;
             nodes = new PointF[(N + 1) * (N + 1)];
             for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * j + i] = new PointF(width * i / N, height * j / N);
             dirichletBC = new (int, double)[N + 1 + N - 1 + N + 1];
