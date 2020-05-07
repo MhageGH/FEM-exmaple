@@ -71,39 +71,36 @@ namespace WindowsFormsApp1
 
         public FEM()
         {
-            nodes = new PointF[]
+            const float width = 2.0f, height = 2.0f;
+            const int N = 8;
+            nodes = new PointF[(N + 1) * (N + 1)];
+            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * j + i] = new PointF(width * i / N, height * j / N);
+            dirichletBC = new (int, double)[N + 1 + N - 1 + N + 1];
+            for (int i = 0; i < N + 1; ++i) dirichletBC[i] = (i, 0);
+            for (int i = 1; i < N; ++i) dirichletBC[9 + i] = (9 * i, 0);
+            for (int i = 0; i < N + 1; ++i) dirichletBC[N + 1 + N - 1 + i] = ((N + 1) * N + i, Math.Sin(width * i / N * Math.PI / 4));// other boundary conditions are Neumann type q_n = 0.
+            elements = new int[2 * N * N][];
+            for (int i = 0; i < N; ++i)
             {
-                new PointF(0, 0),
-                new PointF(1, 0),
-                new PointF(2, 0),
-                new PointF(0, 1),
-                new PointF(1, 1),
-                new PointF(2, 1),
-                new PointF(0, 2),
-                new PointF(1, 2),
-                new PointF(2, 2)
-            };
-            dirichletBC = new (int, double)[]
-            {
-                (0, 0),
-                (1, 0),
-                (2, 0),
-                (3, 0),
-                (6, Math.Sin(0 * Math.PI / 4)),
-                (7, Math.Sin(1 * Math.PI / 4)),
-                (8, Math.Sin(2 * Math.PI / 4))
-            };  // other boundary conditions are Neumann type q_n = 0.
-            elements = new int[][] 
-            {
-                new int[] { 0, 4, 3 },
-                new int[] { 0, 1, 4 },
-                new int[] { 1, 2, 4 },
-                new int[] { 2, 5, 4 },
-                new int[] { 5, 8, 4 },
-                new int[] { 8, 7, 4 },
-                new int[] { 7, 6, 4 },
-                new int[] { 3, 4, 6 }
-            };
+                for (int j = 0; j < 2 * N; ++j)
+                {
+                    if (i % 2 == 0)
+                    {
+                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { 0, N + 2, N + 1 };
+                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { 0, 1, N + 2 };
+                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { 1, 2, N + 2 };
+                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { 2, N + 3, N + 2 };
+                    }
+                    else
+                    {
+                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { 1, 2, N + 3 };
+                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { 1, N + 3, N + 2};
+                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { 1, N + 2, N + 1 };
+                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { 0, 1, N + 1 };
+                    }
+                    for (int k = 0; k < 3; ++k) elements[2 * N * i + j][k] += 2 * (j / 4) + (N + 1) * i;
+                }
+            }
         }
         public void Calculate()
         {
