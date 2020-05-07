@@ -78,7 +78,7 @@ namespace WindowsFormsApp1
             for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * j + i] = new PointF(width * i / N, height * j / N);
             dirichletBC = new (int, double)[N + 1 + N - 1 + N + 1];
             for (int i = 0; i < N + 1; ++i) dirichletBC[i] = (i, 0);
-            for (int i = 1; i < N; ++i) dirichletBC[9 + i] = (9 * i, 0);
+            for (int i = 1; i < N; ++i) dirichletBC[N + i] = ((N + 1) * i, 0);
             for (int i = 0; i < N + 1; ++i) dirichletBC[N + 1 + N - 1 + i] = ((N + 1) * N + i, Math.Sin(width * i / N * Math.PI / 4));// other boundary conditions are Neumann type q_n = 0.
             elements = new int[2 * N * N][];
             for (int i = 0; i < N; ++i)
