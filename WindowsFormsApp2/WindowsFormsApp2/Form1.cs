@@ -18,6 +18,7 @@ namespace WindowsFormsApp2
             fem.PreProcessing();
             fem.Solver();
             fem.PostProcessing();
+            listBox1.SelectedIndex = 6;
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -28,12 +29,37 @@ namespace WindowsFormsApp2
             var triangles = new Triangle[fem.elements.Length];
 
             var components = new double[fem.nodes.Length];
-            //for (int i = 0; i < components.Length; ++i) components[i] = fem.delta[2 * i + 1];
-            for (int i = 0; i < components.Length; ++i) components[i] = fem.sigma_node[i][1];
+            switch (listBox1.SelectedIndex)
+            {
+                case 0:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.delta[2 * i]);
+                    break;
+                case 1:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.delta[2 * i + 1]);
+                    break;
+                case 2:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][0]);
+                    break;
+                case 3:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][1]);
+                    break;
+                case 4:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][2]);
+                    break;
+                case 5:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][0]);
+                    break;
+                case 6:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][1]);
+                    break;
+                case 7:
+                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][2]);
+                    break;
+            }
             double max = -1.0e10, min = 1.0e10;
             for (int i = 0; i < components.Length; ++i) if (max < components[i]) max = components[i];
             for (int i = 0; i < components.Length; ++i) if (min > components[i]) min = components[i];
-            for (int i = 0; i < components.Length; ++i) components[i] = (components[i] - min) / (max - min);
+            for (int i = 0; i < components.Length; ++i) components[i] = max > min ? (components[i] - min) / (max - min) : max;
 
             for (int i = 0; i < triangles.Length; ++i)
             {
@@ -382,5 +408,9 @@ namespace WindowsFormsApp2
             }
         }
 
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.Invalidate();
+        }
     }
 }
