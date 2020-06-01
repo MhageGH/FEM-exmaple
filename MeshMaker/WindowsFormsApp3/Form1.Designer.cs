@@ -61,6 +61,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
+            this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Mesh Maker";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
