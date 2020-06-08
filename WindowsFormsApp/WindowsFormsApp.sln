@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28306.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mechanics", "Mechanics\Mechanics.csproj", "{90F4B0E5-63AE-4DCB-846C-A7C02A1C056B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Preprocessor", "Preprocessor\Preprocessor.csproj", "{94D81133-004F-4286-B24C-6B76D75E2A62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Themal", "Themal\Themal.csproj", "{FDA16685-B04E-488D-84CE-179A19D6789E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90F4B0E5-63AE-4DCB-846C-A7C02A1C056B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90F4B0E5-63AE-4DCB-846C-A7C02A1C056B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90F4B0E5-63AE-4DCB-846C-A7C02A1C056B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90F4B0E5-63AE-4DCB-846C-A7C02A1C056B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94D81133-004F-4286-B24C-6B76D75E2A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94D81133-004F-4286-B24C-6B76D75E2A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94D81133-004F-4286-B24C-6B76D75E2A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94D81133-004F-4286-B24C-6B76D75E2A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA16685-B04E-488D-84CE-179A19D6789E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA16685-B04E-488D-84CE-179A19D6789E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA16685-B04E-488D-84CE-179A19D6789E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA16685-B04E-488D-84CE-179A19D6789E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BE4FFFF-F45A-42D6-B760-DB757013D9FC}
+	EndGlobalSection
+EndGlobal
