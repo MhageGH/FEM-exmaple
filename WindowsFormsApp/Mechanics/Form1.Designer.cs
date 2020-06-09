@@ -70,7 +70,7 @@
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Two-dimensional Elasticity Analysis";
+            this.Text = "Mechanical Analysis";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -123,7 +123,7 @@ namespace WindowsFormsApp2
                     }
                     else
                     {
-                        tri = new PointF[] { new PointF(0 - 50 * f, 0), new PointF(-10 - 50 * f, -5), new PointF(-10 - 50 * f, 5) };
+                        tri = new PointF[] { new PointF(0 + 50 * f, 0), new PointF(-10 + 50 * f, -5), new PointF(-10 + 50 * f, 5) };
                         line = new PointF[] { new PointF(0, 0), new PointF(-50 * f, 0) };
                     }
                     var n = fem.unfixedIndexList[j] / 2;
