@@ -197,7 +197,7 @@ namespace WindowsFormsApp3
         private void button1_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog();
-            sfd.FileName = "FEM.csv";
+            sfd.FileName = "Mesh.csv";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 using (var sw = new System.IO.StreamWriter(sfd.FileName))
@@ -220,6 +220,80 @@ namespace WindowsFormsApp3
                     sw.WriteLine("force Y");
                     foreach (var f in forceYNodeIndexWithValue) sw.WriteLine(f.index.ToString() + "," + f.value.ToString());
                     sw.WriteLine();
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.Filter = "CSVファイル|*.csv";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                using (var sr = new System.IO.StreamReader(ofd.FileName))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        var _nodes = new List<Point>();
+                        if (sr.ReadLine() != "nodes") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            var strs = s.Split(new char[] { ',' });
+                            _nodes.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
+                        }
+                        var _elements = new List<int[]>();
+                        if (sr.ReadLine() != "elements") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            var strs = s.Split(new char[] { ',' });
+                            _elements.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
+                        }
+                        var _fixXNodeIndex = new List<int>();
+                        if (sr.ReadLine() != "fix X") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            _fixXNodeIndex.Add(Convert.ToInt16(s));
+                        }
+                        var _fixYNodeIndex = new List<int>();
+                        if (sr.ReadLine() != "fix Y") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            _fixYNodeIndex.Add(Convert.ToInt16(s));
+                        }
+                        var _forceXNodeIndexWithValue = new List<(int index, int value)>();
+                        if (sr.ReadLine() != "force X") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            var strs = s.Split(new char[] { ',' });
+                            _forceXNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
+                        }
+                        var _forceYNodeIndexWithValue = new List<(int index, int value)>();
+                        if (sr.ReadLine() != "force Y") break;
+                        while (true)
+                        {
+                            var s = sr.ReadLine();
+                            if (s == "") break;
+                            var strs = s.Split(new char[] { ',' });
+                            _forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
+                        }
+                        nodes = _nodes;
+                        elements = _elements;
+                        fixXNodeIndex = _fixXNodeIndex;
+                        fixYNodeIndex = _fixYNodeIndex;
+                        forceXNodeIndexWithValue = _forceXNodeIndexWithValue;
+                        forceYNodeIndexWithValue = _forceYNodeIndexWithValue;
+                        Invalidate();
+                    }
                 }
             }
         }
