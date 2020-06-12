@@ -73,7 +73,7 @@ namespace WindowsFormsApp1
         public FEM()
         {
             const float width = 2.0f, height = 2.0f;
-            const int N = 20;
+            const int N = 6;
             nodes = new PointF[(N + 1) * (N + 1)];
             for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * j + i] = new PointF(width * i / N, height * j / N);
             dirichletBC = new (int, double)[N + 1 + N - 1 + N + 1];
