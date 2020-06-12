@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
-
+using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp2
 {
@@ -24,9 +24,6 @@ namespace WindowsFormsApp2
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var offset = new PointF(80, 80);
-            float rate = 200;
-            float y_max = 2.0f;
             var triangles = new Triangle[fem.elements.Length];
 
             var components = new double[fem.nodes.Length];
@@ -68,7 +65,7 @@ namespace WindowsFormsApp2
                 var colors = new Color[3];
                 for (int j = 0; j < points.Length; ++j)
                 {
-                    points[j] = new PointF(offset.X + rate * fem.nodes[fem.elements[i][j]].X, offset.Y + rate * (y_max - fem.nodes[fem.elements[i][j]].Y));
+                    points[j] = new PointF(fem.nodes[fem.elements[i][j]].X, fem.nodes[fem.elements[i][j]].Y);
                     var c = components[fem.elements[i][j]];
                     Color color0, color1;
                     double s;
@@ -103,7 +100,7 @@ namespace WindowsFormsApp2
                 if (fem.globalFixIndexes[j] % 2 == 1) tri = new PointF[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
                 else tri = new PointF[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
                 var n = fem.globalFixIndexes[j] / 2;
-                var p = new PointF(offset.X + rate * fem.nodes[n].X, offset.Y + rate * (y_max - fem.nodes[n].Y));
+                var p = new PointF(fem.nodes[n].X, fem.nodes[n].Y);
                 for (int i = 0; i < tri.Length; ++i)
                 {
                     tri[i].X += p.X;
@@ -128,7 +125,7 @@ namespace WindowsFormsApp2
                         line = new PointF[] { new PointF(0, 0), new PointF(-50 * f, 0) };
                     }
                     var n = fem.globalUnfixIndexes[j] / 2;
-                    var p = new PointF(offset.X + rate * fem.nodes[n].X, offset.Y + rate * (y_max - fem.nodes[n].Y));
+                    var p = new PointF(fem.nodes[n].X, fem.nodes[n].Y);
                     for (int i = 0; i < tri.Length; ++i)
                     {
                         tri[i].X += p.X;
@@ -161,54 +158,56 @@ namespace WindowsFormsApp2
                     while (!sr.EndOfStream)
                     {
                         var nodes = new List<PointF>();
-                        if (sr.ReadLine() != "nodes") break;
+                        if (!sr.ReadLine().Contains("nodes")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             nodes.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
                         var elements = new List<int[]>();
-                        if (sr.ReadLine() != "elements") break;
+                        if (!sr.ReadLine().Contains("elements")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             elements.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
                         }
                         var fixXNodeIndex = new List<int>();
-                        if (sr.ReadLine() != "fix X") break;
+                        if (!sr.ReadLine().Contains("fix X")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
-                            fixXNodeIndex.Add(Convert.ToInt16(s));
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
+                            var strs = s.Split(new char[] { ',' });
+                            fixXNodeIndex.Add(Convert.ToInt16(strs[0]));
                         }
                         var fixYNodeIndex = new List<int>();
-                        if (sr.ReadLine() != "fix Y") break;
+                        if (!sr.ReadLine().Contains("fix Y")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
-                            fixYNodeIndex.Add(Convert.ToInt16(s));
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
+                            var strs = s.Split(new char[] { ',' });
+                            fixYNodeIndex.Add(Convert.ToInt16(strs[0]));
                         }
                         var forceXNodeIndexWithValue = new List<(int index, int value)>();
-                        if (sr.ReadLine() != "force X") break;
+                        if (!sr.ReadLine().Contains("force X")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             forceXNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
                         var forceYNodeIndexWithValue = new List<(int index, int value)>();
-                        if (sr.ReadLine() != "force Y") break;
+                        if (!sr.ReadLine().Contains("force Y")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
@@ -224,6 +223,7 @@ namespace WindowsFormsApp2
             fem.CreateForces_A();
             fem.Solver();
             fem.PostProcessing();
+            this.Invalidate();
         }
     }
 
@@ -257,10 +257,9 @@ namespace WindowsFormsApp2
         public void DefaultParameter()
         {
             // node
-            const float width = 2.0f, height = 2.0f;
             const int N = 10;
             nodes = new PointF[(N + 1) * (N + 1)];
-            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * j + i] = new PointF(width * i / N, height * j / N);
+            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * (N - j) + i] = new PointF(i * 40 + 80, j * 40 + 80);
 
             // element (triangle)
             elements = new int[2 * N * N][];
@@ -270,17 +269,17 @@ namespace WindowsFormsApp2
                 {
                     if (i % 2 == 0)
                     {
-                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { 0, N + 2, N + 1 };
-                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { 0, 1, N + 2 };
-                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { 1, 2, N + 2 };
-                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { 2, N + 3, N + 2 };
+                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { N+1, N + 2, 0 };
+                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { N + 2, 1, 0 };
+                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { N + 2, 2, 1 };
+                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { N + 2, N + 3, 2 };
                     }
                     else
                     {
-                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { 1, 2, N + 3 };
-                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { 1, N + 3, N + 2 };
-                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { 1, N + 2, N + 1 };
-                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { 0, 1, N + 1 };
+                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { N + 3, 2, 1 };
+                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { N + 2, N + 3, 1 };
+                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { N + 1, N + 2, 1 };
+                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { N + 1, 1, 0 };
                     }
                     for (int k = 0; k < 3; ++k) elements[2 * N * i + j][k] += 2 * (j / 4) + (N + 1) * i;
                 }

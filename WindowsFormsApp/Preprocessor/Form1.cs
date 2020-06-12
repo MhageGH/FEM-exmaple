@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp3
 {
@@ -235,54 +236,56 @@ namespace WindowsFormsApp3
                     while (!sr.EndOfStream)
                     {
                         var _nodes = new List<Point>();
-                        if (sr.ReadLine() != "nodes") break;
+                        if (!sr.ReadLine().Contains("nodes")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             _nodes.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
                         var _elements = new List<int[]>();
-                        if (sr.ReadLine() != "elements") break;
+                        if (!sr.ReadLine().Contains("elements")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             _elements.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
                         }
                         var _fixXNodeIndex = new List<int>();
-                        if (sr.ReadLine() != "fix X") break;
+                        if (!sr.ReadLine().Contains("fix X")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
-                            _fixXNodeIndex.Add(Convert.ToInt16(s));
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
+                            var strs = s.Split(new char[] { ',' });
+                            _fixXNodeIndex.Add(Convert.ToInt16(strs[0]));
                         }
                         var _fixYNodeIndex = new List<int>();
-                        if (sr.ReadLine() != "fix Y") break;
+                        if (!sr.ReadLine().Contains("fix Y")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
-                            _fixYNodeIndex.Add(Convert.ToInt16(s));
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
+                            var strs = s.Split(new char[] { ',' });
+                            _fixYNodeIndex.Add(Convert.ToInt16(strs[0]));
                         }
                         var _forceXNodeIndexWithValue = new List<(int index, int value)>();
-                        if (sr.ReadLine() != "force X") break;
+                        if (!sr.ReadLine().Contains("force X")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             _forceXNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
                         var _forceYNodeIndexWithValue = new List<(int index, int value)>();
-                        if (sr.ReadLine() != "force Y") break;
+                        if (!sr.ReadLine().Contains("force Y")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
-                            if (s == "") break;
+                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
                             _forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
