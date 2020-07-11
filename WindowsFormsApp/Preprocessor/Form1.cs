@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp3
 {
@@ -19,23 +15,56 @@ namespace WindowsFormsApp3
         }
 
         List<Point> nodes = new List<Point>();
-        List<int> selectedNodeIndex = new List<int>();
-        List<int[]> elements = new List<int[]>();
+        List<int> selectedNodeIndexes = new List<int>();
+        List<int[]> triangles = new List<int[]>();
+        List<int[]> quadangles = new List<int[]>();
         List<int> fixXNodeIndex = new List<int>();
         List<int> fixYNodeIndex = new List<int>();
         List<(int index, int value)> forceXNodeIndexWithValue = new List<(int, int)>();
         List<(int index, int value)> forceYNodeIndexWithValue = new List<(int, int)>();
 
-        double SignedArea()
+        double TriangleArea(Point[] p)
         {
-            var p = new Point[3];
-            for (int i = 0; i < p.Length; ++i) p[i] = nodes[selectedNodeIndex[i]];
+            if (p.Length != 3) throw new Exception("Invalid argument of SignedTriangleArea()");
             return (p[1].X * p[2].Y + p[2].X * p[0].Y + p[0].X * p[1].Y - p[2].X * p[1].Y - p[0].X * p[2].Y - p[1].X * p[0].Y) / 2;
+        }
+
+        void UpdateTriangles()
+        {
+            selectedNodeIndexes.Sort();
+            var triangle = selectedNodeIndexes.ToArray();
+            var node = new Point[3];
+            for (int i = 0; i < node.Length; ++i) node[i] = nodes[triangle[i]];
+            var t = new int[3];
+            triangle.CopyTo(t, 0);
+            if (TriangleArea(node) < 0) for (int i = 0; i < 2; ++i) triangle[i] = t[(i + 1) % 2];
+            if (triangles.Any(x => x.SequenceEqual(triangle))) triangles.RemoveAll(x => x.SequenceEqual(triangle));
+            else triangles.Add(triangle);
+        }
+
+        void UpdateQuadangles()
+        {
+            selectedNodeIndexes.Sort();
+            var quadangle = selectedNodeIndexes.ToArray();
+            var node = new Point[3];
+            for (int i = 0; i < node.Length; ++i) node[i] = nodes[quadangle[i]];
+            var q = new int[4];
+            quadangle.CopyTo(q, 0);
+            if (TriangleArea(node) < 0) for (int i = 0; i < 2; ++i) quadangle[i] = q[(i + 1) % 2];
+            for (int i = 0; i < 3; ++i)
+            {
+                for (int j = 0; j < node.Length; ++j) node[j] = nodes[quadangle[new int[] { 0, 2, 3 }[j]]];
+                if (TriangleArea(node) > 0) break;
+                quadangle.CopyTo(q, 0);
+                for (int j = 0; j < 3; ++j) quadangle[j] = q[(j + 1) % 3];
+            }
+            if (quadangles.Any(x => x.SequenceEqual(quadangle))) quadangles.RemoveAll(x => x.SequenceEqual(quadangle));
+            else quadangles.Add(quadangle);
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
-            int s = -1;
+            int index = -1;
             for (int i = 0; i < nodes.Count; ++i)
             {
                 var x = e.X - nodes[i].X;
@@ -43,97 +72,101 @@ namespace WindowsFormsApp3
                 var r2 = x * x + y * y;
                 if (r2 < 100)
                 {
-                    s = i;
+                    index = i;
                     break;
                 }
             }
-            if (radioButton1.Checked)
+            if (radioButton_node.Checked)
             {
-                if (s == -1) nodes.Add(new Point(e.X, e.Y));
-                else nodes.RemoveAt(s);
+                if (index == -1) nodes.Add(new Point(e.X, e.Y));
+                else nodes.RemoveAt(index);
             }
-            else if (radioButton2.Checked)
+            else if (radioButton_triangle.Checked)
             {
-                if (s == -1) return;
-                else selectedNodeIndex.Add(s);
-                if (selectedNodeIndex.Count == 3)
+                if (index == -1) return;
+                else selectedNodeIndexes.Add(index);
+                if (selectedNodeIndexes.Count == 3)
                 {
-                    selectedNodeIndex.Sort();
-                    if (SignedArea() < 0) selectedNodeIndex.Sort((a, b) => b - a);
-                    var ele = new int[3];
-                    for (int i = 0; i < 3; ++i) ele[i] = selectedNodeIndex[i];
-                    bool add = true;
-                    for (int i = 0; i < elements.Count; ++i)
-                    {
-                        if (ele[0] == elements[i][0] && ele[1] == elements[i][1] && ele[2] == elements[i][2])
-                        {
-                            elements.RemoveAt(i);
-                            add = false;
-                            break;
-                        }
-                    }
-                    if (add) elements.Add(ele);
-                    selectedNodeIndex.Clear();
+                    UpdateTriangles();
+                    selectedNodeIndexes.Clear();
                 }
             }
-            else if (radioButton3.Checked)
+            else if (radioButton_quadangle.Checked)
             {
-                if (s == -1) return;
-                else if (fixXNodeIndex.Contains(s)) fixXNodeIndex.Remove(s);
-                else fixXNodeIndex.Add(s);
+                if (index == -1) return;
+                else selectedNodeIndexes.Add(index);
+                if (selectedNodeIndexes.Count == 4)
+                {
+                    UpdateQuadangles();
+                    selectedNodeIndexes.Clear();
+                }
             }
-            else if (radioButton4.Checked)
+            else if (radioButton_fixX.Checked)
             {
-                if (s == -1) return;
-                else if (fixYNodeIndex.Contains(s)) fixYNodeIndex.Remove(s);
-                else fixYNodeIndex.Add(s);
+                if (index == -1) return;
+                else if (fixXNodeIndex.Contains(index)) fixXNodeIndex.Remove(index);
+                else fixXNodeIndex.Add(index);
             }
-            else if (radioButton5.Checked)
+            else if (radioButton_fixY.Checked)
             {
-                if (s == -1) return;
+                if (index == -1) return;
+                else if (fixYNodeIndex.Contains(index)) fixYNodeIndex.Remove(index);
+                else fixYNodeIndex.Add(index);
+            }
+            else if (radioButton_forceX.Checked)
+            {
+                if (index == -1) return;
                 bool add = true;
                 for (int i = 0; i < forceXNodeIndexWithValue.Count; ++i)
                 {
-                    if (forceXNodeIndexWithValue[i].index == s)
+                    if (forceXNodeIndexWithValue[i].index == index)
                     {
-                        if (forceXNodeIndexWithValue[i].value == 1) forceXNodeIndexWithValue[i] = (s, 2);
+                        if (forceXNodeIndexWithValue[i].value == 1) forceXNodeIndexWithValue[i] = (index, 2);
                         else if (forceXNodeIndexWithValue[i].value == 2) forceXNodeIndexWithValue.RemoveAt(i);
                         add = false;
                         break;
                     }
                 }
-                if (add) forceXNodeIndexWithValue.Add((s, 1));
+                if (add) forceXNodeIndexWithValue.Add((index, 1));
             }
-            else if (radioButton6.Checked)
+            else if (radioButton_forceY.Checked)
             {
-                if (s == -1) return;
+                if (index == -1) return;
                 bool add = true;
                 for (int i = 0; i < forceYNodeIndexWithValue.Count; ++i)
                 {
-                    if (forceYNodeIndexWithValue[i].index == s)
+                    if (forceYNodeIndexWithValue[i].index == index)
                     {
-                        if (forceYNodeIndexWithValue[i].value == 1) forceYNodeIndexWithValue[i] = (s, 2);
+                        if (forceYNodeIndexWithValue[i].value == 1) forceYNodeIndexWithValue[i] = (index, 2);
                         else if (forceYNodeIndexWithValue[i].value == 2) forceYNodeIndexWithValue.RemoveAt(i);
                         add = false;
                         break;
                     }
                 }
-                if (add) forceYNodeIndexWithValue.Add((s, 1));
+                if (add) forceYNodeIndexWithValue.Add((index, 1));
             }
             Invalidate();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            foreach (var ele in elements)
+            foreach (var triangle in triangles)
             {
                 var ps = new Point[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = nodes[ele[i]];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = nodes[triangle[i]];
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
+            foreach (var quadangle in quadangles)
+            {
+                var ps = new Point[4];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = nodes[quadangle[i]];
+                e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
+                e.Graphics.DrawPolygon(Pens.Black, ps);
+            }
+
             foreach (var node in nodes) e.Graphics.FillEllipse(Brushes.Blue, node.X - 5, node.Y - 5, 10, 10);
-            foreach (var i in selectedNodeIndex) e.Graphics.FillEllipse(Brushes.Red, nodes[i].X - 5, nodes[i].Y - 5, 10, 10);
+            foreach (var i in selectedNodeIndexes) e.Graphics.FillEllipse(Brushes.Red, nodes[i].X - 5, nodes[i].Y - 5, 10, 10);
 
             for (int i = 0; i < fixXNodeIndex.Count; ++i)
             {
@@ -195,110 +228,100 @@ namespace WindowsFormsApp3
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        string EncodeToCSV()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("nodes");
+            foreach (var node in nodes) sb.AppendLine(node.X.ToString() + "," + node.Y.ToString());
+            sb.AppendLine();
+            sb.AppendLine("triangles");
+            foreach (var triangle in triangles) sb.AppendLine(triangle[0].ToString() + "," + triangle[1].ToString() + "," + triangle[2].ToString());
+            sb.AppendLine();
+            sb.AppendLine("quadangles");
+            foreach (var quadangle in quadangles) sb.AppendLine(quadangle[0].ToString() + "," + quadangle[1].ToString() + "," + quadangle[2].ToString() + "," + quadangle[3].ToString());
+            sb.AppendLine();
+            sb.AppendLine("fix X");
+            foreach (var idx in fixXNodeIndex) sb.AppendLine(idx.ToString());
+            sb.AppendLine();
+            sb.AppendLine("fix Y");
+            foreach (var idx in fixYNodeIndex) sb.AppendLine(idx.ToString());
+            sb.AppendLine();
+            sb.AppendLine("force X");
+            foreach (var f in forceXNodeIndexWithValue) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
+            sb.AppendLine();
+            sb.AppendLine("force Y");
+            foreach (var f in forceYNodeIndexWithValue) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
+            sb.AppendLine();
+            return sb.ToString();
+        }
+
+        void DecodeFromCSV(string text)
+        {
+            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            var words = new string[lines.Length][];
+            for (int i = 0; i < lines.Length; ++i) words[i] = lines[i].Split(new char[] { ',' });
+            var labels = new string[] { "nodes", "triangles", "quadangles", "fix X", "fix Y", "force X", "force Y" };
+            for (int i = 0; i < labels.Length; ++i)
+            {
+                for (int j = 0; j < words.Length; ++j)
+                {
+                    if (words[j][0] == labels[i])
+                    {
+                        switch(i)
+                        {
+                            case 0:
+                                nodes = new List<Point>();
+                                for (++j; words[j][0] != ""; ++j) nodes.Add(new Point(Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                break;
+                            case 1:
+                                triangles = new List<int[]>();
+                                for (++j; words[j][0] != ""; ++j) triangles.Add(new int[3] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]) });
+                                break;
+                            case 2:
+                                quadangles = new List<int[]>();
+                                for (++j; words[j][0] != ""; ++j) quadangles.Add(new int[4] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]), Convert.ToInt16(words[j][3]) });
+                                break;
+                            case 3:
+                                fixXNodeIndex = new List<int>();
+                                for (++j; words[j][0] != ""; ++j) fixXNodeIndex.Add(Convert.ToInt16(words[j][0]));
+                                break;
+                            case 4:
+                                fixYNodeIndex = new List<int>();
+                                for (++j; words[j][0] != ""; ++j) fixYNodeIndex.Add(Convert.ToInt16(words[j][0]));
+                                break;
+                            case 5:
+                                forceXNodeIndexWithValue = new List<(int index, int value)>();
+                                for (++j; words[j][0] != ""; ++j) forceXNodeIndexWithValue.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                break;
+                            case 6:
+                                forceYNodeIndexWithValue = new List<(int index, int value)>();
+                                for (++j; words[j][0] != ""; ++j) forceYNodeIndexWithValue.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                break;
+                        }
+                        break;
+                    }
+                    if (j == words.Length - 1)
+                    {
+                        MessageBox.Show("Invalid text");
+                        break;
+                    }
+                }
+            }                
+        }
+
+        private void button_save_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog();
             sfd.FileName = "Mesh.csv";
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                using (var sw = new System.IO.StreamWriter(sfd.FileName))
-                {
-                    sw.WriteLine("nodes");
-                    foreach (var node in nodes) sw.WriteLine(node.X.ToString() + "," + node.Y.ToString());
-                    sw.WriteLine();
-                    sw.WriteLine("elements");
-                    foreach (var ele in elements) sw.WriteLine(ele[0].ToString() + "," + ele[1].ToString() + "," + ele[2].ToString());
-                    sw.WriteLine();
-                    sw.WriteLine("fix X");
-                    foreach (var idx in fixXNodeIndex) sw.WriteLine(idx.ToString());
-                    sw.WriteLine();
-                    sw.WriteLine("fix Y");
-                    foreach (var idx in fixYNodeIndex) sw.WriteLine(idx.ToString());
-                    sw.WriteLine();
-                    sw.WriteLine("force X");
-                    foreach (var f in forceXNodeIndexWithValue) sw.WriteLine(f.index.ToString() + "," + f.value.ToString());
-                    sw.WriteLine();
-                    sw.WriteLine("force Y");
-                    foreach (var f in forceYNodeIndexWithValue) sw.WriteLine(f.index.ToString() + "," + f.value.ToString());
-                    sw.WriteLine();
-                }
-            }
+            if (sfd.ShowDialog() == DialogResult.OK) using (var sw = new System.IO.StreamWriter(sfd.FileName)) sw.Write(EncodeToCSV());
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button_load_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                using (var sr = new System.IO.StreamReader(ofd.FileName))
-                {
-                    while (!sr.EndOfStream)
-                    {
-                        var _nodes = new List<Point>();
-                        if (!sr.ReadLine().Contains("nodes")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _nodes.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        var _elements = new List<int[]>();
-                        if (!sr.ReadLine().Contains("elements")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _elements.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
-                        }
-                        var _fixXNodeIndex = new List<int>();
-                        if (!sr.ReadLine().Contains("fix X")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _fixXNodeIndex.Add(Convert.ToInt16(strs[0]));
-                        }
-                        var _fixYNodeIndex = new List<int>();
-                        if (!sr.ReadLine().Contains("fix Y")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _fixYNodeIndex.Add(Convert.ToInt16(strs[0]));
-                        }
-                        var _forceXNodeIndexWithValue = new List<(int index, int value)>();
-                        if (!sr.ReadLine().Contains("force X")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _forceXNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        var _forceYNodeIndexWithValue = new List<(int index, int value)>();
-                        if (!sr.ReadLine().Contains("force Y")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            _forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        nodes = _nodes;
-                        elements = _elements;
-                        fixXNodeIndex = _fixXNodeIndex;
-                        fixYNodeIndex = _fixYNodeIndex;
-                        forceXNodeIndexWithValue = _forceXNodeIndexWithValue;
-                        forceYNodeIndexWithValue = _forceYNodeIndexWithValue;
-                        Invalidate();
-                    }
-                }
-            }
+            if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) DecodeFromCSV(sr.ReadToEnd());
+            Invalidate();
         }
     }
 }

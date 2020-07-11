@@ -28,139 +28,153 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
+            this.radioButton_node = new System.Windows.Forms.RadioButton();
+            this.radioButton_triangle = new System.Windows.Forms.RadioButton();
+            this.button_save = new System.Windows.Forms.Button();
+            this.radioButton_fixX = new System.Windows.Forms.RadioButton();
+            this.radioButton_fixY = new System.Windows.Forms.RadioButton();
+            this.radioButton_forceY = new System.Windows.Forms.RadioButton();
+            this.radioButton_forceX = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.radioButton_quadangle = new System.Windows.Forms.RadioButton();
+            this.button_load = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // radioButton1
+            // radioButton_node
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton1.Location = new System.Drawing.Point(6, 25);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(54, 22);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "node";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton_node.AutoSize = true;
+            this.radioButton_node.Checked = true;
+            this.radioButton_node.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_node.Location = new System.Drawing.Point(6, 25);
+            this.radioButton_node.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_node.Name = "radioButton_node";
+            this.radioButton_node.Size = new System.Drawing.Size(54, 22);
+            this.radioButton_node.TabIndex = 0;
+            this.radioButton_node.TabStop = true;
+            this.radioButton_node.Text = "node";
+            this.radioButton_node.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // radioButton_triangle
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton2.Location = new System.Drawing.Point(6, 55);
-            this.radioButton2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(74, 22);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.Text = "element";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton_triangle.AutoSize = true;
+            this.radioButton_triangle.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_triangle.Location = new System.Drawing.Point(6, 55);
+            this.radioButton_triangle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_triangle.Name = "radioButton_triangle";
+            this.radioButton_triangle.Size = new System.Drawing.Size(70, 22);
+            this.radioButton_triangle.TabIndex = 1;
+            this.radioButton_triangle.Text = "triangle";
+            this.radioButton_triangle.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // button_save
             // 
-            this.button1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button1.Location = new System.Drawing.Point(550, 232);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(87, 34);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "save";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button_save.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button_save.Location = new System.Drawing.Point(550, 323);
+            this.button_save.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button_save.Name = "button_save";
+            this.button_save.Size = new System.Drawing.Size(87, 34);
+            this.button_save.TabIndex = 2;
+            this.button_save.Text = "save";
+            this.button_save.UseVisualStyleBackColor = true;
+            this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
-            // radioButton3
+            // radioButton_fixX
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton3.Location = new System.Drawing.Point(6, 85);
-            this.radioButton3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(52, 22);
-            this.radioButton3.TabIndex = 3;
-            this.radioButton3.Text = "fix X";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton_fixX.AutoSize = true;
+            this.radioButton_fixX.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_fixX.Location = new System.Drawing.Point(6, 114);
+            this.radioButton_fixX.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_fixX.Name = "radioButton_fixX";
+            this.radioButton_fixX.Size = new System.Drawing.Size(52, 22);
+            this.radioButton_fixX.TabIndex = 3;
+            this.radioButton_fixX.Text = "fix X";
+            this.radioButton_fixX.UseVisualStyleBackColor = true;
             // 
-            // radioButton4
+            // radioButton_fixY
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton4.Location = new System.Drawing.Point(6, 115);
-            this.radioButton4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(52, 22);
-            this.radioButton4.TabIndex = 4;
-            this.radioButton4.Text = "fix Y";
-            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton_fixY.AutoSize = true;
+            this.radioButton_fixY.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_fixY.Location = new System.Drawing.Point(6, 144);
+            this.radioButton_fixY.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_fixY.Name = "radioButton_fixY";
+            this.radioButton_fixY.Size = new System.Drawing.Size(52, 22);
+            this.radioButton_fixY.TabIndex = 4;
+            this.radioButton_fixY.Text = "fix Y";
+            this.radioButton_fixY.UseVisualStyleBackColor = true;
             // 
-            // radioButton6
+            // radioButton_forceY
             // 
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton6.Location = new System.Drawing.Point(6, 175);
-            this.radioButton6.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(67, 22);
-            this.radioButton6.TabIndex = 6;
-            this.radioButton6.Text = "force Y";
-            this.radioButton6.UseVisualStyleBackColor = true;
+            this.radioButton_forceY.AutoSize = true;
+            this.radioButton_forceY.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_forceY.Location = new System.Drawing.Point(6, 204);
+            this.radioButton_forceY.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_forceY.Name = "radioButton_forceY";
+            this.radioButton_forceY.Size = new System.Drawing.Size(67, 22);
+            this.radioButton_forceY.TabIndex = 6;
+            this.radioButton_forceY.Text = "force Y";
+            this.radioButton_forceY.UseVisualStyleBackColor = true;
             // 
-            // radioButton5
+            // radioButton_forceX
             // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton5.Location = new System.Drawing.Point(6, 145);
-            this.radioButton5.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(67, 22);
-            this.radioButton5.TabIndex = 5;
-            this.radioButton5.Text = "force X";
-            this.radioButton5.UseVisualStyleBackColor = true;
+            this.radioButton_forceX.AutoSize = true;
+            this.radioButton_forceX.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_forceX.Location = new System.Drawing.Point(6, 174);
+            this.radioButton_forceX.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_forceX.Name = "radioButton_forceX";
+            this.radioButton_forceX.Size = new System.Drawing.Size(67, 22);
+            this.radioButton_forceX.TabIndex = 5;
+            this.radioButton_forceX.Text = "force X";
+            this.radioButton_forceX.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Controls.Add(this.radioButton6);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton5);
-            this.groupBox1.Controls.Add(this.radioButton3);
-            this.groupBox1.Controls.Add(this.radioButton4);
+            this.groupBox1.Controls.Add(this.radioButton_quadangle);
+            this.groupBox1.Controls.Add(this.radioButton_node);
+            this.groupBox1.Controls.Add(this.radioButton_forceY);
+            this.groupBox1.Controls.Add(this.radioButton_triangle);
+            this.groupBox1.Controls.Add(this.radioButton_forceX);
+            this.groupBox1.Controls.Add(this.radioButton_fixX);
+            this.groupBox1.Controls.Add(this.radioButton_fixY);
             this.groupBox1.Location = new System.Drawing.Point(532, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(121, 213);
+            this.groupBox1.Size = new System.Drawing.Size(121, 304);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "mode";
             // 
-            // button2
+            // radioButton_quadangle
             // 
-            this.button2.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button2.Location = new System.Drawing.Point(550, 274);
-            this.button2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(87, 34);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "load";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.radioButton_quadangle.AutoSize = true;
+            this.radioButton_quadangle.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_quadangle.Location = new System.Drawing.Point(6, 84);
+            this.radioButton_quadangle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_quadangle.Name = "radioButton_quadangle";
+            this.radioButton_quadangle.Size = new System.Drawing.Size(85, 22);
+            this.radioButton_quadangle.TabIndex = 7;
+            this.radioButton_quadangle.Text = "quadangle";
+            this.radioButton_quadangle.UseVisualStyleBackColor = true;
+            // 
+            // button_load
+            // 
+            this.button_load.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.button_load.Location = new System.Drawing.Point(550, 365);
+            this.button_load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button_load.Name = "button_load";
+            this.button_load.Size = new System.Drawing.Size(87, 34);
+            this.button_load.TabIndex = 8;
+            this.button_load.Text = "load";
+            this.button_load.UseVisualStyleBackColor = true;
+            this.button_load.Click += new System.EventHandler(this.button_load_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 550);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button_load);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.button_save);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -176,15 +190,16 @@
 
         #endregion
 
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton4;
-        private System.Windows.Forms.RadioButton radioButton6;
-        private System.Windows.Forms.RadioButton radioButton5;
+        private System.Windows.Forms.RadioButton radioButton_node;
+        private System.Windows.Forms.RadioButton radioButton_triangle;
+        private System.Windows.Forms.Button button_save;
+        private System.Windows.Forms.RadioButton radioButton_fixX;
+        private System.Windows.Forms.RadioButton radioButton_fixY;
+        private System.Windows.Forms.RadioButton radioButton_forceY;
+        private System.Windows.Forms.RadioButton radioButton_forceX;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button_load;
+        private System.Windows.Forms.RadioButton radioButton_quadangle;
     }
 }
 
