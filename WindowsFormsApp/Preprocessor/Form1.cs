@@ -79,7 +79,10 @@ namespace WindowsFormsApp3
             if (radioButton_node.Checked)
             {
                 if (index == -1) nodes.Add(new Point(e.X, e.Y));
-                else nodes.RemoveAt(index);
+                else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
+                    && !fixXNodeIndex.Contains(index) && !fixYNodeIndex.Contains(index)
+                    && !forceXNodeIndexWithValue.Any(x => x.index == index) && !forceYNodeIndexWithValue.Any(x => x.index == index))
+                    nodes.RemoveAt(index);
             }
             else if (radioButton_triangle.Checked)
             {
