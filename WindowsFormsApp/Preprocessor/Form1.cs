@@ -63,22 +63,14 @@ namespace WindowsFormsApp3
 
         int[] GetNodeOrderOfPolygon(int[] nodes)
         {
-            if (nodes.Length == 3)
-            {
-                var p = new Point[3];
-                for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
-                var n = new int[3];
-                nodes.CopyTo(n, 0);
-                if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
-                return nodes;
-            }
+            var p = new Point[3];
+            for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
+            var n = new int[4];
+            nodes.CopyTo(n, 0);
+            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
+            if (nodes.Length == 3) return nodes;
             else if (nodes.Length == 4)
             {
-                var p = new Point[3];
-                for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
-                var n = new int[4];
-                nodes.CopyTo(n, 0);
-                if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
                 for (int i = 0; i < 3; ++i)
                 {
                     for (int j = 0; j < p.Length; ++j) p[j] = points[nodes[new int[] { 0, 2, 3 }[j]]];
