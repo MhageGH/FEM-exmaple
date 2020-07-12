@@ -15,13 +15,15 @@ namespace WindowsFormsApp3
         }
 
         List<Point> points = new List<Point>();
-        List<int> selectedNodes = new List<int>();
         List<int[]> triangles = new List<int[]>();
         List<int[]> quadangles = new List<int[]>();
         List<int> fixXs = new List<int>();
         List<int> fixYs = new List<int>();
         List<(int index, int value)> forceXs = new List<(int, int)>();
         List<(int index, int value)> forceYs = new List<(int, int)>();
+
+        private List<int> selectedNodes = new List<int>();
+        private int movingNode = -1;
 
         double TriangleArea(Point[] p)
         {
@@ -99,18 +101,38 @@ namespace WindowsFormsApp3
             }
             if (radioButton_node.Checked)
             {
-                if (index == -1) points.Add(new Point(e.X, e.Y));
-                else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
-                    && !fixXs.Contains(index) && !fixYs.Contains(index)
-                    && !forceXs.Any(x => x.index == index) && !forceYs.Any(x => x.index == index))
+                if (radioButton_add.Checked)
                 {
-                    points.RemoveAt(index);
-                    foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) if (triangle[i] > index) triangle[i]--;
-                    foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) if (quadangle[i] > index) quadangle[i]--;
-                    for (int i = 0; i < fixXs.Count; ++i) if (fixXs[i] > index) fixXs[i]--;
-                    for (int i = 0; i < fixYs.Count; ++i) if (fixYs[i] > index) fixYs[i]--;
-                    for (int i = 0; i < forceXs.Count; ++i) if (forceXs[i].index > index) forceXs[i] = (forceXs[i].index - 1, forceXs[i].value);
-                    for (int i = 0; i < forceYs.Count; ++i) if (forceYs[i].index > index) forceYs[i] = (forceYs[i].index - 1, forceYs[i].value);
+                    if (index == -1) points.Add(new Point(e.X, e.Y));
+                    else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
+                        && !fixXs.Contains(index) && !fixYs.Contains(index)
+                        && !forceXs.Any(x => x.index == index) && !forceYs.Any(x => x.index == index))
+                    {
+                        points.RemoveAt(index);
+                        foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) if (triangle[i] > index) triangle[i]--;
+                        foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) if (quadangle[i] > index) quadangle[i]--;
+                        for (int i = 0; i < fixXs.Count; ++i) if (fixXs[i] > index) fixXs[i]--;
+                        for (int i = 0; i < fixYs.Count; ++i) if (fixYs[i] > index) fixYs[i]--;
+                        for (int i = 0; i < forceXs.Count; ++i) if (forceXs[i].index > index) forceXs[i] = (forceXs[i].index - 1, forceXs[i].value);
+                        for (int i = 0; i < forceYs.Count; ++i) if (forceYs[i].index > index) forceYs[i] = (forceYs[i].index - 1, forceYs[i].value);
+                    }
+                }
+                else if (radioButton_move.Checked)
+                {
+                    if (index == -1 && movingNode == -1) return;
+                    else if (index != -1 && movingNode != -1) return;
+                    else if (index != -1 && movingNode == -1) movingNode = index;
+                    else if (index == -1 && movingNode != -1)
+                    {
+                        points[movingNode] = new Point(e.X, e.Y);
+                        movingNode = -1;
+                        for (int i = 0; i < triangles.Count; ++i) triangles[i] = GetNodeOrderOfPolygon(triangles[i]);
+                        for (int i = 0; i < quadangles.Count; ++i) quadangles[i] = GetNodeOrderOfPolygon(quadangles[i]);
+                    }
+                }
+                else if (radioButton_align.Checked)
+                {
+                    // TODO
                 }
             }
             else if (radioButton_triangle.Checked)
@@ -199,7 +221,25 @@ namespace WindowsFormsApp3
 
             foreach (var p in points) e.Graphics.FillEllipse(Brushes.Blue, p.X - 5, p.Y - 5, 10, 10);
             foreach (var i in selectedNodes) e.Graphics.FillEllipse(Brushes.Red, points[i].X - 5, points[i].Y - 5, 10, 10);
-
+            if (movingNode != -1)
+            {
+                e.Graphics.FillEllipse(Brushes.White, points[movingNode].X - 5, points[movingNode].Y - 5, 10, 10);
+                e.Graphics.DrawEllipse(Pens.Blue, points[movingNode].X - 5, points[movingNode].Y - 5, 10, 10);
+            }
+            if (checkBox_VisibleNodeNumber.Checked)
+                for (int i = 0; i < points.Count; ++i) e.Graphics.DrawString(i.ToString(), DefaultFont, Brushes.Black, points[i].X + 5, points[i].Y + 5);
+            if (checkBox_VisibleTriangleNumber.Checked)
+                for (int i = 0; i < triangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine + 
+                    "(" + triangles[i][0].ToString() + "-" + triangles[i][1].ToString() + "-" + triangles[i][2].ToString() + ")", DefaultFont, Brushes.Black,
+                    (points[triangles[i][0]].X + points[triangles[i][1]].X + points[triangles[i][2]].X) / 3, 
+                    (points[triangles[i][0]].Y + points[triangles[i][1]].Y + points[triangles[i][2]].Y) / 3,
+                    new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+            if (checkBox_VisibleQuadangleNumber.Checked)
+                for (int i = 0; i < quadangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine +
+                    "(" + quadangles[i][0].ToString() + "-" + quadangles[i][1].ToString() + "-" + quadangles[i][2].ToString() + "-" + quadangles[i][3].ToString() + ")", DefaultFont, Brushes.Black,
+                    (points[quadangles[i][0]].X + points[quadangles[i][1]].X + points[quadangles[i][2]].X + points[quadangles[i][3]].X) / 4,
+                    (points[quadangles[i][0]].Y + points[quadangles[i][1]].Y + points[quadangles[i][2]].Y + points[quadangles[i][3]].Y) / 4,
+                    new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             for (int i = 0; i < fixXs.Count; ++i)
             {
                 var tri = new PointF[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
@@ -354,6 +394,72 @@ namespace WindowsFormsApp3
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
             if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) DecodeFromCSV(sr.ReadToEnd());
+            Invalidate();
+        }
+
+        private void radioButton_node_CheckedChanged(object sender, EventArgs e)
+        {
+            radioButton_move.Enabled = true;
+            radioButton_align.Enabled = true;
+        }
+
+        void RadioButtonNotForNode()
+        {
+            radioButton_move.Enabled = false;
+            radioButton_align.Enabled = false;
+            radioButton_add.Checked = true;
+            movingNode = -1;
+            Invalidate();
+        }
+
+        private void radioButton_triangle_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_quadangle_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_fixX_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_fixY_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_forceX_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_forceY_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButtonNotForNode();
+        }
+
+        private void radioButton_move_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_move.Checked == false) movingNode = -1;
+            Invalidate();
+        }
+
+        private void checkBox_VisibleNodeNumber_CheckedChanged(object sender, EventArgs e)
+        {
+            Invalidate();
+        }
+
+        private void checkBox_VisibleTriangleNumber_CheckedChanged(object sender, EventArgs e)
+        {
+            Invalidate();
+        }
+
+        private void checkBox_VisibleQuadangleNumber_CheckedChanged(object sender, EventArgs e)
+        {
             Invalidate();
         }
     }
