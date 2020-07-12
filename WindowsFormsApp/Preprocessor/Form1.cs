@@ -62,6 +62,22 @@ namespace WindowsFormsApp3
             else quadangles.Add(quadangle);
         }
 
+        void ReassignNodeNumber()
+        {
+            var _points = points.Select((p, i) => (p, i)).ToList();
+            _points = _points.OrderBy(_point => _point.p.Y).ToList();
+            _points = _points.OrderBy(_point => _point.p.X).ToList();
+            points = _points.Select(_point => _point.p).ToList();
+            var table = new List<int>();
+            for (int i = 0; i < points.Count; ++i) table.Add(_points.FindIndex(_point => _point.i == i));
+            foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) triangle[i] = table[triangle[i]];
+            foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) quadangle[i] = table[quadangle[i]];
+            for (int i = 0; i < fixXs.Count; ++i) fixXs[i] = table[fixXs[i]];
+            for (int i = 0; i < fixYs.Count; ++i) fixYs[i] = table[fixYs[i]];
+            for (int i = 0; i < forceXs.Count; ++i) forceXs[i] = (table[forceXs[i].index], forceXs[i].value);
+            for (int i = 0; i < forceYs.Count; ++i) forceYs[i] = (table[forceYs[i].index], forceYs[i].value);
+        }
+
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             int index = -1;
@@ -241,6 +257,7 @@ namespace WindowsFormsApp3
 
         string EncodeToCSV()
         {
+            ReassignNodeNumber();
             var sb = new StringBuilder();
             sb.AppendLine("points");
             foreach (var point in points) sb.AppendLine(point.X.ToString() + "," + point.Y.ToString());
