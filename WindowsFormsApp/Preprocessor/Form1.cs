@@ -32,12 +32,7 @@ namespace WindowsFormsApp3
         void UpdateTriangles()
         {
             selectedNodes.Sort();
-            var triangle = selectedNodes.ToArray();
-            var p = new Point[3];
-            for (int i = 0; i < p.Length; ++i) p[i] = points[triangle[i]];
-            var t = new int[3];
-            triangle.CopyTo(t, 0);
-            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) triangle[i] = t[(i + 1) % 2];
+            var triangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (triangles.Any(x => x.SequenceEqual(triangle))) triangles.RemoveAll(x => x.SequenceEqual(triangle));
             else triangles.Add(triangle);
         }
@@ -45,19 +40,7 @@ namespace WindowsFormsApp3
         void UpdateQuadangles()
         {
             selectedNodes.Sort();
-            var quadangle = selectedNodes.ToArray();
-            var p = new Point[3];
-            for (int i = 0; i < p.Length; ++i) p[i] = points[quadangle[i]];
-            var q = new int[4];
-            quadangle.CopyTo(q, 0);
-            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) quadangle[i] = q[(i + 1) % 2];
-            for (int i = 0; i < 3; ++i)
-            {
-                for (int j = 0; j < p.Length; ++j) p[j] = points[quadangle[new int[] { 0, 2, 3 }[j]]];
-                if (TriangleArea(p) > 0) break;
-                quadangle.CopyTo(q, 0);
-                for (int j = 0; j < 3; ++j) quadangle[j] = q[(j + 1) % 3];
-            }
+            var quadangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (quadangles.Any(x => x.SequenceEqual(quadangle))) quadangles.RemoveAll(x => x.SequenceEqual(quadangle));
             else quadangles.Add(quadangle);
         }
@@ -76,6 +59,36 @@ namespace WindowsFormsApp3
             for (int i = 0; i < fixYs.Count; ++i) fixYs[i] = table[fixYs[i]];
             for (int i = 0; i < forceXs.Count; ++i) forceXs[i] = (table[forceXs[i].index], forceXs[i].value);
             for (int i = 0; i < forceYs.Count; ++i) forceYs[i] = (table[forceYs[i].index], forceYs[i].value);
+        }
+
+        int[] GetNodeOrderOfPolygon(int[] nodes)
+        {
+            if (nodes.Length == 3)
+            {
+                var p = new Point[3];
+                for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
+                var n = new int[3];
+                nodes.CopyTo(n, 0);
+                if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
+                return nodes;
+            }
+            else if (nodes.Length == 4)
+            {
+                var p = new Point[3];
+                for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
+                var n = new int[4];
+                nodes.CopyTo(n, 0);
+                if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
+                for (int i = 0; i < 3; ++i)
+                {
+                    for (int j = 0; j < p.Length; ++j) p[j] = points[nodes[new int[] { 0, 2, 3 }[j]]];
+                    if (TriangleArea(p) > 0) break;
+                    nodes.CopyTo(n, 0);
+                    for (int j = 0; j < 3; ++j) nodes[j] = n[(j + 1) % 3];
+                }
+                return nodes;
+            }
+            throw new Exception("GetNodeOrder() failed.");
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
