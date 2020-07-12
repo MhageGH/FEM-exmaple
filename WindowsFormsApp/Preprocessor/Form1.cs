@@ -14,14 +14,14 @@ namespace WindowsFormsApp3
             InitializeComponent();
         }
 
-        List<Point> nodes = new List<Point>();
-        List<int> selectedNodeIndexes = new List<int>();
+        List<Point> points = new List<Point>();
+        List<int> selectedNodes = new List<int>();
         List<int[]> triangles = new List<int[]>();
         List<int[]> quadangles = new List<int[]>();
-        List<int> fixXNodeIndex = new List<int>();
-        List<int> fixYNodeIndex = new List<int>();
-        List<(int index, int value)> forceXNodeIndexWithValue = new List<(int, int)>();
-        List<(int index, int value)> forceYNodeIndexWithValue = new List<(int, int)>();
+        List<int> fixXs = new List<int>();
+        List<int> fixYs = new List<int>();
+        List<(int index, int value)> forceXs = new List<(int, int)>();
+        List<(int index, int value)> forceYs = new List<(int, int)>();
 
         double TriangleArea(Point[] p)
         {
@@ -31,30 +31,30 @@ namespace WindowsFormsApp3
 
         void UpdateTriangles()
         {
-            selectedNodeIndexes.Sort();
-            var triangle = selectedNodeIndexes.ToArray();
-            var node = new Point[3];
-            for (int i = 0; i < node.Length; ++i) node[i] = nodes[triangle[i]];
+            selectedNodes.Sort();
+            var triangle = selectedNodes.ToArray();
+            var p = new Point[3];
+            for (int i = 0; i < p.Length; ++i) p[i] = points[triangle[i]];
             var t = new int[3];
             triangle.CopyTo(t, 0);
-            if (TriangleArea(node) < 0) for (int i = 0; i < 2; ++i) triangle[i] = t[(i + 1) % 2];
+            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) triangle[i] = t[(i + 1) % 2];
             if (triangles.Any(x => x.SequenceEqual(triangle))) triangles.RemoveAll(x => x.SequenceEqual(triangle));
             else triangles.Add(triangle);
         }
 
         void UpdateQuadangles()
         {
-            selectedNodeIndexes.Sort();
-            var quadangle = selectedNodeIndexes.ToArray();
-            var node = new Point[3];
-            for (int i = 0; i < node.Length; ++i) node[i] = nodes[quadangle[i]];
+            selectedNodes.Sort();
+            var quadangle = selectedNodes.ToArray();
+            var p = new Point[3];
+            for (int i = 0; i < p.Length; ++i) p[i] = points[quadangle[i]];
             var q = new int[4];
             quadangle.CopyTo(q, 0);
-            if (TriangleArea(node) < 0) for (int i = 0; i < 2; ++i) quadangle[i] = q[(i + 1) % 2];
+            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) quadangle[i] = q[(i + 1) % 2];
             for (int i = 0; i < 3; ++i)
             {
-                for (int j = 0; j < node.Length; ++j) node[j] = nodes[quadangle[new int[] { 0, 2, 3 }[j]]];
-                if (TriangleArea(node) > 0) break;
+                for (int j = 0; j < p.Length; ++j) p[j] = points[quadangle[new int[] { 0, 2, 3 }[j]]];
+                if (TriangleArea(p) > 0) break;
                 quadangle.CopyTo(q, 0);
                 for (int j = 0; j < 3; ++j) quadangle[j] = q[(j + 1) % 3];
             }
@@ -65,10 +65,10 @@ namespace WindowsFormsApp3
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             int index = -1;
-            for (int i = 0; i < nodes.Count; ++i)
+            for (int i = 0; i < points.Count; ++i)
             {
-                var x = e.X - nodes[i].X;
-                var y = e.Y - nodes[i].Y;
+                var x = e.X - points[i].X;
+                var y = e.Y - points[i].Y;
                 var r2 = x * x + y * y;
                 if (r2 < 100)
                 {
@@ -78,83 +78,83 @@ namespace WindowsFormsApp3
             }
             if (radioButton_node.Checked)
             {
-                if (index == -1) nodes.Add(new Point(e.X, e.Y));
+                if (index == -1) points.Add(new Point(e.X, e.Y));
                 else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
-                    && !fixXNodeIndex.Contains(index) && !fixYNodeIndex.Contains(index)
-                    && !forceXNodeIndexWithValue.Any(x => x.index == index) && !forceYNodeIndexWithValue.Any(x => x.index == index))
+                    && !fixXs.Contains(index) && !fixYs.Contains(index)
+                    && !forceXs.Any(x => x.index == index) && !forceYs.Any(x => x.index == index))
                 {
-                    nodes.RemoveAt(index);
+                    points.RemoveAt(index);
                     foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) if (triangle[i] > index) triangle[i]--;
                     foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) if (quadangle[i] > index) quadangle[i]--;
-                    for (int i = 0; i < fixXNodeIndex.Count; ++i) if (fixXNodeIndex[i] > index) fixXNodeIndex[i]--;
-                    for (int i = 0; i < fixYNodeIndex.Count; ++i) if (fixYNodeIndex[i] > index) fixYNodeIndex[i]--;
-                    for (int i = 0; i < forceXNodeIndexWithValue.Count; ++i) if (forceXNodeIndexWithValue[i].index > index) forceXNodeIndexWithValue[i] = (forceXNodeIndexWithValue[i].index - 1, forceXNodeIndexWithValue[i].value);
-                    for (int i = 0; i < forceYNodeIndexWithValue.Count; ++i) if (forceYNodeIndexWithValue[i].index > index) forceYNodeIndexWithValue[i] = (forceYNodeIndexWithValue[i].index - 1, forceYNodeIndexWithValue[i].value);
+                    for (int i = 0; i < fixXs.Count; ++i) if (fixXs[i] > index) fixXs[i]--;
+                    for (int i = 0; i < fixYs.Count; ++i) if (fixYs[i] > index) fixYs[i]--;
+                    for (int i = 0; i < forceXs.Count; ++i) if (forceXs[i].index > index) forceXs[i] = (forceXs[i].index - 1, forceXs[i].value);
+                    for (int i = 0; i < forceYs.Count; ++i) if (forceYs[i].index > index) forceYs[i] = (forceYs[i].index - 1, forceYs[i].value);
                 }
             }
             else if (radioButton_triangle.Checked)
             {
                 if (index == -1) return;
-                else selectedNodeIndexes.Add(index);
-                if (selectedNodeIndexes.Count == 3)
+                else selectedNodes.Add(index);
+                if (selectedNodes.Count == 3)
                 {
                     UpdateTriangles();
-                    selectedNodeIndexes.Clear();
+                    selectedNodes.Clear();
                 }
             }
             else if (radioButton_quadangle.Checked)
             {
                 if (index == -1) return;
-                else selectedNodeIndexes.Add(index);
-                if (selectedNodeIndexes.Count == 4)
+                else selectedNodes.Add(index);
+                if (selectedNodes.Count == 4)
                 {
                     UpdateQuadangles();
-                    selectedNodeIndexes.Clear();
+                    selectedNodes.Clear();
                 }
             }
             else if (radioButton_fixX.Checked)
             {
                 if (index == -1) return;
-                else if (fixXNodeIndex.Contains(index)) fixXNodeIndex.Remove(index);
-                else fixXNodeIndex.Add(index);
+                else if (fixXs.Contains(index)) fixXs.Remove(index);
+                else fixXs.Add(index);
             }
             else if (radioButton_fixY.Checked)
             {
                 if (index == -1) return;
-                else if (fixYNodeIndex.Contains(index)) fixYNodeIndex.Remove(index);
-                else fixYNodeIndex.Add(index);
+                else if (fixYs.Contains(index)) fixYs.Remove(index);
+                else fixYs.Add(index);
             }
             else if (radioButton_forceX.Checked)
             {
                 if (index == -1) return;
                 bool add = true;
-                for (int i = 0; i < forceXNodeIndexWithValue.Count; ++i)
+                for (int i = 0; i < forceXs.Count; ++i)
                 {
-                    if (forceXNodeIndexWithValue[i].index == index)
+                    if (forceXs[i].index == index)
                     {
-                        if (forceXNodeIndexWithValue[i].value == 1) forceXNodeIndexWithValue[i] = (index, 2);
-                        else if (forceXNodeIndexWithValue[i].value == 2) forceXNodeIndexWithValue.RemoveAt(i);
+                        if (forceXs[i].value == 1) forceXs[i] = (index, 2);
+                        else if (forceXs[i].value == 2) forceXs.RemoveAt(i);
                         add = false;
                         break;
                     }
                 }
-                if (add) forceXNodeIndexWithValue.Add((index, 1));
+                if (add) forceXs.Add((index, 1));
             }
             else if (radioButton_forceY.Checked)
             {
                 if (index == -1) return;
                 bool add = true;
-                for (int i = 0; i < forceYNodeIndexWithValue.Count; ++i)
+                for (int i = 0; i < forceYs.Count; ++i)
                 {
-                    if (forceYNodeIndexWithValue[i].index == index)
+                    if (forceYs[i].index == index)
                     {
-                        if (forceYNodeIndexWithValue[i].value == 1) forceYNodeIndexWithValue[i] = (index, 2);
-                        else if (forceYNodeIndexWithValue[i].value == 2) forceYNodeIndexWithValue.RemoveAt(i);
+                        if (forceYs[i].value == 1) forceYs[i] = (index, 2);
+                        else if (forceYs[i].value == 2) forceYs.RemoveAt(i);
                         add = false;
                         break;
                     }
                 }
-                if (add) forceYNodeIndexWithValue.Add((index, 1));
+                if (add) forceYs.Add((index, 1));
             }
             Invalidate();
         }
@@ -164,75 +164,75 @@ namespace WindowsFormsApp3
             foreach (var triangle in triangles)
             {
                 var ps = new Point[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = nodes[triangle[i]];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = points[triangle[i]];
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var quadangle in quadangles)
             {
                 var ps = new Point[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = nodes[quadangle[i]];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = points[quadangle[i]];
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
 
-            foreach (var node in nodes) e.Graphics.FillEllipse(Brushes.Blue, node.X - 5, node.Y - 5, 10, 10);
-            foreach (var i in selectedNodeIndexes) e.Graphics.FillEllipse(Brushes.Red, nodes[i].X - 5, nodes[i].Y - 5, 10, 10);
+            foreach (var p in points) e.Graphics.FillEllipse(Brushes.Blue, p.X - 5, p.Y - 5, 10, 10);
+            foreach (var i in selectedNodes) e.Graphics.FillEllipse(Brushes.Red, points[i].X - 5, points[i].Y - 5, 10, 10);
 
-            for (int i = 0; i < fixXNodeIndex.Count; ++i)
+            for (int i = 0; i < fixXs.Count; ++i)
             {
                 var tri = new PointF[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
                 for (int j = 0; j < tri.Length; ++j)
                 {
-                    tri[j].X += nodes[fixXNodeIndex[i]].X;
-                    tri[j].Y += nodes[fixXNodeIndex[i]].Y;
+                    tri[j].X += points[fixXs[i]].X;
+                    tri[j].Y += points[fixXs[i]].Y;
                 }
                 e.Graphics.DrawPolygon(new Pen(Color.Blue), tri);
             }
-            for (int i = 0; i < fixYNodeIndex.Count; ++i)
+            for (int i = 0; i < fixYs.Count; ++i)
             {
                 var tri = new PointF[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
                 for (int j = 0; j < tri.Length; ++j)
                 {
-                    tri[j].X += nodes[fixYNodeIndex[i]].X;
-                    tri[j].Y += nodes[fixYNodeIndex[i]].Y;
+                    tri[j].X += points[fixYs[i]].X;
+                    tri[j].Y += points[fixYs[i]].Y;
                 }
                 e.Graphics.DrawPolygon(new Pen(Color.Blue), tri);
             }
-            for (int i = 0; i < forceXNodeIndexWithValue.Count; ++i)
+            for (int i = 0; i < forceXs.Count; ++i)
             {
-                float f = 0.5f * forceXNodeIndexWithValue[i].value;
+                float f = 0.5f * forceXs[i].value;
                 PointF[] tri, line;
                 tri = new PointF[] { new PointF(0 + 50 * f, 0), new PointF(-10 + 50 * f, -5), new PointF(-10 + 50 * f, 5) };
                 line = new PointF[] { new PointF(0, 0), new PointF(50 * f, 0) };
                 for (int j = 0; j < tri.Length; ++j)
                 {
-                    tri[j].X += nodes[forceXNodeIndexWithValue[i].index].X;
-                    tri[j].Y += nodes[forceXNodeIndexWithValue[i].index].Y;
+                    tri[j].X += points[forceXs[i].index].X;
+                    tri[j].Y += points[forceXs[i].index].Y;
                 }
                 for (int j = 0; j < line.Length; ++j)
                 {
-                    line[j].X += nodes[forceXNodeIndexWithValue[i].index].X;
-                    line[j].Y += nodes[forceXNodeIndexWithValue[i].index].Y;
+                    line[j].X += points[forceXs[i].index].X;
+                    line[j].Y += points[forceXs[i].index].Y;
                 }
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
-            for (int i = 0; i < forceYNodeIndexWithValue.Count; ++i)
+            for (int i = 0; i < forceYs.Count; ++i)
             {
-                float f = 0.5f * forceYNodeIndexWithValue[i].value;
+                float f = 0.5f * forceYs[i].value;
                 PointF[] tri, line;
                 tri = new PointF[] { new PointF(0, 0 - 50 * f), new PointF(-5, 10 - 50 * f), new PointF(5, 10 - 50 * f) };
                 line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f) };
                 for (int j = 0; j < tri.Length; ++j)
                 {
-                    tri[j].X += nodes[forceYNodeIndexWithValue[i].index].X;
-                    tri[j].Y += nodes[forceYNodeIndexWithValue[i].index].Y;
+                    tri[j].X += points[forceYs[i].index].X;
+                    tri[j].Y += points[forceYs[i].index].Y;
                 }
                 for (int j = 0; j < line.Length; ++j)
                 {
-                    line[j].X += nodes[forceYNodeIndexWithValue[i].index].X;
-                    line[j].Y += nodes[forceYNodeIndexWithValue[i].index].Y;
+                    line[j].X += points[forceYs[i].index].X;
+                    line[j].Y += points[forceYs[i].index].Y;
                 }
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
@@ -242,8 +242,8 @@ namespace WindowsFormsApp3
         string EncodeToCSV()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("nodes");
-            foreach (var node in nodes) sb.AppendLine(node.X.ToString() + "," + node.Y.ToString());
+            sb.AppendLine("points");
+            foreach (var point in points) sb.AppendLine(point.X.ToString() + "," + point.Y.ToString());
             sb.AppendLine();
             sb.AppendLine("triangles");
             foreach (var triangle in triangles) sb.AppendLine(triangle[0].ToString() + "," + triangle[1].ToString() + "," + triangle[2].ToString());
@@ -252,16 +252,16 @@ namespace WindowsFormsApp3
             foreach (var quadangle in quadangles) sb.AppendLine(quadangle[0].ToString() + "," + quadangle[1].ToString() + "," + quadangle[2].ToString() + "," + quadangle[3].ToString());
             sb.AppendLine();
             sb.AppendLine("fix X");
-            foreach (var idx in fixXNodeIndex) sb.AppendLine(idx.ToString());
+            foreach (var idx in fixXs) sb.AppendLine(idx.ToString());
             sb.AppendLine();
             sb.AppendLine("fix Y");
-            foreach (var idx in fixYNodeIndex) sb.AppendLine(idx.ToString());
+            foreach (var idx in fixYs) sb.AppendLine(idx.ToString());
             sb.AppendLine();
             sb.AppendLine("force X");
-            foreach (var f in forceXNodeIndexWithValue) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
+            foreach (var f in forceXs) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
             sb.AppendLine();
             sb.AppendLine("force Y");
-            foreach (var f in forceYNodeIndexWithValue) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
+            foreach (var f in forceYs) sb.AppendLine(f.index.ToString() + "," + f.value.ToString());
             sb.AppendLine();
             return sb.ToString();
         }
@@ -271,7 +271,7 @@ namespace WindowsFormsApp3
             var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             var words = new string[lines.Length][];
             for (int i = 0; i < lines.Length; ++i) words[i] = lines[i].Split(new char[] { ',' });
-            var labels = new string[] { "nodes", "triangles", "quadangles", "fix X", "fix Y", "force X", "force Y" };
+            var labels = new string[] { "points", "triangles", "quadangles", "fix X", "fix Y", "force X", "force Y" };
             for (int i = 0; i < labels.Length; ++i)
             {
                 for (int j = 0; j < words.Length; ++j)
@@ -281,8 +281,8 @@ namespace WindowsFormsApp3
                         switch(i)
                         {
                             case 0:
-                                nodes = new List<Point>();
-                                for (++j; words[j][0] != ""; ++j) nodes.Add(new Point(Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                points = new List<Point>();
+                                for (++j; words[j][0] != ""; ++j) points.Add(new Point(Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
                                 break;
                             case 1:
                                 triangles = new List<int[]>();
@@ -293,20 +293,20 @@ namespace WindowsFormsApp3
                                 for (++j; words[j][0] != ""; ++j) quadangles.Add(new int[4] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]), Convert.ToInt16(words[j][3]) });
                                 break;
                             case 3:
-                                fixXNodeIndex = new List<int>();
-                                for (++j; words[j][0] != ""; ++j) fixXNodeIndex.Add(Convert.ToInt16(words[j][0]));
+                                fixXs = new List<int>();
+                                for (++j; words[j][0] != ""; ++j) fixXs.Add(Convert.ToInt16(words[j][0]));
                                 break;
                             case 4:
-                                fixYNodeIndex = new List<int>();
-                                for (++j; words[j][0] != ""; ++j) fixYNodeIndex.Add(Convert.ToInt16(words[j][0]));
+                                fixYs = new List<int>();
+                                for (++j; words[j][0] != ""; ++j) fixYs.Add(Convert.ToInt16(words[j][0]));
                                 break;
                             case 5:
-                                forceXNodeIndexWithValue = new List<(int index, int value)>();
-                                for (++j; words[j][0] != ""; ++j) forceXNodeIndexWithValue.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                forceXs = new List<(int index, int value)>();
+                                for (++j; words[j][0] != ""; ++j) forceXs.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
                                 break;
                             case 6:
-                                forceYNodeIndexWithValue = new List<(int index, int value)>();
-                                for (++j; words[j][0] != ""; ++j) forceYNodeIndexWithValue.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                forceYs = new List<(int index, int value)>();
+                                for (++j; words[j][0] != ""; ++j) forceYs.Add((Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
                                 break;
                         }
                         break;
