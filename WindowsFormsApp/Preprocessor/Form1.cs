@@ -82,7 +82,15 @@ namespace WindowsFormsApp3
                 else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
                     && !fixXNodeIndex.Contains(index) && !fixYNodeIndex.Contains(index)
                     && !forceXNodeIndexWithValue.Any(x => x.index == index) && !forceYNodeIndexWithValue.Any(x => x.index == index))
+                {
                     nodes.RemoveAt(index);
+                    foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) if (triangle[i] > index) triangle[i]--;
+                    foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) if (quadangle[i] > index) quadangle[i]--;
+                    for (int i = 0; i < fixXNodeIndex.Count; ++i) if (fixXNodeIndex[i] > index) fixXNodeIndex[i]--;
+                    for (int i = 0; i < fixYNodeIndex.Count; ++i) if (fixYNodeIndex[i] > index) fixYNodeIndex[i]--;
+                    for (int i = 0; i < forceXNodeIndexWithValue.Count; ++i) if (forceXNodeIndexWithValue[i].index > index) forceXNodeIndexWithValue[i] = (forceXNodeIndexWithValue[i].index - 1, forceXNodeIndexWithValue[i].value);
+                    for (int i = 0; i < forceYNodeIndexWithValue.Count; ++i) if (forceYNodeIndexWithValue[i].index > index) forceYNodeIndexWithValue[i] = (forceYNodeIndexWithValue[i].index - 1, forceYNodeIndexWithValue[i].value);
+                }
             }
             else if (radioButton_triangle.Checked)
             {
