@@ -125,9 +125,9 @@ namespace WindowsFormsApp3
                     else if (index == -1 && movingNode != -1)
                     {
                         points[movingNode] = new Point(e.X, e.Y);
+                        triangles = triangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
+                        quadangles = quadangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
                         movingNode = -1;
-                        for (int i = 0; i < triangles.Count; ++i) triangles[i] = GetNodeOrderOfPolygon(triangles[i]);
-                        for (int i = 0; i < quadangles.Count; ++i) quadangles[i] = GetNodeOrderOfPolygon(quadangles[i]);
                     }
                 }
                 else if (radioButton_align.Checked)
