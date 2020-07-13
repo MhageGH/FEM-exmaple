@@ -24,6 +24,10 @@ namespace WindowsFormsApp3
 
         private List<int> selectedNodes = new List<int>();
         private int movingNode = -1;
+        private int baseNode = -1;
+        private AlignMode alignMode = AlignMode.vertical;
+
+        private enum AlignMode { vertical, horizontal };
 
         double TriangleArea(Point[] p)
         {
@@ -33,7 +37,6 @@ namespace WindowsFormsApp3
 
         void UpdateTriangles()
         {
-            selectedNodes.Sort();
             var triangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (triangles.Any(x => x.SequenceEqual(triangle))) triangles.RemoveAll(x => x.SequenceEqual(triangle));
             else triangles.Add(triangle);
@@ -41,7 +44,6 @@ namespace WindowsFormsApp3
 
         void UpdateQuadangles()
         {
-            selectedNodes.Sort();
             var quadangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (quadangles.Any(x => x.SequenceEqual(quadangle))) quadangles.RemoveAll(x => x.SequenceEqual(quadangle));
             else quadangles.Add(quadangle);
@@ -65,6 +67,7 @@ namespace WindowsFormsApp3
 
         int[] GetNodeOrderOfPolygon(int[] nodes)
         {
+            nodes = nodes.OrderBy(x => x).ToArray();
             var p = new Point[3];
             for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
             var n = new int[4];
@@ -132,7 +135,22 @@ namespace WindowsFormsApp3
                 }
                 else if (radioButton_align.Checked)
                 {
-                    // TODO
+                    if (index == -1) return;
+                    if (baseNode == -1)
+                    {
+                        baseNode = index;
+                        alignMode = AlignMode.vertical;
+                    }
+                    else if (index == baseNode)
+                    {
+                        if (alignMode == AlignMode.vertical) alignMode = AlignMode.horizontal;
+                        else if (alignMode == AlignMode.horizontal) alignMode = AlignMode.vertical;
+                    }
+                    else
+                    {
+                        if (alignMode == AlignMode.vertical) points[index] = new Point(points[baseNode].X, points[index].Y);
+                        else if (alignMode == AlignMode.horizontal) points[index] = new Point(points[index].X, points[baseNode].Y);
+                    }
                 }
             }
             else if (radioButton_triangle.Checked)
@@ -225,6 +243,11 @@ namespace WindowsFormsApp3
             {
                 e.Graphics.FillEllipse(Brushes.White, points[movingNode].X - 5, points[movingNode].Y - 5, 10, 10);
                 e.Graphics.DrawEllipse(Pens.Blue, points[movingNode].X - 5, points[movingNode].Y - 5, 10, 10);
+            }
+            if (baseNode != -1)
+            {
+                if (alignMode == AlignMode.vertical) e.Graphics.DrawLine(Pens.Silver, points[baseNode].X, points[baseNode].Y - 100, points[baseNode].X, points[baseNode].Y + 100);
+                if (alignMode == AlignMode.horizontal) e.Graphics.DrawLine(Pens.Silver, points[baseNode].X - 100, points[baseNode].Y, points[baseNode].X + 100, points[baseNode].Y);
             }
             if (checkBox_VisibleNodeNumber.Checked)
                 for (int i = 0; i < points.Count; ++i) e.Graphics.DrawString(i.ToString(), DefaultFont, Brushes.Black, points[i].X + 5, points[i].Y + 5);
@@ -408,7 +431,9 @@ namespace WindowsFormsApp3
             radioButton_move.Enabled = false;
             radioButton_align.Enabled = false;
             radioButton_add.Checked = true;
+            selectedNodes.Clear();
             movingNode = -1;
+            baseNode = -1;
             Invalidate();
         }
 
@@ -460,6 +485,12 @@ namespace WindowsFormsApp3
 
         private void checkBox_VisibleQuadangleNumber_CheckedChanged(object sender, EventArgs e)
         {
+            Invalidate();
+        }
+
+        private void radioButton_align_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_align.Checked == false) baseNode = -1;
             Invalidate();
         }
     }

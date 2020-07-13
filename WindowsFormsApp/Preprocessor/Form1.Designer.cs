@@ -39,13 +39,13 @@
             this.radioButton_quadangle = new System.Windows.Forms.RadioButton();
             this.button_load = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.radioButton_align = new System.Windows.Forms.RadioButton();
             this.radioButton_add = new System.Windows.Forms.RadioButton();
             this.radioButton_move = new System.Windows.Forms.RadioButton();
-            this.radioButton_align = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBox_VisibleNodeNumber = new System.Windows.Forms.CheckBox();
-            this.checkBox_VisibleTriangleNumber = new System.Windows.Forms.CheckBox();
             this.checkBox_VisibleQuadangleNumber = new System.Windows.Forms.CheckBox();
+            this.checkBox_VisibleTriangleNumber = new System.Windows.Forms.CheckBox();
+            this.checkBox_VisibleNodeNumber = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -196,6 +196,19 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "operation";
             // 
+            // radioButton_align
+            // 
+            this.radioButton_align.AutoSize = true;
+            this.radioButton_align.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_align.Location = new System.Drawing.Point(6, 85);
+            this.radioButton_align.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_align.Name = "radioButton_align";
+            this.radioButton_align.Size = new System.Drawing.Size(53, 22);
+            this.radioButton_align.TabIndex = 4;
+            this.radioButton_align.Text = "align";
+            this.radioButton_align.UseVisualStyleBackColor = true;
+            this.radioButton_align.CheckedChanged += new System.EventHandler(this.radioButton_align_CheckedChanged);
+            // 
             // radioButton_add
             // 
             this.radioButton_add.AutoSize = true;
@@ -223,18 +236,6 @@
             this.radioButton_move.UseVisualStyleBackColor = true;
             this.radioButton_move.CheckedChanged += new System.EventHandler(this.radioButton_move_CheckedChanged);
             // 
-            // radioButton_align
-            // 
-            this.radioButton_align.AutoSize = true;
-            this.radioButton_align.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton_align.Location = new System.Drawing.Point(6, 85);
-            this.radioButton_align.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton_align.Name = "radioButton_align";
-            this.radioButton_align.Size = new System.Drawing.Size(53, 22);
-            this.radioButton_align.TabIndex = 4;
-            this.radioButton_align.Text = "align";
-            this.radioButton_align.UseVisualStyleBackColor = true;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.checkBox_VisibleQuadangleNumber);
@@ -247,16 +248,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "visible";
             // 
-            // checkBox_VisibleNodeNumber
+            // checkBox_VisibleQuadangleNumber
             // 
-            this.checkBox_VisibleNodeNumber.AutoSize = true;
-            this.checkBox_VisibleNodeNumber.Location = new System.Drawing.Point(6, 24);
-            this.checkBox_VisibleNodeNumber.Name = "checkBox_VisibleNodeNumber";
-            this.checkBox_VisibleNodeNumber.Size = new System.Drawing.Size(104, 22);
-            this.checkBox_VisibleNodeNumber.TabIndex = 0;
-            this.checkBox_VisibleNodeNumber.Text = "node number";
-            this.checkBox_VisibleNodeNumber.UseVisualStyleBackColor = true;
-            this.checkBox_VisibleNodeNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleNodeNumber_CheckedChanged);
+            this.checkBox_VisibleQuadangleNumber.AutoSize = true;
+            this.checkBox_VisibleQuadangleNumber.Location = new System.Drawing.Point(6, 80);
+            this.checkBox_VisibleQuadangleNumber.Name = "checkBox_VisibleQuadangleNumber";
+            this.checkBox_VisibleQuadangleNumber.Size = new System.Drawing.Size(135, 22);
+            this.checkBox_VisibleQuadangleNumber.TabIndex = 2;
+            this.checkBox_VisibleQuadangleNumber.Text = "quadangle number";
+            this.checkBox_VisibleQuadangleNumber.UseVisualStyleBackColor = true;
+            this.checkBox_VisibleQuadangleNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleQuadangleNumber_CheckedChanged);
             // 
             // checkBox_VisibleTriangleNumber
             // 
@@ -269,16 +270,16 @@
             this.checkBox_VisibleTriangleNumber.UseVisualStyleBackColor = true;
             this.checkBox_VisibleTriangleNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleTriangleNumber_CheckedChanged);
             // 
-            // checkBox_VisibleQuadangleNumber
+            // checkBox_VisibleNodeNumber
             // 
-            this.checkBox_VisibleQuadangleNumber.AutoSize = true;
-            this.checkBox_VisibleQuadangleNumber.Location = new System.Drawing.Point(6, 80);
-            this.checkBox_VisibleQuadangleNumber.Name = "checkBox_VisibleQuadangleNumber";
-            this.checkBox_VisibleQuadangleNumber.Size = new System.Drawing.Size(135, 22);
-            this.checkBox_VisibleQuadangleNumber.TabIndex = 2;
-            this.checkBox_VisibleQuadangleNumber.Text = "quadangle number";
-            this.checkBox_VisibleQuadangleNumber.UseVisualStyleBackColor = true;
-            this.checkBox_VisibleQuadangleNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleQuadangleNumber_CheckedChanged);
+            this.checkBox_VisibleNodeNumber.AutoSize = true;
+            this.checkBox_VisibleNodeNumber.Location = new System.Drawing.Point(6, 24);
+            this.checkBox_VisibleNodeNumber.Name = "checkBox_VisibleNodeNumber";
+            this.checkBox_VisibleNodeNumber.Size = new System.Drawing.Size(104, 22);
+            this.checkBox_VisibleNodeNumber.TabIndex = 0;
+            this.checkBox_VisibleNodeNumber.Text = "node number";
+            this.checkBox_VisibleNodeNumber.UseVisualStyleBackColor = true;
+            this.checkBox_VisibleNodeNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleNodeNumber_CheckedChanged);
             // 
             // Form1
             // 
