@@ -16,7 +16,7 @@ namespace WindowsFormsApp3
 
         List<Point> points = new List<Point>();
         List<int[]> triangles = new List<int[]>();
-        List<int[]> quadangles = new List<int[]>();
+        List<int[]> quadrangles = new List<int[]>();
         List<int> fixXs = new List<int>();
         List<int> fixYs = new List<int>();
         List<(int index, int value)> forceXs = new List<(int, int)>();
@@ -42,11 +42,11 @@ namespace WindowsFormsApp3
             else triangles.Add(triangle);
         }
 
-        void UpdateQuadangles()
+        void UpdateQuadrangles()
         {
-            var quadangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
-            if (quadangles.Any(x => x.SequenceEqual(quadangle))) quadangles.RemoveAll(x => x.SequenceEqual(quadangle));
-            else quadangles.Add(quadangle);
+            var quadrangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
+            if (quadrangles.Any(x => x.SequenceEqual(quadrangle))) quadrangles.RemoveAll(x => x.SequenceEqual(quadrangle));
+            else quadrangles.Add(quadrangle);
         }
 
         void ReassignNodeNumber()
@@ -58,7 +58,7 @@ namespace WindowsFormsApp3
             var table = new List<int>();
             for (int i = 0; i < points.Count; ++i) table.Add(_points.FindIndex(_point => _point.i == i));
             foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) triangle[i] = table[triangle[i]];
-            foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) quadangle[i] = table[quadangle[i]];
+            foreach (var quadrangle in quadrangles) for (int i = 0; i < quadrangle.Length; ++i) quadrangle[i] = table[quadrangle[i]];
             for (int i = 0; i < fixXs.Count; ++i) fixXs[i] = table[fixXs[i]];
             for (int i = 0; i < fixYs.Count; ++i) fixYs[i] = table[fixYs[i]];
             for (int i = 0; i < forceXs.Count; ++i) forceXs[i] = (table[forceXs[i].index], forceXs[i].value);
@@ -107,13 +107,13 @@ namespace WindowsFormsApp3
                 if (radioButton_add.Checked)
                 {
                     if (index == -1) points.Add(new Point(e.X, e.Y));
-                    else if (!triangles.Any(x => x.Contains(index)) && !quadangles.Any(x => x.Contains(index))
+                    else if (!triangles.Any(x => x.Contains(index)) && !quadrangles.Any(x => x.Contains(index))
                         && !fixXs.Contains(index) && !fixYs.Contains(index)
                         && !forceXs.Any(x => x.index == index) && !forceYs.Any(x => x.index == index))
                     {
                         points.RemoveAt(index);
                         foreach (var triangle in triangles) for (int i = 0; i < triangle.Length; ++i) if (triangle[i] > index) triangle[i]--;
-                        foreach (var quadangle in quadangles) for (int i = 0; i < quadangle.Length; ++i) if (quadangle[i] > index) quadangle[i]--;
+                        foreach (var quadrangle in quadrangles) for (int i = 0; i < quadrangle.Length; ++i) if (quadrangle[i] > index) quadrangle[i]--;
                         for (int i = 0; i < fixXs.Count; ++i) if (fixXs[i] > index) fixXs[i]--;
                         for (int i = 0; i < fixYs.Count; ++i) if (fixYs[i] > index) fixYs[i]--;
                         for (int i = 0; i < forceXs.Count; ++i) if (forceXs[i].index > index) forceXs[i] = (forceXs[i].index - 1, forceXs[i].value);
@@ -129,7 +129,7 @@ namespace WindowsFormsApp3
                     {
                         points[movingNode] = new Point(e.X, e.Y);
                         triangles = triangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
-                        quadangles = quadangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
+                        quadrangles = quadrangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
                         movingNode = -1;
                     }
                 }
@@ -163,13 +163,13 @@ namespace WindowsFormsApp3
                     selectedNodes.Clear();
                 }
             }
-            else if (radioButton_quadangle.Checked)
+            else if (radioButton_quadrangle.Checked)
             {
                 if (index == -1) return;
                 else selectedNodes.Add(index);
                 if (selectedNodes.Count == 4)
                 {
-                    UpdateQuadangles();
+                    UpdateQuadrangles();
                     selectedNodes.Clear();
                 }
             }
@@ -229,10 +229,10 @@ namespace WindowsFormsApp3
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
-            foreach (var quadangle in quadangles)
+            foreach (var quadrangle in quadrangles)
             {
                 var ps = new Point[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = points[quadangle[i]];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = points[quadrangle[i]];
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
@@ -257,11 +257,11 @@ namespace WindowsFormsApp3
                     (points[triangles[i][0]].X + points[triangles[i][1]].X + points[triangles[i][2]].X) / 3, 
                     (points[triangles[i][0]].Y + points[triangles[i][1]].Y + points[triangles[i][2]].Y) / 3,
                     new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-            if (checkBox_VisibleQuadangleNumber.Checked)
-                for (int i = 0; i < quadangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine +
-                    "(" + quadangles[i][0].ToString() + "-" + quadangles[i][1].ToString() + "-" + quadangles[i][2].ToString() + "-" + quadangles[i][3].ToString() + ")", DefaultFont, Brushes.Black,
-                    (points[quadangles[i][0]].X + points[quadangles[i][1]].X + points[quadangles[i][2]].X + points[quadangles[i][3]].X) / 4,
-                    (points[quadangles[i][0]].Y + points[quadangles[i][1]].Y + points[quadangles[i][2]].Y + points[quadangles[i][3]].Y) / 4,
+            if (checkBox_VisibleQuadrangleNumber.Checked)
+                for (int i = 0; i < quadrangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine +
+                    "(" + quadrangles[i][0].ToString() + "-" + quadrangles[i][1].ToString() + "-" + quadrangles[i][2].ToString() + "-" + quadrangles[i][3].ToString() + ")", DefaultFont, Brushes.Black,
+                    (points[quadrangles[i][0]].X + points[quadrangles[i][1]].X + points[quadrangles[i][2]].X + points[quadrangles[i][3]].X) / 4,
+                    (points[quadrangles[i][0]].Y + points[quadrangles[i][1]].Y + points[quadrangles[i][2]].Y + points[quadrangles[i][3]].Y) / 4,
                     new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             for (int i = 0; i < fixXs.Count; ++i)
             {
@@ -333,8 +333,8 @@ namespace WindowsFormsApp3
             sb.AppendLine("triangles");
             foreach (var triangle in triangles) sb.AppendLine(triangle[0].ToString() + "," + triangle[1].ToString() + "," + triangle[2].ToString());
             sb.AppendLine();
-            sb.AppendLine("quadangles");
-            foreach (var quadangle in quadangles) sb.AppendLine(quadangle[0].ToString() + "," + quadangle[1].ToString() + "," + quadangle[2].ToString() + "," + quadangle[3].ToString());
+            sb.AppendLine("quadrangles");
+            foreach (var quadrangle in quadrangles) sb.AppendLine(quadrangle[0].ToString() + "," + quadrangle[1].ToString() + "," + quadrangle[2].ToString() + "," + quadrangle[3].ToString());
             sb.AppendLine();
             sb.AppendLine("fix X");
             foreach (var idx in fixXs) sb.AppendLine(idx.ToString());
@@ -356,7 +356,7 @@ namespace WindowsFormsApp3
             var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             var words = new string[lines.Length][];
             for (int i = 0; i < lines.Length; ++i) words[i] = lines[i].Split(new char[] { ',' });
-            var labels = new string[] { "points", "triangles", "quadangles", "fix X", "fix Y", "force X", "force Y" };
+            var labels = new string[] { "points", "triangles", "quadrangles", "fix X", "fix Y", "force X", "force Y" };
             for (int i = 0; i < labels.Length; ++i)
             {
                 for (int j = 0; j < words.Length; ++j)
@@ -374,8 +374,8 @@ namespace WindowsFormsApp3
                                 for (++j; words[j][0] != ""; ++j) triangles.Add(new int[3] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]) });
                                 break;
                             case 2:
-                                quadangles = new List<int[]>();
-                                for (++j; words[j][0] != ""; ++j) quadangles.Add(new int[4] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]), Convert.ToInt16(words[j][3]) });
+                                quadrangles = new List<int[]>();
+                                for (++j; words[j][0] != ""; ++j) quadrangles.Add(new int[4] { Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1]), Convert.ToInt16(words[j][2]), Convert.ToInt16(words[j][3]) });
                                 break;
                             case 3:
                                 fixXs = new List<int>();
@@ -442,7 +442,7 @@ namespace WindowsFormsApp3
             RadioButtonNotForNode();
         }
 
-        private void radioButton_quadangle_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_quadrangle_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
         }
@@ -483,7 +483,7 @@ namespace WindowsFormsApp3
             Invalidate();
         }
 
-        private void checkBox_VisibleQuadangleNumber_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_VisibleQuadrangleNumber_CheckedChanged(object sender, EventArgs e)
         {
             Invalidate();
         }

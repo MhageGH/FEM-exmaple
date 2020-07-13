@@ -36,14 +36,14 @@
             this.radioButton_forceY = new System.Windows.Forms.RadioButton();
             this.radioButton_forceX = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton_quadangle = new System.Windows.Forms.RadioButton();
+            this.radioButton_quadrangle = new System.Windows.Forms.RadioButton();
             this.button_load = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButton_align = new System.Windows.Forms.RadioButton();
             this.radioButton_add = new System.Windows.Forms.RadioButton();
             this.radioButton_move = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkBox_VisibleQuadangleNumber = new System.Windows.Forms.CheckBox();
+            this.checkBox_VisibleQuadrangleNumber = new System.Windows.Forms.CheckBox();
             this.checkBox_VisibleTriangleNumber = new System.Windows.Forms.CheckBox();
             this.checkBox_VisibleNodeNumber = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
@@ -145,7 +145,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.radioButton_quadangle);
+            this.groupBox1.Controls.Add(this.radioButton_quadrangle);
             this.groupBox1.Controls.Add(this.radioButton_node);
             this.groupBox1.Controls.Add(this.radioButton_forceY);
             this.groupBox1.Controls.Add(this.radioButton_triangle);
@@ -159,18 +159,18 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "mode";
             // 
-            // radioButton_quadangle
+            // radioButton_quadrangle
             // 
-            this.radioButton_quadangle.AutoSize = true;
-            this.radioButton_quadangle.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.radioButton_quadangle.Location = new System.Drawing.Point(6, 84);
-            this.radioButton_quadangle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.radioButton_quadangle.Name = "radioButton_quadangle";
-            this.radioButton_quadangle.Size = new System.Drawing.Size(85, 22);
-            this.radioButton_quadangle.TabIndex = 7;
-            this.radioButton_quadangle.Text = "quadangle";
-            this.radioButton_quadangle.UseVisualStyleBackColor = true;
-            this.radioButton_quadangle.CheckedChanged += new System.EventHandler(this.radioButton_quadangle_CheckedChanged);
+            this.radioButton_quadrangle.AutoSize = true;
+            this.radioButton_quadrangle.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.radioButton_quadrangle.Location = new System.Drawing.Point(6, 84);
+            this.radioButton_quadrangle.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.radioButton_quadrangle.Name = "radioButton_quadrangle";
+            this.radioButton_quadrangle.Size = new System.Drawing.Size(90, 22);
+            this.radioButton_quadrangle.TabIndex = 7;
+            this.radioButton_quadrangle.Text = "quadrangle";
+            this.radioButton_quadrangle.UseVisualStyleBackColor = true;
+            this.radioButton_quadrangle.CheckedChanged += new System.EventHandler(this.radioButton_quadrangle_CheckedChanged);
             // 
             // button_load
             // 
@@ -238,7 +238,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.checkBox_VisibleQuadangleNumber);
+            this.groupBox3.Controls.Add(this.checkBox_VisibleQuadrangleNumber);
             this.groupBox3.Controls.Add(this.checkBox_VisibleTriangleNumber);
             this.groupBox3.Controls.Add(this.checkBox_VisibleNodeNumber);
             this.groupBox3.Location = new System.Drawing.Point(511, 380);
@@ -248,16 +248,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "visible";
             // 
-            // checkBox_VisibleQuadangleNumber
+            // checkBox_VisibleQuadrangleNumber
             // 
-            this.checkBox_VisibleQuadangleNumber.AutoSize = true;
-            this.checkBox_VisibleQuadangleNumber.Location = new System.Drawing.Point(6, 80);
-            this.checkBox_VisibleQuadangleNumber.Name = "checkBox_VisibleQuadangleNumber";
-            this.checkBox_VisibleQuadangleNumber.Size = new System.Drawing.Size(135, 22);
-            this.checkBox_VisibleQuadangleNumber.TabIndex = 2;
-            this.checkBox_VisibleQuadangleNumber.Text = "quadangle number";
-            this.checkBox_VisibleQuadangleNumber.UseVisualStyleBackColor = true;
-            this.checkBox_VisibleQuadangleNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleQuadangleNumber_CheckedChanged);
+            this.checkBox_VisibleQuadrangleNumber.AutoSize = true;
+            this.checkBox_VisibleQuadrangleNumber.Location = new System.Drawing.Point(6, 80);
+            this.checkBox_VisibleQuadrangleNumber.Name = "checkBox_VisibleQuadrangleNumber";
+            this.checkBox_VisibleQuadrangleNumber.Size = new System.Drawing.Size(140, 22);
+            this.checkBox_VisibleQuadrangleNumber.TabIndex = 2;
+            this.checkBox_VisibleQuadrangleNumber.Text = "quadrangle number";
+            this.checkBox_VisibleQuadrangleNumber.UseVisualStyleBackColor = true;
+            this.checkBox_VisibleQuadrangleNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleQuadrangleNumber_CheckedChanged);
             // 
             // checkBox_VisibleTriangleNumber
             // 
@@ -319,7 +319,7 @@
         private System.Windows.Forms.RadioButton radioButton_forceX;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button_load;
-        private System.Windows.Forms.RadioButton radioButton_quadangle;
+        private System.Windows.Forms.RadioButton radioButton_quadrangle;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButton_align;
         private System.Windows.Forms.RadioButton radioButton_add;
@@ -327,7 +327,7 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox checkBox_VisibleNodeNumber;
         private System.Windows.Forms.CheckBox checkBox_VisibleTriangleNumber;
-        private System.Windows.Forms.CheckBox checkBox_VisibleQuadangleNumber;
+        private System.Windows.Forms.CheckBox checkBox_VisibleQuadrangleNumber;
     }
 }
 
