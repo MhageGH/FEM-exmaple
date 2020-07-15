@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Windows.Forms;
 
@@ -106,6 +107,7 @@ namespace WindowsFormsApp3
             {
                 if (radioButton_add.Checked)
                 {
+                    if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
                     if (index == -1) points.Add(new Point(e.X, e.Y));
                     else if (!triangles.Any(x => x.Contains(index)) && !quadrangles.Any(x => x.Contains(index))
                         && !fixXs.Contains(index) && !fixYs.Contains(index)
@@ -122,6 +124,13 @@ namespace WindowsFormsApp3
                 }
                 else if (radioButton_move.Checked)
                 {
+                    if (e.Button==MouseButtons.Right)
+                    {
+                        movingNode = -1;
+                        Invalidate();
+                        return;
+                    }
+                    if (e.Button == MouseButtons.Middle) return;
                     if (index == -1 && movingNode == -1) return;
                     else if (index != -1 && movingNode != -1) return;
                     else if (index != -1 && movingNode == -1) movingNode = index;
@@ -135,6 +144,13 @@ namespace WindowsFormsApp3
                 }
                 else if (radioButton_align.Checked)
                 {
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        baseNode = -1;
+                        Invalidate();
+                        return;
+                    }
+                    if (e.Button == MouseButtons.Middle) return;
                     if (index == -1) return;
                     if (baseNode == -1)
                     {
@@ -155,8 +171,15 @@ namespace WindowsFormsApp3
             }
             else if (radioButton_triangle.Checked)
             {
+                if (e.Button == MouseButtons.Middle) return;
+                if (e.Button == MouseButtons.Right)
+                {
+                    selectedNodes.Clear();
+                    Invalidate();
+                    return;
+                }
                 if (index == -1) return;
-                else selectedNodes.Add(index);
+                else if (!selectedNodes.Contains(index)) selectedNodes.Add(index);
                 if (selectedNodes.Count == 3)
                 {
                     UpdateTriangles();
@@ -165,8 +188,15 @@ namespace WindowsFormsApp3
             }
             else if (radioButton_quadrangle.Checked)
             {
+                if (e.Button == MouseButtons.Middle) return;
+                if (e.Button == MouseButtons.Right)
+                {
+                    selectedNodes.Clear();
+                    Invalidate();
+                    return;
+                }
                 if (index == -1) return;
-                else selectedNodes.Add(index);
+                else if (!selectedNodes.Contains(index)) selectedNodes.Add(index);
                 if (selectedNodes.Count == 4)
                 {
                     UpdateQuadrangles();
@@ -175,18 +205,21 @@ namespace WindowsFormsApp3
             }
             else if (radioButton_fixX.Checked)
             {
+                if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
                 if (index == -1) return;
                 else if (fixXs.Contains(index)) fixXs.Remove(index);
                 else fixXs.Add(index);
             }
             else if (radioButton_fixY.Checked)
             {
+                if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
                 if (index == -1) return;
                 else if (fixYs.Contains(index)) fixYs.Remove(index);
                 else fixYs.Add(index);
             }
             else if (radioButton_forceX.Checked)
             {
+                if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
                 if (index == -1) return;
                 bool add = true;
                 for (int i = 0; i < forceXs.Count; ++i)
@@ -203,6 +236,7 @@ namespace WindowsFormsApp3
             }
             else if (radioButton_forceY.Checked)
             {
+                if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
                 if (index == -1) return;
                 bool add = true;
                 for (int i = 0; i < forceYs.Count; ++i)
@@ -424,7 +458,9 @@ namespace WindowsFormsApp3
         {
             radioButton_move.Enabled = true;
             radioButton_align.Enabled = true;
-        }
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to put or remove node";            
+            else toolStripStatusLabel1.Text = "-";
+    }
 
         void RadioButtonNotForNode()
         {
@@ -440,36 +476,50 @@ namespace WindowsFormsApp3
         private void radioButton_triangle_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node to form element.     Right click to cancel.";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_quadrangle_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node to form element.     Right click to cancel.";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_fixX_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_fixY_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_forceX_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_forceY_CheckedChanged(object sender, EventArgs e)
         {
             RadioButtonNotForNode();
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to select node";
+            else toolStripStatusLabel1.Text = "-";
         }
 
         private void radioButton_move_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton_move.Checked == false) movingNode = -1;
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to move node.     Right click to cancel.";
+            else toolStripStatusLabel1.Text = "-";
             Invalidate();
         }
 
@@ -491,7 +541,15 @@ namespace WindowsFormsApp3
         private void radioButton_align_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton_align.Checked == false) baseNode = -1;
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to align node.     Right click to cancel.";
+            else toolStripStatusLabel1.Text = "-";
             Invalidate();
+        }
+
+        private void radioButton_add_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((RadioButton)sender).Checked) toolStripStatusLabel1.Text = "Left click to put or remove node";
+            else toolStripStatusLabel1.Text = "-";
         }
     }
 }

@@ -46,9 +46,12 @@
             this.checkBox_VisibleQuadrangleNumber = new System.Windows.Forms.CheckBox();
             this.checkBox_VisibleTriangleNumber = new System.Windows.Forms.CheckBox();
             this.checkBox_VisibleNodeNumber = new System.Windows.Forms.CheckBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioButton_node
@@ -222,6 +225,7 @@
             this.radioButton_add.TabStop = true;
             this.radioButton_add.Text = "add / remove";
             this.radioButton_add.UseVisualStyleBackColor = true;
+            this.radioButton_add.CheckedChanged += new System.EventHandler(this.radioButton_add_CheckedChanged);
             // 
             // radioButton_move
             // 
@@ -281,11 +285,28 @@
             this.checkBox_VisibleNodeNumber.UseVisualStyleBackColor = true;
             this.checkBox_VisibleNodeNumber.CheckedChanged += new System.EventHandler(this.checkBox_VisibleNodeNumber_CheckedChanged);
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 528);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(665, 22);
+            this.statusStrip1.TabIndex = 11;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(175, 17);
+            this.toolStripStatusLabel1.Text = "Left click to put or remove node";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 550);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.button_load);
@@ -304,7 +325,10 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -328,6 +352,8 @@
         private System.Windows.Forms.CheckBox checkBox_VisibleNodeNumber;
         private System.Windows.Forms.CheckBox checkBox_VisibleTriangleNumber;
         private System.Windows.Forms.CheckBox checkBox_VisibleQuadrangleNumber;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 
