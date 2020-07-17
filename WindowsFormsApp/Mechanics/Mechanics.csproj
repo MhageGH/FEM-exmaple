@@ -81,5 +81,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Preprocessor\Preprocessor.csproj">
+      <Project>{94d81133-004f-4286-b24c-6b76d75e2a62}</Project>
+      <Name>Preprocessor</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

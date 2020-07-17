@@ -25,9 +25,9 @@ namespace Mechanics
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var triangles = new Triangle[fem.triangles.Count];
+            var triangles = new Triangle[fem.mesh.triangles.Count];
 
-            var components = new double[fem.points.Count];
+            var components = new double[fem.mesh.points.Count];
             switch (listBox1.SelectedIndex)
             {
                 case 0:
@@ -66,8 +66,8 @@ namespace Mechanics
                 var colors = new Color[3];
                 for (int j = 0; j < points.Length; ++j)
                 {
-                    points[j] = new Point(fem.points[fem.triangles[i][j]].X, fem.points[fem.triangles[i][j]].Y);
-                    var c = components[fem.triangles[i][j]];
+                    points[j] = new Point(fem.mesh.points[fem.mesh.triangles[i][j]].X, fem.mesh.points[fem.mesh.triangles[i][j]].Y);
+                    var c = components[fem.mesh.triangles[i][j]];
                     Color color0, color1;
                     double s;
                     if (c < 0.5)
@@ -101,7 +101,7 @@ namespace Mechanics
                 if (fem.globalFixIndexes[j] % 2 == 1) tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
                 else tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
                 var n = fem.globalFixIndexes[j] / 2;
-                var p = new Point(fem.points[n].X, fem.points[n].Y);
+                var p = new Point(fem.mesh.points[n].X, fem.mesh.points[n].Y);
                 for (int i = 0; i < tri.Length; ++i)
                 {
                     tri[i].X += p.X;
@@ -126,7 +126,7 @@ namespace Mechanics
                         line = new Point[] { new Point(0, 0), new Point((int)(-50 * f), 0) };
                     }
                     var n = fem.globalUnfixIndexes[j] / 2;
-                    var p = new Point(fem.points[n].X, fem.points[n].Y);
+                    var p = new Point(fem.mesh.points[n].X, fem.mesh.points[n].Y);
                     for (int i = 0; i < tri.Length; ++i)
                     {
                         tri[i].X += p.X;
@@ -148,79 +148,11 @@ namespace Mechanics
             this.Invalidate();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button_load_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                using (var sr = new System.IO.StreamReader(ofd.FileName))
-                {
-                    while (!sr.EndOfStream)
-                    {
-                        var points = new List<Point>();
-                        if (!sr.ReadLine().Contains("nodes")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            points.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        var triangles = new List<int[]>();
-                        if (!sr.ReadLine().Contains("elements")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            triangles.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
-                        }
-                        var fixXNodeIndex = new List<int>();
-                        if (!sr.ReadLine().Contains("fix X")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            fixXNodeIndex.Add(Convert.ToInt16(strs[0]));
-                        }
-                        var fixYNodeIndex = new List<int>();
-                        if (!sr.ReadLine().Contains("fix Y")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            fixYNodeIndex.Add(Convert.ToInt16(strs[0]));
-                        }
-                        var forceXNodeIndexWithValue = new List<(int index, int value)>();
-                        if (!sr.ReadLine().Contains("force X")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            forceXNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        var forceYNodeIndexWithValue = new List<(int index, int value)>();
-                        if (!sr.ReadLine().Contains("force Y")) break;
-                        while (true)
-                        {
-                            var s = sr.ReadLine();
-                            if (s == null || !Regex.IsMatch(s, "[^,]")) break;
-                            var strs = s.Split(new char[] { ',' });
-                            forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
-                        }
-                        fem.points = points;
-                        fem.triangles = triangles;
-                        fem.fixXs = fixXNodeIndex;
-                        fem.fixYs = fixYNodeIndex;
-                        fem.forceXs = forceXNodeIndexWithValue;
-                        fem.forceYs = forceYNodeIndexWithValue;
-                    }
-                }
-            }
+            if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) fem.meshEncoder.DecodeFromCSV(sr.ReadToEnd());
             fem.CreateForces_A();
             fem.Solver();
             fem.PostProcessing();
@@ -228,7 +160,6 @@ namespace Mechanics
         }
     }
 
-    
     class Triangle
     {
         public Point[] points;
