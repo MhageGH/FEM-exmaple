@@ -20,8 +20,6 @@ namespace Mechanics
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var triangles = new Triangle[fem.mesh.triangles.Count];
-
             var values = new double[fem.mesh.points.Count];
             if (fem.solved)
             {
@@ -57,36 +55,20 @@ namespace Mechanics
                 for (int i = 0; i < values.Length; ++i) if (min > values[i]) min = values[i];
                 for (int i = 0; i < values.Length; ++i) values[i] = max > min ? (values[i] - min) / (max - min) : max;
             }
-
-            for (int i = 0; i < triangles.Length; ++i)
+            var triangles = new List<Triangle>();
+            foreach (var triangle in fem.mesh.triangles)
             {
-                var points = new Point[3];
-                var colors = new Color[3];
-                for (int j = 0; j < points.Length; ++j)
+                var points = new List<Point>();
+                var colors = new List<Color>();
+                foreach(var node in triangle)
                 {
-                    points[j] = new Point(fem.mesh.points[fem.mesh.triangles[i][j]].X, fem.mesh.points[fem.mesh.triangles[i][j]].Y);
-                    var c = values[fem.mesh.triangles[i][j]];
-                    Color color0, color1;
-                    double s;
-                    if (c < 0.5)
-                    {
-                        s = 2 * c;
-                        color0 = Color.Blue;
-                        color1 = Color.LawnGreen;
-                    }
-                    else
-                    {
-                        s = 2 * (c - 0.5);
-                        color0 = Color.LawnGreen;
-                        color1 = Color.Red;
-                    }
-                    colors[j] = Color.FromArgb(
-                        (int)(color0.R * (1 - s) + color1.R * s),
-                        (int)(color0.G * (1 - s) + color1.G * s),
-                        (int)(color0.B * (1 - s) + color1.B * s)
-                        );
+                    points.Add(fem.mesh.points[node]);
+                    var c0 = values[node] < 0.5 ? Color.Blue : Color.LawnGreen;
+                    var c1 = values[node] < 0.5 ? Color.LawnGreen : Color.Red;
+                    var s = values[node] < 0.5 ? 2 * values[node] : 2 * (values[node] - 0.5);
+                    colors.Add(Color.FromArgb((int)(c0.R * (1 - s) + c1.R * s), (int)(c0.G * (1 - s) + c1.G * s), (int)(c0.B * (1 - s) + c1.B * s)));
                 }
-                triangles[i] = new Triangle(points, colors);
+                triangles.Add(new Triangle(points.ToArray(), colors.ToArray()));
             }
             foreach (var triangle in triangles)
             {
