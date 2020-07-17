@@ -4,8 +4,9 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
-namespace WindowsFormsApp2
+namespace Mechanics
 {
     public partial class Form1 : Form
     {
@@ -24,9 +25,9 @@ namespace WindowsFormsApp2
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var triangles = new Triangle[fem.elements.Length];
+            var triangles = new Triangle[fem.triangles.Count];
 
-            var components = new double[fem.nodes.Length];
+            var components = new double[fem.points.Count];
             switch (listBox1.SelectedIndex)
             {
                 case 0:
@@ -61,12 +62,12 @@ namespace WindowsFormsApp2
 
             for (int i = 0; i < triangles.Length; ++i)
             {
-                var points = new PointF[3];
+                var points = new Point[3];
                 var colors = new Color[3];
                 for (int j = 0; j < points.Length; ++j)
                 {
-                    points[j] = new PointF(fem.nodes[fem.elements[i][j]].X, fem.nodes[fem.elements[i][j]].Y);
-                    var c = components[fem.elements[i][j]];
+                    points[j] = new Point(fem.points[fem.triangles[i][j]].X, fem.points[fem.triangles[i][j]].Y);
+                    var c = components[fem.triangles[i][j]];
                     Color color0, color1;
                     double s;
                     if (c < 0.5)
@@ -96,11 +97,11 @@ namespace WindowsFormsApp2
             }
             for (int j = 0; j < fem.globalFixIndexes.Count; ++j)
             {
-                PointF[] tri;
-                if (fem.globalFixIndexes[j] % 2 == 1) tri = new PointF[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
-                else tri = new PointF[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
+                Point[] tri;
+                if (fem.globalFixIndexes[j] % 2 == 1) tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
+                else tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
                 var n = fem.globalFixIndexes[j] / 2;
-                var p = new PointF(fem.nodes[n].X, fem.nodes[n].Y);
+                var p = new Point(fem.points[n].X, fem.points[n].Y);
                 for (int i = 0; i < tri.Length; ++i)
                 {
                     tri[i].X += p.X;
@@ -113,19 +114,19 @@ namespace WindowsFormsApp2
                 if (fem.forces_A[j] != 0)
                 {
                     float f = (float)fem.forces_A[j];
-                    PointF[] tri, line;
+                    Point[] tri, line;
                     if (fem.globalUnfixIndexes[j] % 2 == 1)
                     {
-                        tri = new PointF[] { new PointF(0, 0 - 50 * f), new PointF(-5, 10 - 50 * f), new PointF(5, 10 - 50 * f) };
-                        line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f) };
+                        tri = new Point[] { new Point(0, (int)(0 - 50 * f)), new Point(-5, (int)(10 - 50 * f)), new Point(5, (int)(10 - 50 * f)) };
+                        line = new Point[] { new Point(0, 0), new Point(0, (int)(-50 * f)) };
                     }
                     else
                     {
-                        tri = new PointF[] { new PointF(0 + 50 * f, 0), new PointF(-10 + 50 * f, -5), new PointF(-10 + 50 * f, 5) };
-                        line = new PointF[] { new PointF(0, 0), new PointF(-50 * f, 0) };
+                        tri = new Point[] { new Point((int)(0 + 50 * f), 0), new Point((int)(-10 + 50 * f), -5), new Point((int)(-10 + 50 * f), 5) };
+                        line = new Point[] { new Point(0, 0), new Point((int)(-50 * f), 0) };
                     }
                     var n = fem.globalUnfixIndexes[j] / 2;
-                    var p = new PointF(fem.nodes[n].X, fem.nodes[n].Y);
+                    var p = new Point(fem.points[n].X, fem.points[n].Y);
                     for (int i = 0; i < tri.Length; ++i)
                     {
                         tri[i].X += p.X;
@@ -157,23 +158,23 @@ namespace WindowsFormsApp2
                 {
                     while (!sr.EndOfStream)
                     {
-                        var nodes = new List<PointF>();
+                        var points = new List<Point>();
                         if (!sr.ReadLine().Contains("nodes")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
                             if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
-                            nodes.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
+                            points.Add(new Point(Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
-                        var elements = new List<int[]>();
+                        var triangles = new List<int[]>();
                         if (!sr.ReadLine().Contains("elements")) break;
                         while (true)
                         {
                             var s = sr.ReadLine();
                             if (s == null || !Regex.IsMatch(s, "[^,]")) break;
                             var strs = s.Split(new char[] { ',' });
-                            elements.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
+                            triangles.Add(new int[3] { Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1]), Convert.ToInt16(strs[2]) });
                         }
                         var fixXNodeIndex = new List<int>();
                         if (!sr.ReadLine().Contains("fix X")) break;
@@ -211,12 +212,12 @@ namespace WindowsFormsApp2
                             var strs = s.Split(new char[] { ',' });
                             forceYNodeIndexWithValue.Add((Convert.ToInt16(strs[0]), Convert.ToInt16(strs[1])));
                         }
-                        fem.nodes = nodes.ToArray();
-                        fem.elements = elements.ToArray();
-                        fem.fixXNodeIndexes = fixXNodeIndex;
-                        fem.fixYNodeIndexes = fixYNodeIndex;
-                        fem.forceXNodeIndexesWithValue = forceXNodeIndexWithValue;
-                        fem.forceYNodeIndexesWithValue = forceYNodeIndexWithValue;
+                        fem.points = points;
+                        fem.triangles = triangles;
+                        fem.fixXs = fixXNodeIndex;
+                        fem.fixYs = fixYNodeIndex;
+                        fem.forceXs = forceXNodeIndexWithValue;
+                        fem.forceYs = forceYNodeIndexWithValue;
                     }
                 }
             }
@@ -229,17 +230,17 @@ namespace WindowsFormsApp2
 
     class FEM
     {
-        public List<int> fixXNodeIndexes;
-        public List<int> fixYNodeIndexes;
-        public List<(int index, int value)> forceXNodeIndexesWithValue;
-        public List<(int index, int value)> forceYNodeIndexesWithValue;
+        public List<Point> points;
+        public List<int[]> triangles;
+        public List<int> fixXs;
+        public List<int> fixYs;
+        public List<(int index, int value)> forceXs;
+        public List<(int index, int value)> forceYs;
 
         const double E = 1000000.0;
         const double nu = 0.3;
         const double thickness = 0.1;
         const double k_spring = 1.0;
-        public PointF[] nodes;
-        public int[][] elements;
         public List<int> globalFixIndexes;
         public List<int> globalUnfixIndexes;
         private double[][,] B;
@@ -258,92 +259,92 @@ namespace WindowsFormsApp2
         {
             // node
             const int N = 10;
-            nodes = new PointF[(N + 1) * (N + 1)];
-            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) nodes[(N + 1) * (N - j) + i] = new PointF(i * 40 + 80, j * 40 + 80);
+            points = new Point[(N + 1) * (N + 1)].ToList();
+            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) points[(N + 1) * (N - j) + i] = new Point(i * 40 + 80, j * 40 + 80);
 
-            // element (triangle)
-            elements = new int[2 * N * N][];
+            // triangle
+            triangles = new int[2 * N * N][].ToList();
             for (int i = 0; i < N; ++i)
             {
                 for (int j = 0; j < 2 * N; ++j)
                 {
                     if (i % 2 == 0)
                     {
-                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { N+1, N + 2, 0 };
-                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { N + 2, 1, 0 };
-                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { N + 2, 2, 1 };
-                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { N + 2, N + 3, 2 };
+                        if (j % 4 == 0) triangles[2 * N * i + j] = new int[] { N+1, N + 2, 0 };
+                        if (j % 4 == 1) triangles[2 * N * i + j] = new int[] { N + 2, 1, 0 };
+                        if (j % 4 == 2) triangles[2 * N * i + j] = new int[] { N + 2, 2, 1 };
+                        if (j % 4 == 3) triangles[2 * N * i + j] = new int[] { N + 2, N + 3, 2 };
                     }
                     else
                     {
-                        if (j % 4 == 0) elements[2 * N * i + j] = new int[] { N + 3, 2, 1 };
-                        if (j % 4 == 1) elements[2 * N * i + j] = new int[] { N + 2, N + 3, 1 };
-                        if (j % 4 == 2) elements[2 * N * i + j] = new int[] { N + 1, N + 2, 1 };
-                        if (j % 4 == 3) elements[2 * N * i + j] = new int[] { N + 1, 1, 0 };
+                        if (j % 4 == 0) triangles[2 * N * i + j] = new int[] { N + 3, 2, 1 };
+                        if (j % 4 == 1) triangles[2 * N * i + j] = new int[] { N + 2, N + 3, 1 };
+                        if (j % 4 == 2) triangles[2 * N * i + j] = new int[] { N + 1, N + 2, 1 };
+                        if (j % 4 == 3) triangles[2 * N * i + j] = new int[] { N + 1, 1, 0 };
                     }
-                    for (int k = 0; k < 3; ++k) elements[2 * N * i + j][k] += 2 * (j / 4) + (N + 1) * i;
+                    for (int k = 0; k < 3; ++k) triangles[2 * N * i + j][k] += 2 * (j / 4) + (N + 1) * i;
                 }
             }
-            var e = new List<int[]>();
-            for (int i = 0; i < elements.Length; ++i)
+            var _triangles = new List<int[]>();
+            for (int i = 0; i < triangles.Count; ++i)
             {
                 if (86 <= i && i <= 93) continue;
-                e.Add(elements[i]);
+                _triangles.Add(triangles[i]);
             }
-            elements = e.ToArray();
+            triangles = _triangles;
 
             // fix nodes
-            fixXNodeIndexes = new List<int>();
-            fixXNodeIndexes.Add(0);
-            fixYNodeIndexes = new List<int>();
-            for (int i = 0; i < N + 1; ++i) fixYNodeIndexes.Add(i);
+            fixXs = new List<int>();
+            fixXs.Add(0);
+            fixYs = new List<int>();
+            for (int i = 0; i < N + 1; ++i) fixYs.Add(i);
 
             // force
-            forceXNodeIndexesWithValue = new List<(int index, int value)>();
-            forceYNodeIndexesWithValue = new List<(int index, int value)>();
-            forceYNodeIndexesWithValue.Add((nodes.Length - 1 - N, 1));
-            for (int i = 1; i < N; ++i) forceYNodeIndexesWithValue.Add((nodes.Length - 1 - N + i, 2));
-            forceYNodeIndexesWithValue.Add((nodes.Length - 1, 1));
+            forceXs = new List<(int index, int value)>();
+            forceYs = new List<(int index, int value)>();
+            forceYs.Add((points.Count - 1 - N, 1));
+            for (int i = 1; i < N; ++i) forceYs.Add((points.Count - 1 - N + i, 2));
+            forceYs.Add((points.Count - 1, 1));
         }
 
         public void CreateForces_A()
         {
             globalFixIndexes = new List<int>();
-            foreach (var i in fixXNodeIndexes) globalFixIndexes.Add(2 * i);
-            foreach (var i in fixYNodeIndexes) globalFixIndexes.Add(2 * i + 1);
+            foreach (var i in fixXs) globalFixIndexes.Add(2 * i);
+            foreach (var i in fixYs) globalFixIndexes.Add(2 * i + 1);
             globalFixIndexes.Sort();
             globalUnfixIndexes = new List<int>();
-            for (int i = 0; i < nodes.Length * 2; ++i) if (!globalFixIndexes.Contains(i)) globalUnfixIndexes.Add(i);
+            for (int i = 0; i < points.Count * 2; ++i) if (!globalFixIndexes.Contains(i)) globalUnfixIndexes.Add(i);
             forces_A = new double[globalUnfixIndexes.Count];
             const double f = 0.5;
-            for (int i = 0; i < forceXNodeIndexesWithValue.Count; ++i)
-                forces_A[globalUnfixIndexes.FindIndex(a => a == 2 * forceXNodeIndexesWithValue[i].index)] = f * forceXNodeIndexesWithValue[i].value;
-            for (int i = 0; i < forceYNodeIndexesWithValue.Count; ++i)
-                forces_A[globalUnfixIndexes.FindIndex(a => a == 2 * forceYNodeIndexesWithValue[i].index) + 1] = f * forceYNodeIndexesWithValue[i].value;
+            for (int i = 0; i < forceXs.Count; ++i)
+                forces_A[globalUnfixIndexes.FindIndex(a => a == 2 * forceXs[i].index)] = f * forceXs[i].value;
+            for (int i = 0; i < forceYs.Count; ++i)
+                forces_A[globalUnfixIndexes.FindIndex(a => a == 2 * forceYs[i].index) + 1] = f * forceYs[i].value;
         }
 
         public void Solver()
         {
-            B = new double[elements.Length][,];
-            D = new double[elements.Length][,];
-            var K_m = new double[elements.Length][,];
+            B = new double[triangles.Count][,];
+            D = new double[triangles.Count][,];
+            var K_m = new double[triangles.Count][,];
             for (int i = 0; i < K_m.Length; ++i)
             {
                 double Delta =
-                    (nodes[elements[i][1]].X * nodes[elements[i][2]].Y
-                    + nodes[elements[i][2]].X * nodes[elements[i][0]].Y
-                    + nodes[elements[i][0]].X * nodes[elements[i][1]].Y
-                    - nodes[elements[i][2]].X * nodes[elements[i][1]].Y
-                    - nodes[elements[i][0]].X * nodes[elements[i][2]].Y
-                    - nodes[elements[i][1]].X * nodes[elements[i][0]].Y
+                    (points[triangles[i][1]].X * points[triangles[i][2]].Y
+                    + points[triangles[i][2]].X * points[triangles[i][0]].Y
+                    + points[triangles[i][0]].X * points[triangles[i][1]].Y
+                    - points[triangles[i][2]].X * points[triangles[i][1]].Y
+                    - points[triangles[i][0]].X * points[triangles[i][2]].Y
+                    - points[triangles[i][1]].X * points[triangles[i][0]].Y
                     ) / 2.0;
                 if (Delta < 0) MessageBox.Show("Invalide Delta");
                 B[i] = new double[3, 6];
                 for (int j = 0; j < 6; ++j)
                 {
-                    B[i][0, j] = (j < 3) ? nodes[elements[i][(1 + j) % 3]].Y - nodes[elements[i][(2 + j) % 3]].Y : 0;
-                    B[i][1, j] = (j < 3) ? 0 : nodes[elements[i][(2 + j) % 3]].X - nodes[elements[i][(1 + j) % 3]].X;
-                    B[i][2, j] = (j < 3) ? nodes[elements[i][(2 + j) % 3]].X - nodes[elements[i][(1 + j) % 3]].X : nodes[elements[i][(1 + j) % 3]].Y - nodes[elements[i][(2 + j) % 3]].Y;
+                    B[i][0, j] = (j < 3) ? points[triangles[i][(1 + j) % 3]].Y - points[triangles[i][(2 + j) % 3]].Y : 0;
+                    B[i][1, j] = (j < 3) ? 0 : points[triangles[i][(2 + j) % 3]].X - points[triangles[i][(1 + j) % 3]].X;
+                    B[i][2, j] = (j < 3) ? points[triangles[i][(2 + j) % 3]].X - points[triangles[i][(1 + j) % 3]].X : points[triangles[i][(1 + j) % 3]].Y - points[triangles[i][(2 + j) % 3]].Y;
                     for (int k = 0; k < 3; ++k) B[i][k, j] /= 2.0 * Delta;
                 }
                 D[i] = new double[3, 3];
@@ -372,15 +373,15 @@ namespace WindowsFormsApp2
                 }
             }
 
-            var K = new double[nodes.Length * 2, nodes.Length * 2];
+            var K = new double[points.Count * 2, points.Count * 2];
             for (int i = 0; i < K_m.Length; ++i)
             {
                 for (int j = 0; j < 3; ++j)
                 {
                     for (int k = 0; k < 3; ++k)
                     {
-                        K[2 * elements[i][j], 2 * elements[i][k]] += K_m[i][j, k];                   // u   order of K and order of K_m are different.
-                        K[2 * elements[i][j] + 1, 2 * elements[i][k] + 1] += K_m[i][j + 3, k + 3];   // v
+                        K[2 * triangles[i][j], 2 * triangles[i][k]] += K_m[i][j, k];                   // u   order of K and order of K_m are different.
+                        K[2 * triangles[i][j] + 1, 2 * triangles[i][k] + 1] += K_m[i][j + 3, k + 3];   // v
                     }
                 }
             }
@@ -420,18 +421,18 @@ namespace WindowsFormsApp2
 
         public void PostProcessing()
         {
-            delta = new double[2 * nodes.Length];
+            delta = new double[2 * points.Count];
             for (int i = 0; i < globalFixIndexes.Count; ++i) delta[globalFixIndexes[i]] = 0;
             for (int i = 0; i < globalUnfixIndexes.Count; ++i) delta[globalUnfixIndexes[i]] = delta_A[i];
 
-            epsilon = new double[elements.Length][];
-            delta_m = new double[elements.Length][];
-            sigma = new double[elements.Length][];
-            for (int i = 0; i < elements.Length; ++i)
+            epsilon = new double[triangles.Count][];
+            delta_m = new double[triangles.Count][];
+            sigma = new double[triangles.Count][];
+            for (int i = 0; i < triangles.Count; ++i)
             {
                 epsilon[i] = new double[3];
                 delta_m[i] = new double[6];
-                for (int j = 0; j < delta_m[i].Length; ++j) delta_m[i][j] = delta[2 * elements[i][j % 3] + j / 3]; // order of delta and order of delta_m are different.
+                for (int j = 0; j < delta_m[i].Length; ++j) delta_m[i][j] = delta[2 * triangles[i][j % 3] + j / 3]; // order of delta and order of delta_m are different.
                 for (int j = 0; j < epsilon[i].Length; ++j)
                 {
                     epsilon[i][j] = 0;
@@ -444,21 +445,21 @@ namespace WindowsFormsApp2
                     for (int k = 0; k < 3; ++k) sigma[i][j] += D[i][j, k] * epsilon[i][k];
                 }
             }
-            epsilon_node = new double[nodes.Length][];
-            sigma_node = new double[nodes.Length][];
-            var e_list = new List<double[]>[nodes.Length];
-            var s_list = new List<double[]>[nodes.Length];
+            epsilon_node = new double[points.Count][];
+            sigma_node = new double[points.Count][];
+            var e_list = new List<double[]>[points.Count];
+            var s_list = new List<double[]>[points.Count];
             for (int i = 0; i < e_list.Length; ++i) e_list[i] = new List<double[]>();
             for (int i = 0; i < s_list.Length; ++i) s_list[i] = new List<double[]>();
-            for (int i = 0; i < elements.Length; ++i)
+            for (int i = 0; i < triangles.Count; ++i)
             {
-                for (int j = 0; j < elements[i].Length; ++j)
+                for (int j = 0; j < triangles[i].Length; ++j)
                 {
-                    e_list[elements[i][j]].Add(epsilon[i]);
-                    s_list[elements[i][j]].Add(sigma[i]);
+                    e_list[triangles[i][j]].Add(epsilon[i]);
+                    s_list[triangles[i][j]].Add(sigma[i]);
                 }
             }
-            for (int i = 0; i < nodes.Length; ++i)
+            for (int i = 0; i < points.Count; ++i)
             {
                 epsilon_node[i] = new double[3];
                 for (int j = 0; j < epsilon_node[i].Length; ++j)
@@ -480,11 +481,11 @@ namespace WindowsFormsApp2
 
     class Triangle
     {
-        public PointF[] points;
+        public Point[] points;
         Color[] colors;
         Color centerColor;
 
-        public Triangle(PointF[] points, Color[] colors)
+        public Triangle(Point[] points, Color[] colors)
         {
             this.points = points;
             this.colors = colors;

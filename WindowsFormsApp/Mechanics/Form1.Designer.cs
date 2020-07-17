@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp2
+﻿namespace Mechanics
 {
     partial class Form1
     {
