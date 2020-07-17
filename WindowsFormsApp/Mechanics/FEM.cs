@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
@@ -117,7 +116,7 @@ namespace Mechanics
                     - points[triangles[i][0]].X * points[triangles[i][2]].Y
                     - points[triangles[i][1]].X * points[triangles[i][0]].Y
                     ) / 2.0;
-                if (Delta < 0) MessageBox.Show("Invalide Delta");
+                if (Delta < 0) throw new Exception("Invalide Delta");
                 B[i] = new double[3, 6];
                 for (int j = 0; j < 6; ++j)
                 {
