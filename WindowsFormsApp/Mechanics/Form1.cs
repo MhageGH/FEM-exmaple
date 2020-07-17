@@ -15,12 +15,8 @@ namespace Mechanics
         public Form1()
         {
             InitializeComponent();
+            listBox1.SelectedIndex = 0;
             fem = new FEM();
-            fem.DefaultParameter();
-            fem.CreateForces_A();
-            fem.Solver();
-            fem.PostProcessing();
-            listBox1.SelectedIndex = 6;
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)

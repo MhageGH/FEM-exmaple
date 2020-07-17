@@ -85,7 +85,7 @@
             // button_save
             // 
             this.button_save.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_save.Location = new System.Drawing.Point(418, 420);
+            this.button_save.Location = new System.Drawing.Point(535, 502);
             this.button_save.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button_save.Name = "button_save";
             this.button_save.Size = new System.Drawing.Size(87, 34);
@@ -178,7 +178,7 @@
             // button_load
             // 
             this.button_load.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_load.Location = new System.Drawing.Point(418, 462);
+            this.button_load.Location = new System.Drawing.Point(535, 544);
             this.button_load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.button_load.Name = "button_load";
             this.button_load.Size = new System.Drawing.Size(87, 34);
@@ -289,7 +289,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 528);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 584);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(665, 22);
             this.statusStrip1.TabIndex = 11;
@@ -305,7 +305,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(665, 550);
+            this.ClientSize = new System.Drawing.Size(665, 606);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);

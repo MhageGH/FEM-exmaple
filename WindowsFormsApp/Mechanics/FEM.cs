@@ -15,11 +15,11 @@ namespace Mechanics
         const double nu = 0.3;
         const double thickness = 0.1;
         const double k_spring = 1.0;
-        public List<int> globalFixIndexes;
-        public List<int> globalUnfixIndexes;
+        public List<int> globalFixIndexes = new List<int>();
+        public List<int> globalUnfixIndexes = new List<int>();
         private double[][,] B_Matrix;
         private double[][,] D_Matrix;
-        public double[] forces_A;       // foces without fixed coordinate per node
+        public double[] forces_A = new double[0];       // foces without fixed coordinate per node
         private double[] delta_A;       // displecements without fixed coordinate per node
         public double[] forces;         // all forces per node
         public double[] delta;          // all displecements per node
@@ -35,65 +35,11 @@ namespace Mechanics
             meshEncoder = new Preprocessor.MeshEncoder(mesh);
         }
 
-        public void DefaultParameter()
-        {
-            // node
-            const int N = 10;
-            mesh.points = new Point[(N + 1) * (N + 1)].ToList();
-            for (int i = 0; i < N + 1; ++i) for (int j = 0; j < N + 1; ++j) mesh.points[(N + 1) * (N - j) + i] = new Point(i * 40 + 80, j * 40 + 80);
-
-            // triangle
-            mesh.triangles = new int[2 * N * N][].ToList();
-            for (int i = 0; i < N; ++i)
-            {
-                for (int j = 0; j < 2 * N; ++j)
-                {
-                    if (i % 2 == 0)
-                    {
-                        if (j % 4 == 0) mesh.triangles[2 * N * i + j] = new int[] { N + 1, N + 2, 0 };
-                        if (j % 4 == 1) mesh.triangles[2 * N * i + j] = new int[] { N + 2, 1, 0 };
-                        if (j % 4 == 2) mesh.triangles[2 * N * i + j] = new int[] { N + 2, 2, 1 };
-                        if (j % 4 == 3) mesh.triangles[2 * N * i + j] = new int[] { N + 2, N + 3, 2 };
-                    }
-                    else
-                    {
-                        if (j % 4 == 0) mesh.triangles[2 * N * i + j] = new int[] { N + 3, 2, 1 };
-                        if (j % 4 == 1) mesh.triangles[2 * N * i + j] = new int[] { N + 2, N + 3, 1 };
-                        if (j % 4 == 2) mesh.triangles[2 * N * i + j] = new int[] { N + 1, N + 2, 1 };
-                        if (j % 4 == 3) mesh.triangles[2 * N * i + j] = new int[] { N + 1, 1, 0 };
-                    }
-                    for (int k = 0; k < 3; ++k) mesh.triangles[2 * N * i + j][k] += 2 * (j / 4) + (N + 1) * i;
-                }
-            }
-            var _triangles = new List<int[]>();
-            for (int i = 0; i < mesh.triangles.Count; ++i)
-            {
-                if (86 <= i && i <= 93) continue;
-                _triangles.Add(mesh.triangles[i]);
-            }
-            mesh.triangles = _triangles;
-
-            // fix nodes
-            mesh.fixXs = new List<int>();
-            mesh.fixXs.Add(0);
-            mesh.fixYs = new List<int>();
-            for (int i = 0; i < N + 1; ++i) mesh.fixYs.Add(i);
-
-            // force
-            mesh.forceXs = new List<(int index, int value)>();
-            mesh.forceYs = new List<(int index, int value)>();
-            mesh.forceYs.Add((mesh.points.Count - 1 - N, 1));
-            for (int i = 1; i < N; ++i) mesh.forceYs.Add((mesh.points.Count - 1 - N + i, 2));
-            mesh.forceYs.Add((mesh.points.Count - 1, 1));
-        }
-
         public void CreateForces_A()
         {
-            globalFixIndexes = new List<int>();
             foreach (var i in mesh.fixXs) globalFixIndexes.Add(2 * i);
             foreach (var i in mesh.fixYs) globalFixIndexes.Add(2 * i + 1);
             globalFixIndexes.Sort();
-            globalUnfixIndexes = new List<int>();
             for (int i = 0; i < mesh.points.Count * 2; ++i) if (!globalFixIndexes.Contains(i)) globalUnfixIndexes.Add(i);
             forces_A = new double[globalUnfixIndexes.Count];
             const double f = 0.5;
