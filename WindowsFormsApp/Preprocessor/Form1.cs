@@ -276,61 +276,35 @@ namespace Preprocessor
                     (mesh.points[mesh.quadrangles[i][0]].X + mesh.points[mesh.quadrangles[i][1]].X + mesh.points[mesh.quadrangles[i][2]].X + mesh.points[mesh.quadrangles[i][3]].X) / 4,
                     (mesh.points[mesh.quadrangles[i][0]].Y + mesh.points[mesh.quadrangles[i][1]].Y + mesh.points[mesh.quadrangles[i][2]].Y + mesh.points[mesh.quadrangles[i][3]].Y) / 4,
                     new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
-            for (int i = 0; i < mesh.fixXs.Count; ++i)
+
+
+            foreach (var i in mesh.fixXs)
             {
-                var tri = new PointF[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
-                for (int j = 0; j < tri.Length; ++j)
-                {
-                    tri[j].X += mesh.points[mesh.fixXs[i]].X;
-                    tri[j].Y += mesh.points[mesh.fixXs[i]].Y;
-                }
-                e.Graphics.DrawPolygon(new Pen(Color.Blue), tri);
+                var tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
+                tri = tri.Select(x => new Point(x.X + mesh.points[i].X, x.Y + mesh.points[i].Y)).ToArray();
+                e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
-            for (int i = 0; i < mesh.fixYs.Count; ++i)
+            foreach (var i in mesh.fixYs)
             {
-                var tri = new PointF[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
-                for (int j = 0; j < tri.Length; ++j)
-                {
-                    tri[j].X += mesh.points[mesh.fixYs[i]].X;
-                    tri[j].Y += mesh.points[mesh.fixYs[i]].Y;
-                }
-                e.Graphics.DrawPolygon(new Pen(Color.Blue), tri);
+                var tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
+                tri = tri.Select(x => new Point(x.X + mesh.points[i].X, x.Y + mesh.points[i].Y)).ToArray();
+                e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
-            for (int i = 0; i < mesh.forceXs.Count; ++i)
+            foreach (var f in mesh.forceXs)
             {
-                float f = 0.5f * mesh.forceXs[i].value;
-                PointF[] tri, line;
-                tri = new PointF[] { new PointF(0 + 50 * f, 0), new PointF(-10 + 50 * f, -5), new PointF(-10 + 50 * f, 5) };
-                line = new PointF[] { new PointF(0, 0), new PointF(50 * f, 0) };
-                for (int j = 0; j < tri.Length; ++j)
-                {
-                    tri[j].X += mesh.points[mesh.forceXs[i].index].X;
-                    tri[j].Y += mesh.points[mesh.forceXs[i].index].Y;
-                }
-                for (int j = 0; j < line.Length; ++j)
-                {
-                    line[j].X += mesh.points[mesh.forceXs[i].index].X;
-                    line[j].Y += mesh.points[mesh.forceXs[i].index].Y;
-                }
+                var tri = new Point[] { new Point(0 + 50 * f.value / 2, 0), new Point(-10 + 50 * f.value / 2, -5), new Point(-10 + 50 * f.value / 2, 5) };
+                tri = tri.Select(x => new Point(x.X + mesh.points[f.index].X, x.Y + mesh.points[f.index].Y)).ToArray();
+                var line = new Point[] { new Point(0, 0), new Point(50 * f.value / 2, 0) };
+                line = line.Select(x => new Point(x.X + mesh.points[f.index].X, x.Y + mesh.points[f.index].Y)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
-            for (int i = 0; i < mesh.forceYs.Count; ++i)
+            foreach (var f in mesh.forceYs)
             {
-                float f = 0.5f * mesh.forceYs[i].value;
-                PointF[] tri, line;
-                tri = new PointF[] { new PointF(0, 0 - 50 * f), new PointF(-5, 10 - 50 * f), new PointF(5, 10 - 50 * f) };
-                line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f) };
-                for (int j = 0; j < tri.Length; ++j)
-                {
-                    tri[j].X += mesh.points[mesh.forceYs[i].index].X;
-                    tri[j].Y += mesh.points[mesh.forceYs[i].index].Y;
-                }
-                for (int j = 0; j < line.Length; ++j)
-                {
-                    line[j].X += mesh.points[mesh.forceYs[i].index].X;
-                    line[j].Y += mesh.points[mesh.forceYs[i].index].Y;
-                }
+                var tri = new Point[] { new Point(0, 0 - 50 * f.value / 2), new Point(-5, 10 - 50 * f.value / 2), new Point(5, 10 - 50 * f.value / 2) };
+                tri = tri.Select(x => new Point(x.X + mesh.points[f.index].X, x.Y + mesh.points[f.index].Y)).ToArray();
+                var line = new Point[] { new Point(0, 0), new Point(0, -50 * f.value / 2) };
+                line = line.Select(x => new Point(x.X + mesh.points[f.index].X, x.Y + mesh.points[f.index].Y)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }

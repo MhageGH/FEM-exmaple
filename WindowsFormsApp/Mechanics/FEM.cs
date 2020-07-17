@@ -19,7 +19,7 @@ namespace Mechanics
         public List<int> globalUnfixIndexes = new List<int>();
         private double[][,] B_Matrix;
         private double[][,] D_Matrix;
-        public double[] forces_A = new double[0];       // foces without fixed coordinate per node
+        public double[] forces_A;       // foces without fixed coordinate per node
         private double[] delta_A;       // displecements without fixed coordinate per node
         public double[] forces;         // all forces per node
         public double[] delta;          // all displecements per node
@@ -28,6 +28,7 @@ namespace Mechanics
         public double[][] sigma;        // stress per element. {σ_x, σ_y, τ_xy}
         public double[][] epsilon_node; // average of strains of elements with a node
         public double[][] sigma_node;   // average of stress of elements with a node
+        public bool solved = false;
 
         public FEM()
         {
@@ -49,7 +50,7 @@ namespace Mechanics
                 forces_A[globalUnfixIndexes.FindIndex(a => a == 2 * mesh.forceYs[i].index) + 1] = f * mesh.forceYs[i].value;
         }
 
-        public void Solver()
+        public void Solve()
         {
             B_Matrix = new double[mesh.triangles.Count][,];
             D_Matrix = new double[mesh.triangles.Count][,];
@@ -115,6 +116,7 @@ namespace Mechanics
             var K_AA = new double[forces_A.Length, forces_A.Length];
             for (int i = 0; i < K_AA.GetLength(0); ++i) for (int j = 0; j < K_AA.GetLength(1); ++j) K_AA[i, j] = K[globalUnfixIndexes[i], globalUnfixIndexes[j]];
             delta_A = SolveSimultaneousEquations(K_AA, forces_A);
+            solved = true;
         }
 
         double[] SolveSimultaneousEquations(double[,] a, double[] b)

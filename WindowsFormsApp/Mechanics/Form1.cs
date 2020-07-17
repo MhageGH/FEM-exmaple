@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace Mechanics
@@ -23,38 +22,41 @@ namespace Mechanics
         {
             var triangles = new Triangle[fem.mesh.triangles.Count];
 
-            var components = new double[fem.mesh.points.Count];
-            switch (listBox1.SelectedIndex)
+            var values = new double[fem.mesh.points.Count];
+            if (fem.solved)
             {
-                case 0:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.delta[2 * i]);
-                    break;
-                case 1:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.delta[2 * i + 1]);
-                    break;
-                case 2:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][0]);
-                    break;
-                case 3:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][1]);
-                    break;
-                case 4:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.epsilon_node[i][2]);
-                    break;
-                case 5:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][0]);
-                    break;
-                case 6:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][1]);
-                    break;
-                case 7:
-                    for (int i = 0; i < components.Length; ++i) components[i] = Math.Abs(fem.sigma_node[i][2]);
-                    break;
+                switch (listBox1.SelectedIndex)
+                {
+                    case 0:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i]);
+                        break;
+                    case 1:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i + 1]);
+                        break;
+                    case 2:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][0]);
+                        break;
+                    case 3:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][1]);
+                        break;
+                    case 4:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][2]);
+                        break;
+                    case 5:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][0]);
+                        break;
+                    case 6:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][1]);
+                        break;
+                    case 7:
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][2]);
+                        break;
+                }
+                double max = -1.0e10, min = 1.0e10;
+                for (int i = 0; i < values.Length; ++i) if (max < values[i]) max = values[i];
+                for (int i = 0; i < values.Length; ++i) if (min > values[i]) min = values[i];
+                for (int i = 0; i < values.Length; ++i) values[i] = max > min ? (values[i] - min) / (max - min) : max;
             }
-            double max = -1.0e10, min = 1.0e10;
-            for (int i = 0; i < components.Length; ++i) if (max < components[i]) max = components[i];
-            for (int i = 0; i < components.Length; ++i) if (min > components[i]) min = components[i];
-            for (int i = 0; i < components.Length; ++i) components[i] = max > min ? (components[i] - min) / (max - min) : max;
 
             for (int i = 0; i < triangles.Length; ++i)
             {
@@ -63,7 +65,7 @@ namespace Mechanics
                 for (int j = 0; j < points.Length; ++j)
                 {
                     points[j] = new Point(fem.mesh.points[fem.mesh.triangles[i][j]].X, fem.mesh.points[fem.mesh.triangles[i][j]].Y);
-                    var c = components[fem.mesh.triangles[i][j]];
+                    var c = values[fem.mesh.triangles[i][j]];
                     Color color0, color1;
                     double s;
                     if (c < 0.5)
@@ -88,54 +90,39 @@ namespace Mechanics
             }
             foreach (var triangle in triangles)
             {
-                e.Graphics.FillRectangle(triangle.GetGradientBrush(), this.ClientRectangle);
+                if (fem.solved) e.Graphics.FillRectangle(triangle.GetGradientBrush(), this.ClientRectangle);
+                else e.Graphics.FillPolygon(Brushes.LawnGreen, triangle.points);
                 e.Graphics.DrawPolygon(new Pen(Color.Black), triangle.points);
             }
-            for (int j = 0; j < fem.globalFixIndexes.Count; ++j)
+            foreach(var i in fem.mesh.fixXs)
             {
-                Point[] tri;
-                if (fem.globalFixIndexes[j] % 2 == 1) tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
-                else tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
-                var n = fem.globalFixIndexes[j] / 2;
-                var p = new Point(fem.mesh.points[n].X, fem.mesh.points[n].Y);
-                for (int i = 0; i < tri.Length; ++i)
-                {
-                    tri[i].X += p.X;
-                    tri[i].Y += p.Y;
-                }
-                e.Graphics.DrawPolygon(new Pen(Color.Blue), tri);
+                var tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
+                tri = tri.Select(x => new Point(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
-            for (int j = 0; j < fem.forces_A.Length; ++j)
+            foreach (var i in fem.mesh.fixYs)
             {
-                if (fem.forces_A[j] != 0)
-                {
-                    float f = (float)fem.forces_A[j];
-                    Point[] tri, line;
-                    if (fem.globalUnfixIndexes[j] % 2 == 1)
-                    {
-                        tri = new Point[] { new Point(0, (int)(0 - 50 * f)), new Point(-5, (int)(10 - 50 * f)), new Point(5, (int)(10 - 50 * f)) };
-                        line = new Point[] { new Point(0, 0), new Point(0, (int)(-50 * f)) };
-                    }
-                    else
-                    {
-                        tri = new Point[] { new Point((int)(0 + 50 * f), 0), new Point((int)(-10 + 50 * f), -5), new Point((int)(-10 + 50 * f), 5) };
-                        line = new Point[] { new Point(0, 0), new Point((int)(-50 * f), 0) };
-                    }
-                    var n = fem.globalUnfixIndexes[j] / 2;
-                    var p = new Point(fem.mesh.points[n].X, fem.mesh.points[n].Y);
-                    for (int i = 0; i < tri.Length; ++i)
-                    {
-                        tri[i].X += p.X;
-                        tri[i].Y += p.Y;
-                    }
-                    for (int i = 0; i < line.Length; ++i)
-                    {
-                        line[i].X += p.X;
-                        line[i].Y += p.Y;
-                    }
-                    e.Graphics.FillPolygon(Brushes.Red, tri);
-                    e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
-                }
+                var tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
+                tri = tri.Select(x => new Point(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                e.Graphics.DrawPolygon(Pens.Blue, tri);
+            }
+            foreach(var f in fem.mesh.forceXs)
+            {
+                var tri = new Point[] { new Point(0 + 50 * f.value / 2, 0), new Point(-10 + 50 * f.value / 2, -5), new Point(-10 + 50 * f.value / 2, 5) };
+                tri = tri.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var line = new Point[] { new Point(0, 0), new Point(50 * f.value / 2, 0) };
+                line = line.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                e.Graphics.FillPolygon(Brushes.Red, tri);
+                e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
+            }
+            foreach (var f in fem.mesh.forceYs)
+            {
+                var tri = new Point[] { new Point(0, 0 - 50 * f.value / 2), new Point(-5, 10 - 50 * f.value / 2), new Point(5, 10 - 50 * f.value / 2) };
+                tri = tri.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var line = new Point[] { new Point(0, 0), new Point(0, -50 * f.value / 2) };
+                line = line.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                e.Graphics.FillPolygon(Brushes.Red, tri);
+                e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
         }
 
@@ -149,8 +136,14 @@ namespace Mechanics
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
             if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) fem.meshEncoder.DecodeFromCSV(sr.ReadToEnd());
+            fem.solved = false;
+            this.Invalidate();
+        }
+
+        private void button_solve_Click(object sender, EventArgs e)
+        {
             fem.CreateForces_A();
-            fem.Solver();
+            fem.Solve();
             fem.PostProcessing();
             this.Invalidate();
         }
