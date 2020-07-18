@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace Mechanics
 {
@@ -14,7 +15,6 @@ namespace Mechanics
         public Form1()
         {
             InitializeComponent();
-            listBox1.SelectedIndex = 0;
             fem = new FEM();
         }
 
@@ -23,7 +23,7 @@ namespace Mechanics
             var values = new double[fem.mesh.points.Count];
             if (fem.solved)
             {
-                switch (listBox1.SelectedIndex)
+                switch (toolStripMenuItem2.SelectedIndex)
                 {
                     case 0:
                         for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i]);
@@ -106,27 +106,38 @@ namespace Mechanics
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
+            var bar = new Triangle[]{
+                new Triangle(new Point[] { new Point(530, 220), new Point(560, 220), new Point(530, 300) }, new Color[] { Color.Red, Color.Red, Color.LawnGreen }),
+                new Triangle(new Point[] { new Point(560, 220), new Point(560, 300), new Point(530, 300) }, new Color[] { Color.Red, Color.LawnGreen, Color.LawnGreen }),
+                new Triangle(new Point[] { new Point(530, 300), new Point(560, 300), new Point(530, 380) }, new Color[] { Color.LawnGreen, Color.LawnGreen, Color.Blue }),
+                new Triangle(new Point[] { new Point(560, 300), new Point(560, 380), new Point(530, 380) }, new Color[] { Color.LawnGreen, Color.Blue, Color.Blue })
+            };
+            foreach(var t in bar) e.Graphics.FillRectangle(t.GetGradientBrush(), this.ClientRectangle);
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.Invalidate();
-        }
-
-        private void button_load_Click(object sender, EventArgs e)
+        private void loadMeshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
             if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) fem.meshEncoder.DecodeFromCSV(sr.ReadToEnd());
+            label_mesh.Text = System.IO.Path.GetFileName(ofd.FileName);
             fem.solved = false;
+            label_state.Text = "Not solved";
             this.Invalidate();
         }
 
-        private void button_solve_Click(object sender, EventArgs e)
+        private void solveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fem.CreateForces_A();
             fem.Solve();
             fem.PostProcessing();
+            label_state.Text = "Solved";
+            this.Invalidate();
+        }
+
+        private void toolStripMenuItem2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            label_parameter.Text = ((ToolStripComboBox)sender).Text;
             this.Invalidate();
         }
     }

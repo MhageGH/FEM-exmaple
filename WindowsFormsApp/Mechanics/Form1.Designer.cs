@@ -28,88 +28,279 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.label_parameter = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.solverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meshEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parameterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripComboBox();
+            this.meshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.elementNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nodeNumberToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.elementNumberToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.button_load = new System.Windows.Forms.Button();
-            this.button_solve = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label_state = new System.Windows.Forms.Label();
+            this.label_mesh = new System.Windows.Forms.Label();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // label_parameter
+            // 
+            this.label_parameter.AutoSize = true;
+            this.label_parameter.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label_parameter.Location = new System.Drawing.Point(570, 167);
+            this.label_parameter.Name = "label_parameter";
+            this.label_parameter.Size = new System.Drawing.Size(13, 18);
+            this.label_parameter.TabIndex = 1;
+            this.label_parameter.Text = "-";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.solverToolStripMenuItem,
+            this.toolToolStripMenuItem,
+            this.displayToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(665, 24);
+            this.menuStrip1.TabIndex = 11;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadMeshToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
+            this.toolStripMenuItem1.Text = "File";
+            // 
+            // loadMeshToolStripMenuItem
+            // 
+            this.loadMeshToolStripMenuItem.Name = "loadMeshToolStripMenuItem";
+            this.loadMeshToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.loadMeshToolStripMenuItem.Text = "Open";
+            this.loadMeshToolStripMenuItem.Click += new System.EventHandler(this.loadMeshToolStripMenuItem_Click);
+            // 
+            // solverToolStripMenuItem
+            // 
+            this.solverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.solveToolStripMenuItem});
+            this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
+            this.solverToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+            this.solverToolStripMenuItem.Text = "Solver";
+            // 
+            // solveToolStripMenuItem
+            // 
+            this.solveToolStripMenuItem.Name = "solveToolStripMenuItem";
+            this.solveToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
+            this.solveToolStripMenuItem.Text = "Solve";
+            this.solveToolStripMenuItem.Click += new System.EventHandler(this.solveToolStripMenuItem_Click);
+            // 
+            // toolToolStripMenuItem
+            // 
+            this.toolToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.meshEditorToolStripMenuItem});
+            this.toolToolStripMenuItem.Name = "toolToolStripMenuItem";
+            this.toolToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.toolToolStripMenuItem.Text = "Tool";
+            // 
+            // meshEditorToolStripMenuItem
+            // 
+            this.meshEditorToolStripMenuItem.Name = "meshEditorToolStripMenuItem";
+            this.meshEditorToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.meshEditorToolStripMenuItem.Text = "Mesh Editor";
+            // 
+            // displayToolStripMenuItem
+            // 
+            this.displayToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.parameterToolStripMenuItem,
+            this.meshToolStripMenuItem});
+            this.displayToolStripMenuItem.Name = "displayToolStripMenuItem";
+            this.displayToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.displayToolStripMenuItem.Text = "View";
+            // 
+            // parameterToolStripMenuItem
+            // 
+            this.parameterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2});
+            this.parameterToolStripMenuItem.Name = "parameterToolStripMenuItem";
+            this.parameterToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.parameterToolStripMenuItem.Text = "Parameter";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Items.AddRange(new object[] {
+            "u",
+            "v",
+            "ε_x",
+            "ε_y",
+            "γ_xy",
+            "σ_x",
+            "σ_y",
+            "τ_xy"});
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(80, 23);
+            this.toolStripMenuItem2.Text = "-";
+            this.toolStripMenuItem2.SelectedIndexChanged += new System.EventHandler(this.toolStripMenuItem2_SelectedIndexChanged);
+            // 
+            // meshToolStripMenuItem
+            // 
+            this.meshToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nodeToolStripMenuItem,
+            this.elementNumberToolStripMenuItem,
+            this.nodeNumberToolStripMenuItem,
+            this.elementNumberToolStripMenuItem1,
+            this.fixToolStripMenuItem,
+            this.forceToolStripMenuItem});
+            this.meshToolStripMenuItem.Name = "meshToolStripMenuItem";
+            this.meshToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.meshToolStripMenuItem.Text = "Mesh";
+            // 
+            // nodeToolStripMenuItem
+            // 
+            this.nodeToolStripMenuItem.Name = "nodeToolStripMenuItem";
+            this.nodeToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.nodeToolStripMenuItem.Text = "Node";
+            // 
+            // elementNumberToolStripMenuItem
+            // 
+            this.elementNumberToolStripMenuItem.Name = "elementNumberToolStripMenuItem";
+            this.elementNumberToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.elementNumberToolStripMenuItem.Text = "Element";
+            // 
+            // nodeNumberToolStripMenuItem
+            // 
+            this.nodeNumberToolStripMenuItem.Name = "nodeNumberToolStripMenuItem";
+            this.nodeNumberToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.nodeNumberToolStripMenuItem.Text = "Node number";
+            // 
+            // elementNumberToolStripMenuItem1
+            // 
+            this.elementNumberToolStripMenuItem1.Name = "elementNumberToolStripMenuItem1";
+            this.elementNumberToolStripMenuItem1.Size = new System.Drawing.Size(160, 22);
+            this.elementNumberToolStripMenuItem1.Text = "Element number";
+            // 
+            // fixToolStripMenuItem
+            // 
+            this.fixToolStripMenuItem.Name = "fixToolStripMenuItem";
+            this.fixToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.fixToolStripMenuItem.Text = "Fix";
+            // 
+            // forceToolStripMenuItem
+            // 
+            this.forceToolStripMenuItem.Name = "forceToolStripMenuItem";
+            this.forceToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.forceToolStripMenuItem.Text = "Force";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.label1.Location = new System.Drawing.Point(528, 199);
+            this.label1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label1.Location = new System.Drawing.Point(524, 167);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(113, 18);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Shown Parameter";
+            this.label1.Size = new System.Drawing.Size(39, 18);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "View";
             // 
-            // listBox1
+            // label2
             // 
-            this.listBox1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 18;
-            this.listBox1.Items.AddRange(new object[] {
-            "displacement : u",
-            "displecement : v",
-            "strain : ε_x",
-            "strain : ε_y",
-            "strain : γ_xy",
-            "stress : σ_x",
-            "stress : σ_y",
-            "stress : τ_xy"});
-            this.listBox1.Location = new System.Drawing.Point(532, 220);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(120, 148);
-            this.listBox1.TabIndex = 2;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label2.Location = new System.Drawing.Point(522, 131);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 18);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Mesh";
             // 
-            // button_load
+            // label3
             // 
-            this.button_load.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_load.Location = new System.Drawing.Point(531, 93);
-            this.button_load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button_load.Name = "button_load";
-            this.button_load.Size = new System.Drawing.Size(87, 23);
-            this.button_load.TabIndex = 9;
-            this.button_load.Text = "load";
-            this.button_load.UseVisualStyleBackColor = true;
-            this.button_load.Click += new System.EventHandler(this.button_load_Click);
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label3.Location = new System.Drawing.Point(524, 149);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 18);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "State";
             // 
-            // button_solve
+            // label_state
             // 
-            this.button_solve.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_solve.Location = new System.Drawing.Point(531, 123);
-            this.button_solve.Name = "button_solve";
-            this.button_solve.Size = new System.Drawing.Size(87, 23);
-            this.button_solve.TabIndex = 10;
-            this.button_solve.Text = "solve";
-            this.button_solve.UseVisualStyleBackColor = true;
-            this.button_solve.Click += new System.EventHandler(this.button_solve_Click);
+            this.label_state.AutoSize = true;
+            this.label_state.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label_state.Location = new System.Drawing.Point(570, 149);
+            this.label_state.Name = "label_state";
+            this.label_state.Size = new System.Drawing.Size(13, 18);
+            this.label_state.TabIndex = 15;
+            this.label_state.Text = "-";
+            // 
+            // label_mesh
+            // 
+            this.label_mesh.AutoSize = true;
+            this.label_mesh.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label_mesh.Location = new System.Drawing.Point(570, 131);
+            this.label_mesh.Name = "label_mesh";
+            this.label_mesh.Size = new System.Drawing.Size(13, 18);
+            this.label_mesh.TabIndex = 16;
+            this.label_mesh.Text = "-";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 550);
-            this.Controls.Add(this.button_solve);
-            this.Controls.Add(this.button_load);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.label_mesh);
+            this.Controls.Add(this.label_state);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_parameter);
+            this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Mechanical Analysis";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
+        private System.Windows.Forms.Label label_parameter;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem loadMeshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem solverToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem solveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem displayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parameterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripComboBox toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem nodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem elementNumberToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nodeNumberToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem elementNumberToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem fixToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem forceToolStripMenuItem;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button button_load;
-        private System.Windows.Forms.Button button_solve;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label_state;
+        private System.Windows.Forms.Label label_mesh;
     }
 }
 
