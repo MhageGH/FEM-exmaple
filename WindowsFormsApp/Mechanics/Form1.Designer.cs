@@ -118,8 +118,9 @@
             // meshEditorToolStripMenuItem
             // 
             this.meshEditorToolStripMenuItem.Name = "meshEditorToolStripMenuItem";
-            this.meshEditorToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.meshEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.meshEditorToolStripMenuItem.Text = "Mesh Editor";
+            this.meshEditorToolStripMenuItem.Click += new System.EventHandler(this.meshEditorToolStripMenuItem_Click);
             // 
             // displayToolStripMenuItem
             // 

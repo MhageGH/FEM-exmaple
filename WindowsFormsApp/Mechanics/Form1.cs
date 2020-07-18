@@ -21,6 +21,7 @@ namespace Mechanics
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             var values = new double[fem.mesh.points.Count];
+            double max = -1.0e10, min = 1.0e10;
             if (fem.solved)
             {
                 switch (toolStripMenuItem2.SelectedIndex)
@@ -50,7 +51,6 @@ namespace Mechanics
                         for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][2]);
                         break;
                 }
-                double max = -1.0e10, min = 1.0e10;
                 for (int i = 0; i < values.Length; ++i) if (max < values[i]) max = values[i];
                 for (int i = 0; i < values.Length; ++i) if (min > values[i]) min = values[i];
                 for (int i = 0; i < values.Length; ++i) values[i] = max > min ? (values[i] - min) / (max - min) : max;
@@ -113,6 +113,11 @@ namespace Mechanics
                 new Triangle(new Point[] { new Point(560, 300), new Point(560, 380), new Point(530, 380) }, new Color[] { Color.LawnGreen, Color.Blue, Color.Blue })
             };
             foreach(var t in bar) e.Graphics.FillRectangle(t.GetGradientBrush(), this.ClientRectangle);
+            if (fem.solved)
+            {
+                e.Graphics.DrawString(max.ToString("e2"), DefaultFont, Brushes.Black, 560, 220);
+                e.Graphics.DrawString(min.ToString("e2"), DefaultFont, Brushes.Black, 560, 380);
+            }
         }
 
         private void loadMeshToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,6 +144,11 @@ namespace Mechanics
         {
             label_parameter.Text = ((ToolStripComboBox)sender).Text;
             this.Invalidate();
+        }
+
+        private void meshEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Preprocessor.Form1().Show();
         }
     }
 
