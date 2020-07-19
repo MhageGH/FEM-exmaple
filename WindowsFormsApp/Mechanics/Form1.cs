@@ -4,18 +4,19 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Win32;
 
 namespace Mechanics
 {
     public partial class Form1 : Form
     {
         FEM fem;
+        Preprocessor.MeshEncoder meshEncoder;
 
         public Form1()
         {
             InitializeComponent();
             fem = new FEM();
+            meshEncoder = new Preprocessor.MeshEncoder(fem.mesh);
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -124,7 +125,7 @@ namespace Mechanics
         {
             var ofd = new OpenFileDialog();
             ofd.Filter = "CSVファイル|*.csv";
-            if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) fem.meshEncoder.DecodeFromCSV(sr.ReadToEnd());
+            if (ofd.ShowDialog() == DialogResult.OK) using (var sr = new System.IO.StreamReader(ofd.FileName)) meshEncoder.DecodeFromCSV(sr.ReadToEnd());
             label_mesh.Text = System.IO.Path.GetFileName(ofd.FileName);
             fem.solved = false;
             label_state.Text = "Not solved";

@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Mechanics
 {
     class FEM
     {
-        public Preprocessor.Mesh mesh;
-        public Preprocessor.MeshEncoder meshEncoder;
+        public Preprocessor.Mesh mesh = new Preprocessor.Mesh();
 
         const double E = 1000000.0;
         const double nu = 0.3;
@@ -28,76 +25,13 @@ namespace Mechanics
         public double[][] sigma;        // stress {σ_x, σ_y, τ_xy}
         public bool solved = false;
 
-        public FEM()
-        {
-            mesh = new Preprocessor.Mesh();
-            meshEncoder = new Preprocessor.MeshEncoder(mesh);
-        }
-
         public void Solve()
         {
             CreateForces_A();
-            B_Matrixes = new double[mesh.triangles.Count][,];
-            D_Matrixes = new double[mesh.triangles.Count][,];
-            var K_m = new double[mesh.triangles.Count][,];
-            for (int i = 0; i < K_m.Length; ++i)
-            {
-                double Delta =
-                    (mesh.points[mesh.triangles[i][1]].X * mesh.points[mesh.triangles[i][2]].Y
-                    + mesh.points[mesh.triangles[i][2]].X * mesh.points[mesh.triangles[i][0]].Y
-                    + mesh.points[mesh.triangles[i][0]].X * mesh.points[mesh.triangles[i][1]].Y
-                    - mesh.points[mesh.triangles[i][2]].X * mesh.points[mesh.triangles[i][1]].Y
-                    - mesh.points[mesh.triangles[i][0]].X * mesh.points[mesh.triangles[i][2]].Y
-                    - mesh.points[mesh.triangles[i][1]].X * mesh.points[mesh.triangles[i][0]].Y
-                    ) / 2.0;
-                if (Delta < 0) throw new Exception("Invalide Delta");
-                B_Matrixes[i] = new double[3, 6];
-                for (int j = 0; j < 6; ++j)
-                {
-                    B_Matrixes[i][0, j] = (j < 3) ? mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y : 0;
-                    B_Matrixes[i][1, j] = (j < 3) ? 0 : mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X;
-                    B_Matrixes[i][2, j] = (j < 3) ? mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X : mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y;
-                    for (int k = 0; k < 3; ++k) B_Matrixes[i][k, j] /= 2.0 * Delta;
-                }
-                D_Matrixes[i] = new double[3, 3];
-                D_Matrixes[i][0, 0] = 1; D_Matrixes[i][0, 1] = nu; D_Matrixes[i][0, 2] = 0;
-                D_Matrixes[i][1, 0] = nu; D_Matrixes[i][1, 1] = 1; D_Matrixes[i][1, 2] = 0;
-                D_Matrixes[i][2, 0] = 0; D_Matrixes[i][2, 1] = 0; D_Matrixes[i][2, 2] = (1.0 - nu) / 2.0;
-                for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) D_Matrixes[i][j, k] *= E / (1 - nu * nu); // for plane stress
-                var DB = new double[3, 6];
-                for (int j = 0; j < 3; ++j)
-                {
-                    for (int k = 0; k < 6; ++k)
-                    {
-                        DB[j, k] = 0;
-                        for (int l = 0; l < 3; ++l) DB[j, k] += D_Matrixes[i][j, l] * B_Matrixes[i][l, k];
-                    }
-                }
-                K_m[i] = new double[6, 6];
-                for (int j = 0; j < 6; ++j)
-                {
-                    for (int k = 0; k < 6; ++k)
-                    {
-                        K_m[i][j, k] = 0;
-                        for (int l = 0; l < 3; ++l) K_m[i][j, k] += B_Matrixes[i][l, j] * DB[l, k];
-                        K_m[i][j, k] *= thickness * Delta;
-                    }
-                }
-            }
-
+            var K_m = CreateElementMatrixes();            
             var K = new double[mesh.points.Count * 2, mesh.points.Count * 2];
-            for (int i = 0; i < K_m.Length; ++i)
-            {
-                for (int j = 0; j < 3; ++j)
-                {
-                    for (int k = 0; k < 3; ++k)
-                    {
-                        K[2 * mesh.triangles[i][j], 2 * mesh.triangles[i][k]] += K_m[i][j, k];                   // u   order of K and order of K_m are different.
-                        K[2 * mesh.triangles[i][j] + 1, 2 * mesh.triangles[i][k] + 1] += K_m[i][j + 3, k + 3];   // v
-                    }
-                }
-            }
-
+            for (int i = 0; i < K_m.Length; ++i) for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) for (int l = 0; l < 2; ++l)
+                            K[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += K_m[i][j + 3 * l, k + 3 * l];  //  order of K and order of K_m are different.
             var K_AA = new double[forces_A.Length, forces_A.Length];
             for (int i = 0; i < K_AA.GetLength(0); ++i) for (int j = 0; j < K_AA.GetLength(1); ++j) K_AA[i, j] = K[iForce[i], iForce[j]];
             delta_A = SolveSimultaneousEquations(K_AA, forces_A);
@@ -112,6 +46,33 @@ namespace Mechanics
             foreach (var f in mesh.forceXs) forces_A[iForce.ToList().FindIndex(a => a == 2 * f.index)] = unit_force * f.value;
             foreach (var f in mesh.forceYs) forces_A[iForce.ToList().FindIndex(a => a == 2 * f.index) + 1] = unit_force * f.value;
         }
+
+        double[][,] CreateElementMatrixes()
+        {
+            B_Matrixes = new double[mesh.triangles.Count][,].Select(x => x = new double[3, 6]).ToArray();
+            D_Matrixes = new double[mesh.triangles.Count][,].Select(x => x = new double[3, 3]).ToArray();
+            var K_m = new double[mesh.triangles.Count][,].Select(x => x = new double[6, 6]).ToArray();
+            for (int i = 0; i < K_m.Length; ++i)
+            {
+                double area = 0;
+                for (int j = 0; j < 6; ++j) area += (j < 3 ? 1 : -1) * mesh.points[mesh.triangles[i][(j + 1 + j / 3) % 3]].X * mesh.points[mesh.triangles[i][(j + 2 - j / 3) % 3]].Y / 2.0;
+                if (area < 0) throw new Exception("Invalide area");
+                for (int j = 0; j < 6; ++j)
+                {
+                    B_Matrixes[i][0, j] = (j < 3) ? mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y : 0;
+                    B_Matrixes[i][1, j] = (j < 3) ? 0 : mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X;
+                    B_Matrixes[i][2, j] = (j < 3) ? mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X : mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y;
+                    for (int k = 0; k < 3; ++k) B_Matrixes[i][k, j] /= 2.0 * area;
+                }
+                D_Matrixes[i] = new double[,] { { 1, nu, 0 }, { nu, 1, 0 }, { 0, 0, (1.0 - nu) / 2.0 } };
+                for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) D_Matrixes[i][j, k] *= E / (1 - nu * nu); // for plane stress
+                var DB = new double[3, 6];
+                for (int j = 0; j < 3; ++j) for (int k = 0; k < 6; ++k) for (int l = 0; l < 3; ++l) DB[j, k] += D_Matrixes[i][j, l] * B_Matrixes[i][l, k];
+                for (int j = 0; j < 6; ++j) for (int k = 0; k < 6; ++k) for (int l = 0; l < 3; ++l) K_m[i][j, k] += B_Matrixes[i][l, j] * DB[l, k] * thickness * area;
+            }
+            return K_m;
+        }
+
 
         double[] SolveSimultaneousEquations(double[,] a, double[] b)
         {
