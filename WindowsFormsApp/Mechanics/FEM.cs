@@ -144,69 +144,41 @@ namespace Mechanics
         public void PostProcessing()
         {
             double[][] epsilon_e, sigma_e;
-            GetValueForElements(out epsilon_e, out sigma_e);
-            GetValueForNodes(epsilon_e, sigma_e);
+            GetDelta();
+            GetValuesForElements(out epsilon_e, out sigma_e);
+            GetValuesForNodes(epsilon_e, sigma_e);
         }
 
-        void GetValueForElements(out double[][] epsilon_e, out double[][] sigma_e)
+        void GetDelta()
         {
             delta = new double[2 * mesh.points.Count];
             for (int i = 0; i < iFix.Length; ++i) delta[iFix[i]] = 0;
             for (int i = 0; i < iForce.Length; ++i) delta[iForce[i]] = delta_A[i];
-            epsilon_e = new double[mesh.triangles.Count][];
-            sigma_e = new double[mesh.triangles.Count][];
+        }
+
+        void GetValuesForElements(out double[][] epsilon_e, out double[][] sigma_e)
+        {
+            epsilon_e = new double[mesh.triangles.Count][].Select(x => x = new double[3]).ToArray();
+            sigma_e = new double[mesh.triangles.Count][].Select(x => x = new double[3]).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i)
             {
-                epsilon_e[i] = new double[3];
-                var displacement = new double[6];
-                for (int j = 0; j < displacement.Length; ++j) displacement[j] = delta[2 * mesh.triangles[i][j % 3] + j / 3]; // order of delta and order of d are different.
-                for (int j = 0; j < epsilon_e[i].Length; ++j)
-                {
-                    epsilon_e[i][j] = 0;
-                    for (int k = 0; k < 6; ++k) epsilon_e[i][j] += B_Matrixes[i][j, k] * displacement[k];
-                }
-                sigma_e[i] = new double[3];
-                for (int j = 0; j < sigma_e[i].Length; ++j)
-                {
-                    sigma_e[i][j] = 0;
-                    for (int k = 0; k < 3; ++k) sigma_e[i][j] += D_Matrixes[i][j, k] * epsilon_e[i][k];
-                }
+                var d = new double[6];
+                for (int j = 0; j < d.Length; ++j) d[j] = delta[2 * mesh.triangles[i][j % 3] + j / 3]; // order of delta and order of d are different.
+                for (int j = 0; j < epsilon_e[i].Length; ++j) for (int k = 0; k < 6; ++k) epsilon_e[i][j] += B_Matrixes[i][j, k] * d[k];
+                for (int j = 0; j < sigma_e[i].Length; ++j) for (int k = 0; k < 3; ++k) sigma_e[i][j] += D_Matrixes[i][j, k] * epsilon_e[i][k];
             }
         }
 
-        void GetValueForNodes(double[][] epsilon_e, double[][] sigma_e)
+        void GetValuesForNodes(double[][] epsilon_e, double[][] sigma_e)
         {
-            var e_list = new List<double[]>[mesh.points.Count];
-            var s_list = new List<double[]>[mesh.points.Count];
-            for (int i = 0; i < e_list.Length; ++i) e_list[i] = new List<double[]>();
-            for (int i = 0; i < s_list.Length; ++i) s_list[i] = new List<double[]>();
-            for (int i = 0; i < mesh.triangles.Count; ++i)
-            {
-                for (int j = 0; j < mesh.triangles[i].Length; ++j)
-                {
-                    e_list[mesh.triangles[i][j]].Add(epsilon_e[i]);
-                    s_list[mesh.triangles[i][j]].Add(sigma_e[i]);
-                }
-            }
-            epsilon = new double[mesh.points.Count][];
-            sigma = new double[mesh.points.Count][];
-            for (int i = 0; i < mesh.points.Count; ++i)
-            {
-                epsilon[i] = new double[3];
-                for (int j = 0; j < epsilon[i].Length; ++j)
-                {
-                    epsilon[i][j] = 0;
-                    for (int k = 0; k < e_list[i].Count; ++k) epsilon[i][j] += e_list[i][k][j];
-                    epsilon[i][j] /= e_list[i].Count;
-                }
-                sigma[i] = new double[3];
-                for (int j = 0; j < sigma[i].Length; ++j)
-                {
-                    sigma[i][j] = 0;
-                    for (int k = 0; k < s_list[i].Count; ++k) sigma[i][j] += s_list[i][k][j];
-                    sigma[i][j] /= s_list[i].Count;
-                }
-            }
+            var e_list = new List<double[]>[mesh.points.Count].Select(x => x = new List<double[]>()).ToArray();
+            var s_list = new List<double[]>[mesh.points.Count].Select(x => x = new List<double[]>()).ToArray();
+            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) e_list[mesh.triangles[i][j]].Add(epsilon_e[i]);
+            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) s_list[mesh.triangles[i][j]].Add(sigma_e[i]);
+            epsilon = new double[mesh.points.Count][].Select(x => x = new double[3]).ToArray();
+            sigma = new double[mesh.points.Count][].Select(x => x = new double[3]).ToArray();
+            for (int i = 0; i < epsilon.Length; ++i) for (int j = 0; j < epsilon[i].Length; ++j) foreach (var e in e_list[i]) epsilon[i][j] += e[j] / e_list[i].Count;
+            for (int i = 0; i < sigma.Length; ++i) for (int j = 0; j < sigma[i].Length; ++j) foreach (var s in s_list[i]) sigma[i][j] += s[j] / s_list[i].Count;
         }
     }
 }
