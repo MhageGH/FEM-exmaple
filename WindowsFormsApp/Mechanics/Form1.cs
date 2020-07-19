@@ -33,22 +33,22 @@ namespace Mechanics
                         for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i + 1]);
                         break;
                     case 2:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][0]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][0]);
                         break;
                     case 3:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][1]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][1]);
                         break;
                     case 4:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon_node[i][2]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][2]);
                         break;
                     case 5:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][0]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][0]);
                         break;
                     case 6:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][1]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][1]);
                         break;
                     case 7:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma_node[i][2]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][2]);
                         break;
                 }
                 for (int i = 0; i < values.Length; ++i) if (max < values[i]) max = values[i];
@@ -133,7 +133,6 @@ namespace Mechanics
 
         private void solveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fem.CreateForces_A();
             fem.Solve();
             fem.PostProcessing();
             label_state.Text = "Solved";
