@@ -28,28 +28,28 @@ namespace Mechanics
                 switch (toolStripMenuItem2.SelectedIndex)
                 {
                     case 0:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.displacements[2 * i]);
                         break;
                     case 1:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.delta[2 * i + 1]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.displacements[2 * i + 1]);
                         break;
                     case 2:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][0]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.strains[i][0]);
                         break;
                     case 3:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][1]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.strains[i][1]);
                         break;
                     case 4:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.epsilon[i][2]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.strains[i][2]);
                         break;
                     case 5:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][0]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.stresses[i][0]);
                         break;
                     case 6:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][1]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.stresses[i][1]);
                         break;
                     case 7:
-                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.sigma[i][2]);
+                        for (int i = 0; i < values.Length; ++i) values[i] = Math.Abs(fem.stresses[i][2]);
                         break;
                 }
                 for (int i = 0; i < values.Length; ++i) if (max < values[i]) max = values[i];
