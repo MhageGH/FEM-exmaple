@@ -16,6 +16,9 @@ namespace Preprocessor
         public List<int> fixYs = new List<int>();
         public List<(int index, int value)> forceXs = new List<(int, int)>();
         public List<(int index, int value)> forceYs = new List<(int, int)>();
+        public Mode mode = Mode.planeStress;
+
+        public enum Mode { planeStress, planeStrain } 
     }
     public class MeshEncoder
     {

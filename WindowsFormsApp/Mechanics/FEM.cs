@@ -16,9 +16,8 @@ namespace Mechanics
         int[] iFix;
         int[] iForce;
         double[][,] B_Matrixes_triangle;
-        double[][,] D_Matrixes_triangle;
         double[][,] B_Matrixes_quadrangle;
-        double[][,] D_Matrixes_quadrangle;
+        double[,] D_Matrix;
         double[] reduced_displacements; //δ_A : unknown quantity in reduced space which doesn't include coordinates of fixed nodes. 
         double[] reduced_forces;        // f_A
 
@@ -30,6 +29,7 @@ namespace Mechanics
         public void Solve()
         {
             GetReducedForces();
+            GetD_Matrix();
             var stifnessMatrixes_triangle = GetStiffnessMatrixes_triangle();                     // K_e (triangle)
             var stifnessMatrixes_quadrangle = GetStiffnessMatrixes_quadrangle();                 // K_e (quadrangle)
             var stiffnessMatrixes = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K
@@ -51,10 +51,23 @@ namespace Mechanics
             foreach (var f in mesh.forceYs) reduced_forces[iForce.ToList().FindIndex(a => a == 2 * f.index) + 1] = unit_force * f.value;
         }
 
+        void GetD_Matrix()
+        {
+            if (mesh.mode == Preprocessor.Mesh.Mode.planeStress)
+            {
+                D_Matrix = new double[,] { { 1, poissons_ratio, 0 }, { poissons_ratio, 1, 0 }, { 0, 0, (1 - poissons_ratio) / 2 } };
+                for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) D_Matrix[j, k] *= elasticity / (1 - poissons_ratio * poissons_ratio);
+            }
+            else if (mesh.mode == Preprocessor.Mesh.Mode.planeStrain)
+            {
+                D_Matrix = new double[,] { { 1, poissons_ratio / (1 - poissons_ratio), 0 }, { poissons_ratio / (1 - poissons_ratio), 1, 0 }, { 0, 0, (1 - 2 * poissons_ratio) / 2 / (1 - poissons_ratio) } };
+                for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) D_Matrix[j, k] *= elasticity * (1 - poissons_ratio) / (1 - 2 * poissons_ratio) / (1 + poissons_ratio);
+            }
+        }
+
         double[][,] GetStiffnessMatrixes_triangle()
         {
             B_Matrixes_triangle = new double[mesh.triangles.Count][,].Select(x => x = new double[3, 6]).ToArray();
-            D_Matrixes_triangle = new double[mesh.triangles.Count][,].Select(x => x = new double[3, 3]).ToArray();
             var stifnessMatrixes_triangle = new double[mesh.triangles.Count][,].Select(x => x = new double[6, 6]).ToArray();
             for (int i = 0; i < stifnessMatrixes_triangle.Length; ++i)
             {
@@ -68,10 +81,8 @@ namespace Mechanics
                     B_Matrixes_triangle[i][2, j] = (j < 3) ? mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X : mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y;
                     for (int k = 0; k < 3; ++k) B_Matrixes_triangle[i][k, j] /= 2.0 * area;
                 }
-                D_Matrixes_triangle[i] = new double[,] { { 1, poissons_ratio, 0 }, { poissons_ratio, 1, 0 }, { 0, 0, (1.0 - poissons_ratio) / 2.0 } };
-                for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) D_Matrixes_triangle[i][j, k] *= elasticity / (1 - poissons_ratio * poissons_ratio); // for plane stress
                 var DB = new double[3, 6];
-                for (int j = 0; j < 3; ++j) for (int k = 0; k < 6; ++k) for (int l = 0; l < 3; ++l) DB[j, k] += D_Matrixes_triangle[i][j, l] * B_Matrixes_triangle[i][l, k];
+                for (int j = 0; j < 3; ++j) for (int k = 0; k < 6; ++k) for (int l = 0; l < 3; ++l) DB[j, k] += D_Matrix[j, l] * B_Matrixes_triangle[i][l, k];
                 for (int j = 0; j < 6; ++j) for (int k = 0; k < 6; ++k) for (int l = 0; l < 3; ++l) stifnessMatrixes_triangle[i][j, k] += B_Matrixes_triangle[i][l, j] * DB[l, k] * thickness * area;
             }
             return stifnessMatrixes_triangle;
@@ -160,7 +171,7 @@ namespace Mechanics
         {
             // TODO consider quadrangle
             var stresses_e = new double[mesh.triangles.Count][].Select(x => x = new double[3]).ToArray();
-            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < stresses_e[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_e[i][j] += D_Matrixes_triangle[i][j, k] * strains_triangle[i][k];
+            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < stresses_e[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_e[i][j] += D_Matrix[j, k] * strains_triangle[i][k];
             var averages = new List<double[]>[mesh.points.Count].Select(x => x = new List<double[]>()).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(stresses_e[i]);
             stresses = new double[mesh.points.Count][].Select(x => x = new double[3]).ToArray();
