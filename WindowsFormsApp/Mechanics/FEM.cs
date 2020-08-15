@@ -31,13 +31,13 @@ namespace Mechanics
             GetReducedForces();
             GetD_Matrix();
             var areas = GetAreas_triangle();
-            GetB_Matrixes_triangle(areas);                                                       // B_e (triangle)   - order of elements : uuuvvv
-            GetB_Matrixes_quadrangle();                                                          // B_e (quadrangle) - order of elements : uuuvvv
-            var stifnessMatrixes_triangle = GetStiffnessMatrixes_triangle(areas);                // K_e (triangle)   - order of elements : uuuvvv
-            var stifnessMatrixes_quadrangle = GetStiffnessMatrixes_quadrangle();                 // K_e (quadrangle) - order of elements : uuuuvvvv
-            var stiffnessMatrixes = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K (overall)      - order of elements : uvuvuv...
+            GetB_Matrixes_triangle(areas);                                                       // B_e (triangle)  
+            GetB_Matrixes_quadrangle();                                                          // B_e (quadrangle)
+            var stifnessMatrixes_triangle = GetStiffnessMatrixes_triangle(areas);                // K_e (triangle)  
+            var stifnessMatrixes_quadrangle = GetStiffnessMatrixes_quadrangle();                 // K_e (quadrangle)
+            var stiffnessMatrixes = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K (overall)     
             for (int i = 0; i < stifnessMatrixes_triangle.Length; ++i) for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) for (int l = 0; l < 2; ++l)
-                            stiffnessMatrixes[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += stifnessMatrixes_triangle[i][j + 3 * l, k + 3 * l];  //  order of K and order of K_e are different.
+                            stiffnessMatrixes[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += stifnessMatrixes_triangle[i][2 * j + l, 2 * k + l];
             // TODO for quadrangle
             var reducedStiffnessMatrixes = new double[reduced_forces.Length, reduced_forces.Length];    // K_AA
             for (int i = 0; i < reducedStiffnessMatrixes.GetLength(0); ++i) for (int j = 0; j < reducedStiffnessMatrixes.GetLength(1); ++j) reducedStiffnessMatrixes[i, j] = stiffnessMatrixes[iForce[i], iForce[j]];    // because displacements of fixed nodes are 0.
@@ -71,7 +71,8 @@ namespace Mechanics
         double[] GetAreas_triangle()
         {
             double[] areas = new double[mesh.triangles.Count];
-            for (int i = 0; i < areas.Length; ++i) for (int j = 0; j < 6; ++j) areas[i] += (j < 3 ? 1 : -1) * mesh.points[mesh.triangles[i][(j + 1 + j / 3) % 3]].X * mesh.points[mesh.triangles[i][(j + 2 - j / 3) % 3]].Y / 2.0;
+            for (int i = 0; i < areas.Length; ++i) for (int j = 0; j < 6; ++j) 
+                    areas[i] += (j < 3 ? 1 : -1) * mesh.points[mesh.triangles[i][(j + 1 + j / 3) % 3]].X * mesh.points[mesh.triangles[i][(j + 2 - j / 3) % 3]].Y / 2.0;
             for (int i = 0; i < areas.Length; ++i) if (areas[i] < 0) throw new Exception("Invalide area");
             return areas;
         }
@@ -83,9 +84,11 @@ namespace Mechanics
             {
                 for (int j = 0; j < 6; ++j)
                 {
-                    B_Matrixes_triangle[i][0, j] = (j < 3) ? mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y : 0;
-                    B_Matrixes_triangle[i][1, j] = (j < 3) ? 0 : mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X;
-                    B_Matrixes_triangle[i][2, j] = (j < 3) ? mesh.points[mesh.triangles[i][(2 + j) % 3]].X - mesh.points[mesh.triangles[i][(1 + j) % 3]].X : mesh.points[mesh.triangles[i][(1 + j) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j) % 3]].Y;
+                    B_Matrixes_triangle[i][0, j] = (j % 2 == 0) ? mesh.points[mesh.triangles[i][(1 + j / 2) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j / 2) % 3]].Y : 0;
+                    B_Matrixes_triangle[i][1, j] = (j % 2 == 1) ? mesh.points[mesh.triangles[i][(2 + j / 2) % 3]].X - mesh.points[mesh.triangles[i][(1 + j / 2) % 3]].X : 0;
+                    B_Matrixes_triangle[i][2, j] = (j % 2 == 0) ?
+                        mesh.points[mesh.triangles[i][(2 + j / 2) % 3]].X - mesh.points[mesh.triangles[i][(1 + j / 2) % 3]].X :
+                        mesh.points[mesh.triangles[i][(1 + j / 2) % 3]].Y - mesh.points[mesh.triangles[i][(2 + j / 2) % 3]].Y;
                     for (int k = 0; k < 3; ++k) B_Matrixes_triangle[i][k, j] /= 2.0 * areas[i];
                 }
             }
@@ -172,7 +175,7 @@ namespace Mechanics
             for (int i = 0; i < mesh.triangles.Count; ++i)
             {
                 var d = new double[6];
-                for (int j = 0; j < d.Length; ++j) d[j] = displacements[2 * mesh.triangles[i][j % 3] + j / 3]; // order of displacements and order of d are different.
+                for (int j = 0; j < d.Length; ++j) d[j] = displacements[2 * mesh.triangles[i][j / 2] + j % 2];
                 for (int j = 0; j < strains_triangle[i].Length; ++j) for (int k = 0; k < 6; ++k) strains_triangle[i][j] += B_Matrixes_triangle[i][j, k] * d[k];
             }
             return strains_triangle;
