@@ -178,7 +178,7 @@ namespace Mechanics
             double[] areas = new double[mesh.triangles.Count];
             for (int i = 0; i < areas.Length; ++i) for (int j = 0; j < 6; ++j)
                     areas[i] += (j < 3 ? 1 : -1) * mesh.points[mesh.triangles[i][(j + 1 + j / 3) % 3]].X * mesh.points[mesh.triangles[i][(j + 2 - j / 3) % 3]].Y / 2.0;
-            for (int i = 0; i < areas.Length; ++i) if (areas[i] < 0) throw new Exception("Invalide area");
+            for (int i = 0; i < areas.Length; ++i) if (areas[i] <= 0) throw new Exception("Invalide area");
             return areas;
         }
 
@@ -243,25 +243,32 @@ namespace Mechanics
 
         void CreateB_Matrixes()
         {
-            B_Matrixes = new double[mesh.triangles.Count][,].Select(x => new double[3, 8]).ToArray();
-            for (int i = 0; i < B_Matrixes.Length; ++i)
+            B_Matrixes = new double[mesh.quadrangles.Count][,].Select(x => new double[3, 8]).ToArray();
+            B_MatrixesAtIntegrationPoints = new double[4][][,].Select(y => new double[mesh.quadrangles.Count][,].Select(x => new double[3, 8]).ToArray()).ToArray();
+            for (int i = 0; i < mesh.quadrangles.Count; ++i)
             {
-                for (int j = 0; j < 8; ++j)
+                var x = new double[4].Select((s, k) => (double)mesh.points[mesh.quadrangles[i][k]].X).ToArray();
+                var y = new double[4].Select((s, k) => (double)mesh.points[mesh.quadrangles[i][k]].Y).ToArray();
+                for (int pointNumber = 0; pointNumber < 5; ++pointNumber) // pointNumber < 4 : integration point, pointNumber = 4 : center
                 {
-                    var x = new int[4].Select((s, k) => mesh.points[mesh.triangles[i][k]].X);
-                    var y = new int[4].Select((s, k) => mesh.points[mesh.triangles[i][k]].Y);
-                    //B_Matrixes[i][0, j] = (j % 2 == 0) ? : 0;
-                    // TODO
-                }
-            }
-            B_MatrixesAtIntegrationPoints = new double[4][][,].Select(y => new double[mesh.triangles.Count][,].Select(x => new double[3, 8]).ToArray()).ToArray();
-            for (int i = 0; i < B_MatrixesAtIntegrationPoints.Length; ++i)
-            {
-                for (int j = 0; j < B_MatrixesAtIntegrationPoints[i].Length; ++j)
-                {
-                    for (int k = 0; k < 8; ++k)
+                    double xi = (pointNumber < 4) ? integrationPoints[pointNumber][0] : 0;     // ξ
+                    double eta = (pointNumber < 4) ? integrationPoints[pointNumber][1] : 0;    // η
+                    var J00 = ((-1 + eta) * x[0] + (1 - eta) * x[1] + (1 + eta) * x[2] + (-1 - eta) * x[3]) / 4;    // ∂x/∂ξ
+                    var J01 = ((-1 + xi) * x[0] + (-1 - xi) * x[1] + (1 + xi) * x[2] + (1 - xi) * x[3]) / 4;        // ∂x/∂η
+                    var J10 = ((-1 + eta) * y[0] + (1 - eta) * y[1] + (1 + eta) * y[2] + (-1 - eta) * y[3]) / 4;    // ∂y/∂ξ
+                    var J11 = ((-1 + xi) * y[0] + (-1 - xi) * y[1] + (1 + xi) * y[2] + (1 - xi) * y[3]) / 4;        // ∂y/∂η
+                    var detJ = J00 * J11 - J01 * J10;
+                    if (detJ <= 0) throw new Exception("Invalide detJ");
+                    var dNdxi = new double[4] { (-1 + eta) / 4, (1 - eta) / 4, (1 + eta) / 4, (-1 - eta) / 4 };   // ∂Ni/∂ξ
+                    var dNdeta = new double[4] { (-1 + xi) / 4, (-1 - xi) / 4, (1 + xi) / 4, (1 - xi) / 4 };      // ∂Ni/∂η
+                    for (int j = 0; j < 8; ++j)
                     {
-                        // TODO
+                        var B = new double[3];
+                        B[0] = (j % 2 == 0) ? dNdxi[j / 2] * J11 / detJ - dNdeta[j / 2] * J10 / detJ : 0;
+                        B[1] = (j % 2 == 0) ? 0 : -dNdxi[j / 2] * J01 / detJ + dNdeta[j / 2] * J00 / detJ;
+                        B[2] = (j % 2 == 0) ? -dNdxi[j / 2] * J01 / detJ + dNdeta[j / 2] * J00 / detJ : dNdxi[j / 2] * J11 / detJ - dNdeta[j / 2] * J10 / detJ;
+                        if (pointNumber < 4) for (int k = 0; k < B.Length; ++k) B_MatrixesAtIntegrationPoints[pointNumber][i][k, j] = B[k];
+                        else for (int k = 0; k < B.Length; ++k) B_Matrixes[i][k, j] = B[k];
                     }
                 }
             }
