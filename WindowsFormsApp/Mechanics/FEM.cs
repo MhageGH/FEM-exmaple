@@ -112,7 +112,7 @@ namespace Mechanics
 
         double[][] GetStrains_triangle()
         {
-            var strains_triangle = new double[mesh.triangles.Count][].Select(x => x = new double[3]).ToArray();
+            var strains_triangle = new double[mesh.triangles.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i)
             {
                 var d = new double[6];
@@ -124,7 +124,7 @@ namespace Mechanics
 
         double[][] GetStrains_quadrangle()
         {
-            var strains_quadrangle = new double[mesh.quadrangles.Count][].Select(x => x = new double[4]).ToArray();
+            var strains_quadrangle = new double[mesh.quadrangles.Count][].Select(x => new double[4]).ToArray();
             // TODO
             return strains_quadrangle;
         }
@@ -132,27 +132,27 @@ namespace Mechanics
         void GetStrains(double[][] strains_triangle, double[][] strains_quadrangle)
         {
             // TODO consider quadrangle
-            var averages = new List<double[]>[mesh.points.Count].Select(x => x = new List<double[]>()).ToArray();
+            var averages = new List<double[]>[mesh.points.Count].Select(x => new List<double[]>()).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(strains_triangle[i]);
-            strains = new double[mesh.points.Count][].Select(x => x = new double[3]).ToArray();
+            strains = new double[mesh.points.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < strains.Length; ++i) for (int j = 0; j < strains[i].Length; ++j) foreach (var average in averages[i]) strains[i][j] += average[j] / averages[i].Count;
         }
 
         void GetStresses(double[][] strains_triangle, double[][] strains_quadrangle)
         {
             // TODO consider quadrangle
-            var stresses_e = new double[mesh.triangles.Count][].Select(x => x = new double[3]).ToArray();
+            var stresses_e = new double[mesh.triangles.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < stresses_e[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_e[i][j] += D_Matrix[j, k] * strains_triangle[i][k];
-            var averages = new List<double[]>[mesh.points.Count].Select(x => x = new List<double[]>()).ToArray();
+            var averages = new List<double[]>[mesh.points.Count].Select(x => new List<double[]>()).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(stresses_e[i]);
-            stresses = new double[mesh.points.Count][].Select(x => x = new double[3]).ToArray();
+            stresses = new double[mesh.points.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < stresses.Length; ++i) for (int j = 0; j < stresses[i].Length; ++j) foreach (var average in averages[i]) stresses[i][j] += average[j] / averages[i].Count;
         }
     }
 
     interface IMatrixesOfElement
     {
-        double[][,] B_Matrixes { get; } // B_e
+        double[][,] B_Matrixes { get; } // B_e at center of element
 
         double[][,] StiffnessMatrixes { get; }  // K_e
     }
@@ -161,7 +161,7 @@ namespace Mechanics
     {
         Preprocessor.Mesh mesh;
 
-        public double[][,] B_Matrixes { get; private set; }
+        public double[][,] B_Matrixes { get; private set; }   
 
         public double[][,] StiffnessMatrixes { get; private set; }
 
@@ -184,7 +184,7 @@ namespace Mechanics
 
         void CreateB_Matrixes(double[] areas)
         {
-            B_Matrixes = new double[mesh.triangles.Count][,].Select(x => x = new double[3, 6]).ToArray();
+            B_Matrixes = new double[mesh.triangles.Count][,].Select(x => new double[3, 6]).ToArray();
             for (int i = 0; i < B_Matrixes.Length; ++i)
             {
                 for (int j = 0; j < 6; ++j)
@@ -201,7 +201,7 @@ namespace Mechanics
 
         void CreateStiffnessMatrixes(double[] areas, double[,] D_Matrix, double thickness)
         {
-            StiffnessMatrixes = new double[mesh.triangles.Count][,].Select(x => x = new double[6, 6]).ToArray();
+            StiffnessMatrixes = new double[mesh.triangles.Count][,].Select(x => new double[6, 6]).ToArray();
             for (int i = 0; i < StiffnessMatrixes.Length; ++i)
             {
                 var DB = new double[3, 6];
@@ -213,11 +213,61 @@ namespace Mechanics
 
     class MatrixesOfQuadrangle : IMatrixesOfElement
     {
-        public double[][,] B_Matrixes { get; private set; }
+        Preprocessor.Mesh mesh;
+
+        public double[][,] B_Matrixes { get; private set; } // at center of element
 
         public double[][,] StiffnessMatrixes { get; private set; }
 
+        // Use 2-dimensional 2 point Legendre-Gauss formula for integration to create stiffness matrixes.
+        double[][][,] B_MatrixesAtIntegrationPoints;  // [point number in element][element number][row, column]
+        readonly double[][] integrationPoints = new double[4][] {
+            new double[2] { -1 / Math.Sqrt(3), -1 / Math.Sqrt(3) }, 
+            new double[2] { -1 / Math.Sqrt(3), +1 / Math.Sqrt(3) }, 
+            new double[2] { +1 / Math.Sqrt(3), -1 / Math.Sqrt(3) }, 
+            new double[2] { +1 / Math.Sqrt(3), +1 / Math.Sqrt(3) }
+        };
+        readonly double[][] integrationWeights = new double[4][] {
+            new double[2]{1, 1},
+            new double[2]{1, 1},
+            new double[2]{1, 1},
+            new double[2]{1, 1}
+        };
+
         public MatrixesOfQuadrangle(Preprocessor.Mesh mesh, double[,] D_Matrix, double thickness)
+        {
+            this.mesh = mesh;
+            CreateB_Matrixes();
+            CreateStiffnessMatrixes(D_Matrix, thickness);
+        }
+
+        void CreateB_Matrixes()
+        {
+            B_Matrixes = new double[mesh.triangles.Count][,].Select(x => new double[3, 8]).ToArray();
+            for (int i = 0; i < B_Matrixes.Length; ++i)
+            {
+                for (int j = 0; j < 8; ++j)
+                {
+                    var x = new int[4].Select((s, k) => mesh.points[mesh.triangles[i][k]].X);
+                    var y = new int[4].Select((s, k) => mesh.points[mesh.triangles[i][k]].Y);
+                    //B_Matrixes[i][0, j] = (j % 2 == 0) ? : 0;
+                    // TODO
+                }
+            }
+            B_MatrixesAtIntegrationPoints = new double[4][][,].Select(y => new double[mesh.triangles.Count][,].Select(x => new double[3, 8]).ToArray()).ToArray();
+            for (int i = 0; i < B_MatrixesAtIntegrationPoints.Length; ++i)
+            {
+                for (int j = 0; j < B_MatrixesAtIntegrationPoints[i].Length; ++j)
+                {
+                    for (int k = 0; k < 8; ++k)
+                    {
+                        // TODO
+                    }
+                }
+            }
+        }
+
+        void CreateStiffnessMatrixes(double[,]D_Matrix, double thickness)
         {
             // TODO
         }
