@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace Mechanics
 {
@@ -233,6 +234,7 @@ namespace Mechanics
             new double[2]{1, 1},
             new double[2]{1, 1}
         };
+        double[][] detJs;
 
         public MatrixesOfQuadrangle(Preprocessor.Mesh mesh, double[,] D_Matrix, double thickness)
         {
@@ -245,6 +247,7 @@ namespace Mechanics
         {
             B_Matrixes = new double[mesh.quadrangles.Count][,].Select(x => new double[3, 8]).ToArray();
             B_MatrixesAtIntegrationPoints = new double[4][][,].Select(y => new double[mesh.quadrangles.Count][,].Select(x => new double[3, 8]).ToArray()).ToArray();
+            detJs = new double[4][].Select(x => new double[mesh.quadrangles.Count]).ToArray();
             for (int i = 0; i < mesh.quadrangles.Count; ++i)
             {
                 var x = new double[4].Select((s, k) => (double)mesh.points[mesh.quadrangles[i][k]].X).ToArray();
@@ -270,13 +273,28 @@ namespace Mechanics
                         if (pointNumber < 4) for (int k = 0; k < B.Length; ++k) B_MatrixesAtIntegrationPoints[pointNumber][i][k, j] = B[k];
                         else for (int k = 0; k < B.Length; ++k) B_Matrixes[i][k, j] = B[k];
                     }
+                    if (pointNumber < 4) detJs[pointNumber][i] = detJ;
                 }
             }
         }
 
         void CreateStiffnessMatrixes(double[,]D_Matrix, double thickness)
         {
-            // TODO
+            StiffnessMatrixes = new double[mesh.quadrangles.Count][,].Select(x => new double[8, 8]).ToArray();
+            for (int i = 0; i < mesh.quadrangles.Count; ++i)
+            {
+                for (int pointNumber = 0; pointNumber < 4; ++pointNumber)
+                {
+                    var DB = new double[3, 8];
+                    var BDB = new double[8, 8];
+                    for (int j = 0; j < 3; ++j) for (int k = 0; k < 8; ++k) for (int l = 0; l < 3; ++l) DB[j, k] += D_Matrix[j, l] * B_MatrixesAtIntegrationPoints[pointNumber][i][l, k];
+                    for (int j = 0; j < 8; ++j) for (int k = 0; k < 8; ++k) for (int l = 0; l < 3; ++l) BDB[j, k] += B_MatrixesAtIntegrationPoints[pointNumber][i][l, j] * DB[l, k];
+                    for (int j = 0; j < 8; ++j) for (int k = 0; k < 8; ++k) 
+                            StiffnessMatrixes[i][j, k] += BDB[j, k] * detJs[pointNumber][i] * integrationWeights[pointNumber][0] * integrationWeights[pointNumber][1] * thickness;
+                }
+            }
         }
+
+        // TODO 荷重ベクトルを考慮
     }
 }
