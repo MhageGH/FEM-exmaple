@@ -36,8 +36,8 @@ namespace Mechanics
             var overallStiffnessMatrix = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K
             for (int i = 0; i < matrixesOfTriangle.StiffnessMatrixes.Length; ++i) for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) for (int l = 0; l < 2; ++l)
                             overallStiffnessMatrix[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += matrixesOfTriangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
-            // TODO for quadrangle
-
+            for (int i = 0; i < matrixesOfQuadrangle.StiffnessMatrixes.Length; ++i) for (int j = 0; j < 4; ++j) for (int k = 0; k < 4; ++k) for (int l = 0; l < 2; ++l)
+                            overallStiffnessMatrix[2 * mesh.quadrangles[i][j] + l, 2 * mesh.quadrangles[i][k] + l] += matrixesOfQuadrangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
             var reducedStifnessMatrix = new double[reduced_forces.Length, reduced_forces.Length];    // K_AA
             for (int i = 0; i < reducedStifnessMatrix.GetLength(0); ++i) for (int j = 0; j < reducedStifnessMatrix.GetLength(1); ++j) reducedStifnessMatrix[i, j] = overallStiffnessMatrix[iForce[i], iForce[j]];    // because displacements of fixed nodes are 0.
             reduced_displacements = SolveSimultaneousEquations(reducedStifnessMatrix, reduced_forces); // δ_A = f_A / K_AA
@@ -125,27 +125,35 @@ namespace Mechanics
 
         double[][] GetStrains_quadrangle()
         {
-            var strains_quadrangle = new double[mesh.quadrangles.Count][].Select(x => new double[4]).ToArray();
-            // TODO
+            var strains_quadrangle = new double[mesh.quadrangles.Count][].Select(x => new double[3]).ToArray();
+            for (int i = 0; i < mesh.quadrangles.Count; ++i)
+            {
+                var d = new double[8];
+                for (int j = 0; j < d.Length; ++j) d[j] = displacements[2 * mesh.quadrangles[i][j / 2] + j % 2];
+                for (int j = 0; j < strains_quadrangle[i].Length; ++j) for (int k = 0; k < 8; ++k) strains_quadrangle[i][j] += matrixesOfQuadrangle.B_Matrixes[i][j, k] * d[k];
+            }
             return strains_quadrangle;
         }
 
         void GetStrains(double[][] strains_triangle, double[][] strains_quadrangle)
         {
-            // TODO consider quadrangle
             var averages = new List<double[]>[mesh.points.Count].Select(x => new List<double[]>()).ToArray();
             for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(strains_triangle[i]);
+            for (int i = 0; i < mesh.quadrangles.Count; ++i) for (int j = 0; j < mesh.quadrangles[i].Length; ++j) averages[mesh.quadrangles[i][j]].Add(strains_quadrangle[i]);
             strains = new double[mesh.points.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < strains.Length; ++i) for (int j = 0; j < strains[i].Length; ++j) foreach (var average in averages[i]) strains[i][j] += average[j] / averages[i].Count;
         }
 
         void GetStresses(double[][] strains_triangle, double[][] strains_quadrangle)
         {
-            // TODO consider quadrangle
-            var stresses_e = new double[mesh.triangles.Count][].Select(x => new double[3]).ToArray();
-            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < stresses_e[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_e[i][j] += D_Matrix[j, k] * strains_triangle[i][k];
+            var stresses_triangle = new double[mesh.triangles.Count][].Select(x => new double[3]).ToArray();
+            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < stresses_triangle[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_triangle[i][j] += D_Matrix[j, k] * strains_triangle[i][k];
+            var stresses_quadrangle = new double[mesh.quadrangles.Count][].Select(x => new double[3]).ToArray();
+            for (int i = 0; i < mesh.quadrangles.Count; ++i) for (int j = 0; j < stresses_quadrangle[i].Length; ++j) for (int k = 0; k < 3; ++k) stresses_quadrangle[i][j] += D_Matrix[j, k] * strains_quadrangle[i][k];
+
             var averages = new List<double[]>[mesh.points.Count].Select(x => new List<double[]>()).ToArray();
-            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(stresses_e[i]);
+            for (int i = 0; i < mesh.triangles.Count; ++i) for (int j = 0; j < mesh.triangles[i].Length; ++j) averages[mesh.triangles[i][j]].Add(stresses_triangle[i]);
+            for (int i = 0; i < mesh.quadrangles.Count; ++i) for (int j = 0; j < mesh.quadrangles[i].Length; ++j) averages[mesh.quadrangles[i][j]].Add(stresses_quadrangle[i]);
             stresses = new double[mesh.points.Count][].Select(x => new double[3]).ToArray();
             for (int i = 0; i < stresses.Length; ++i) for (int j = 0; j < stresses[i].Length; ++j) foreach (var average in averages[i]) stresses[i][j] += average[j] / averages[i].Count;
         }
@@ -294,7 +302,5 @@ namespace Mechanics
                 }
             }
         }
-
-        // TODO 荷重ベクトルを考慮
     }
 }
