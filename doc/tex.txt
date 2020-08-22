@@ -3,7 +3,7 @@
 \bm{K}_e=\int_{\Omega_e} \bm{B}_e^T \bm{D} \bm{B}_e h_e dA
 \end{align*}
 
-\ \(\Omega_e\) is a region of the element.
+\ \(\Omega_e\) is a region of the element. \(h_e\) is thickness.
 
 \ \(\bm{D}\) (elastic coefficient matrix) is shown as follow.
 
@@ -206,10 +206,7 @@ j(\xi, \eta) = \frac{\partial x}{\partial \xi} \frac{\partial y}{\partial \eta}
 
 \ For quadrangle element, use following cooding transformation and Legendre-Gauss formula.
 \begin{align*}
-    dA = j(\xi, \eta)d\xi d\eta
-\end{align*}
-\begin{align*}
-    \int_{-1}^{1}\int_{-1}^{1}F(\xi, \eta) d\xi d\eta = \sum_{i} \sum_{j} F(\xi_i, \eta_j)w_i w_j
+    \int_{\Omega_e}F dA = \int_{-1}^{1}\int_{-1}^{1}F(\xi, \eta) j(\xi, \eta) d\xi d\eta = \sum_{i} \sum_{j} F(\xi_i, \eta_j) j(\xi_i, \eta_i) w_i w_j
 \end{align*}
 \begin{align*}
     \xi_0 = -\frac{1}{\sqrt{3}}, \ \xi_1 = \frac{1}{\sqrt{3}}, \ \eta_0 = -\frac{1}{\sqrt{3}}, \ \eta_1 = \frac{1}{\sqrt{3}}
@@ -217,3 +214,58 @@ j(\xi, \eta) = \frac{\partial x}{\partial \xi} \frac{\partial y}{\partial \eta}
 \begin{align*}
     w_0 = 1, \ w_1 = 1
 \end{align*}
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+2. Assemble following matrixes \(\bm{K}\) (stiffness matrix) which have all degree of freedom by using all \(\bm{K}_e\).
+\begin{align*}
+    \bm{K} \Leftarrow \bm{K}_e
+\end{align*}
+
+3. Solve following stifness equation. 
+\begin{align*}
+    \bm{K} \bm{d} = \bm{F}
+\end{align*}
+ 
+\ Then \(\bm{d}\) is displacement. 
+
+\ Some components are fixed as defined by boundary condition. Others are unknown quantity.
+
+\ \(\bm{F}\) is Force. Some components are given by boundary condition. 
+
+\ The values of non-fixed and non-forced components are zero.
+
+\  
+
+4. Post-process. Calculate strain \(\bm{\epsilon}_e\) and stresses \(\bm{\sigma}_e\) from calculated \(\bm{d}\) as following.
+\begin{align*}
+    \bm{\epsilon}_e = \bm{B}_e \bm{d}_e
+\end{align*}
+\begin{align*}
+    \bm{\sigma}_e = \bm{D} \bm{\epsilon}_e
+\end{align*}
+
+\ Then
+\begin{align*}
+    \bm{\epsilon} = 
+    \left[
+    \begin{array}{c}
+     \epsilon_x \\
+     \epsilon_y \\
+     \gamma_{xy} 
+    \end{array}
+     \right]
+     ,\ 
+    \bm{\sigma} = 
+    \left[
+    \begin{array}{c}
+     \sigma_x \\
+     \sigma_y \\
+     \tau_{xy} 
+    \end{array}
+     \right]
+\end{align*}
+
+ 

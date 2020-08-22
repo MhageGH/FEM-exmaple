@@ -5,6 +5,7 @@ Two-dimensional elasticity analysis.<br>
 ## theory 
 ![](doc/texclip1.png)<br>
 ![](doc/texclip2.png)<br>
+![](doc/texclip3.png)<br>
 
 # Preprocessor
 ![](doc/Preprocessor.png)<br>
