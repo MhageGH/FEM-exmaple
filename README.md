@@ -1,11 +1,11 @@
-# Thermal
- ![](doc/Thermal.png)<br>
-Simple two-dimensional thermal analysis by solving Laplace's equation.<br>
-
-# Mechanics
-![](doc/Mechanics2.png)<br>
+# Mechanical Analysis
 Two-dimensional elasticity analysis.<br>
- 
+![](doc/MechanicalAnalysis.png)<br>
+
+## theory 
+![](doc/texclip1.png)<br>
+![](doc/texclip2.png)<br>
+
 # Preprocessor
 ![](doc/Preprocessor.png)<br>
 Tool to create mesh for FEM.<br>
