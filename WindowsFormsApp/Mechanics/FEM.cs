@@ -49,8 +49,8 @@ namespace Mechanics
             iFix = mesh.fixXs.Select(x => 2 * x).Union(mesh.fixYs.Select(x => 2 * x + 1)).OrderBy(x => x).ToArray();
             iForce = Enumerable.Range(0, mesh.points.Count * 2).Where(x => !iFix.Contains(x)).ToArray();
             reduced_forces = new double[iForce.Length];
-            foreach (var f in mesh.forceXs) reduced_forces[iForce.ToList().FindIndex(a => a == 2 * f.index)] = unit_force * f.value;
-            foreach (var f in mesh.forceYs) reduced_forces[iForce.ToList().FindIndex(a => a == 2 * f.index) + 1] = unit_force * f.value;
+            foreach (var (index, value) in mesh.forceXs) reduced_forces[iForce.ToList().FindIndex(a => a == 2 * index)] = unit_force * value;
+            foreach (var (index, value) in mesh.forceYs) reduced_forces[iForce.ToList().FindIndex(a => a == 2 * index) + 1] = unit_force * value;
         }
 
         void GetD_Matrix()

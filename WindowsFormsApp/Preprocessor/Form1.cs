@@ -25,47 +25,18 @@ namespace Preprocessor
 
         private enum AlignMode { vertical, horizontal };
 
-        double TriangleArea(Point[] p)
-        {
-            if (p.Length != 3) throw new Exception("Invalid argument of SignedTriangleArea()");
-            return (p[1].X * p[2].Y + p[2].X * p[0].Y + p[0].X * p[1].Y - p[2].X * p[1].Y - p[0].X * p[2].Y - p[1].X * p[0].Y) / 2;
-        }
-
         void UpdateTriangles()
         {
-            var triangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
+            var triangle = meshEncoder.GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (mesh.triangles.Any(x => x.SequenceEqual(triangle))) mesh.triangles.RemoveAll(x => x.SequenceEqual(triangle));
             else mesh.triangles.Add(triangle);
         }
 
         void UpdateQuadrangles()
         {
-            var quadrangle = GetNodeOrderOfPolygon(selectedNodes.ToArray());
+            var quadrangle = meshEncoder.GetNodeOrderOfPolygon(selectedNodes.ToArray());
             if (mesh.quadrangles.Any(x => x.SequenceEqual(quadrangle))) mesh.quadrangles.RemoveAll(x => x.SequenceEqual(quadrangle));
             else mesh.quadrangles.Add(quadrangle);
-        }
-
-        int[] GetNodeOrderOfPolygon(int[] nodes)
-        {
-            nodes = nodes.OrderBy(x => x).ToArray();
-            var p = new Point[3];
-            for (int i = 0; i < p.Length; ++i) p[i] = mesh.points[nodes[i]];
-            var n = new int[4];
-            nodes.CopyTo(n, 0);
-            if (TriangleArea(p) < 0) for (int i = 0; i < 2; ++i) nodes[i] = n[(i + 1) % 2];
-            if (nodes.Length == 3) return nodes;
-            else if (nodes.Length == 4)
-            {
-                for (int i = 0; i < 3; ++i)
-                {
-                    for (int j = 0; j < p.Length; ++j) p[j] = mesh.points[nodes[new int[] { 0, 2, 3 }[j]]];
-                    if (TriangleArea(p) > 0) break;
-                    nodes.CopyTo(n, 0);
-                    for (int j = 0; j < 3; ++j) nodes[j] = n[(j + 1) % 3];
-                }
-                return nodes;
-            }
-            throw new Exception("GetNodeOrder() failed.");
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -116,8 +87,8 @@ namespace Preprocessor
                     else if (index == -1 && movingNode != -1)
                     {
                         mesh.points[movingNode] = new Point(e.X, e.Y);
-                        mesh.triangles = mesh.triangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
-                        mesh.quadrangles = mesh.quadrangles.Select(x => x.Contains(movingNode) ? GetNodeOrderOfPolygon(x) : x).ToList();
+                        mesh.triangles = mesh.triangles.Select(x => x.Contains(movingNode) ? meshEncoder.GetNodeOrderOfPolygon(x) : x).ToList();
+                        mesh.quadrangles = mesh.quadrangles.Select(x => x.Contains(movingNode) ? meshEncoder.GetNodeOrderOfPolygon(x) : x).ToList();
                         movingNode = -1;
                     }
                 }
