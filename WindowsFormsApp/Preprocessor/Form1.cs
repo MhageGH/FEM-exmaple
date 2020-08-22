@@ -27,14 +27,14 @@ namespace Preprocessor
 
         void UpdateTriangles()
         {
-            var triangle = meshEncoder.GetNodeOrderOfPolygon(selectedNodes.ToArray());
+            var triangle = mesh.NormalizeNodeOrderOfPolygon(selectedNodes.ToArray());
             if (mesh.triangles.Any(x => x.SequenceEqual(triangle))) mesh.triangles.RemoveAll(x => x.SequenceEqual(triangle));
             else mesh.triangles.Add(triangle);
         }
 
         void UpdateQuadrangles()
         {
-            var quadrangle = meshEncoder.GetNodeOrderOfPolygon(selectedNodes.ToArray());
+            var quadrangle = mesh.NormalizeNodeOrderOfPolygon(selectedNodes.ToArray());
             if (mesh.quadrangles.Any(x => x.SequenceEqual(quadrangle))) mesh.quadrangles.RemoveAll(x => x.SequenceEqual(quadrangle));
             else mesh.quadrangles.Add(quadrangle);
         }
@@ -87,8 +87,8 @@ namespace Preprocessor
                     else if (index == -1 && movingNode != -1)
                     {
                         mesh.points[movingNode] = new Point(e.X, e.Y);
-                        mesh.triangles = mesh.triangles.Select(x => x.Contains(movingNode) ? meshEncoder.GetNodeOrderOfPolygon(x) : x).ToList();
-                        mesh.quadrangles = mesh.quadrangles.Select(x => x.Contains(movingNode) ? meshEncoder.GetNodeOrderOfPolygon(x) : x).ToList();
+                        mesh.triangles = mesh.triangles.Select(x => x.Contains(movingNode) ? mesh.NormalizeNodeOrderOfPolygon(x) : x).ToList();
+                        mesh.quadrangles = mesh.quadrangles.Select(x => x.Contains(movingNode) ? mesh.NormalizeNodeOrderOfPolygon(x) : x).ToList();
                         movingNode = -1;
                     }
                 }
