@@ -60,7 +60,7 @@ namespace WindowsFormsApp1
 
         }
     }
-    
+
     class FEM
     {
         const double k_TC = 1.0;

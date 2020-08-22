@@ -89,7 +89,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::WindowsFormsApp1.Properties.Resources.texclip20200507222050;
+            this.pictureBox1.Image = global::Themal.Properties.Resources.texclip20200507222050;
             this.pictureBox1.Location = new System.Drawing.Point(481, 97);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(163, 57);
