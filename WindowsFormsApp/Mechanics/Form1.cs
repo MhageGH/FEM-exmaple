@@ -96,30 +96,30 @@ namespace Mechanics
             foreach (var i in fem.mesh.fixXs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-20, -10), new PointF(-20, 10) };
-                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X / scale, x.Y + fem.mesh.points[i].Y / scale)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach (var i in fem.mesh.fixYs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-10, 20), new PointF(10, 20) };
-                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X / scale, x.Y + fem.mesh.points[i].Y / scale)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach(var f in fem.mesh.forceXs)
             {
                 var tri = new PointF[] { new PointF(0 + 50 * f.value / 2, 0), new PointF(-10 + 50 * f.value / 2, -5), new PointF(-10 + 50 * f.value / 2, 5) };
-                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X / scale, x.Y + fem.mesh.points[f.index].Y / scale)).ToArray();
                 var line = new PointF[] { new PointF(0, 0), new PointF(50 * f.value / 2, 0) };
-                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X / scale, x.Y + fem.mesh.points[f.index].Y / scale)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
             foreach (var f in fem.mesh.forceYs)
             {
                 var tri = new PointF[] { new PointF(0, 0 - 50 * f.value / 2), new PointF(-5, 10 - 50 * f.value / 2), new PointF(5, 10 - 50 * f.value / 2) };
-                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X / scale, x.Y + fem.mesh.points[f.index].Y / scale)).ToArray();
                 var line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f.value / 2) };
-                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X / scale, x.Y + fem.mesh.points[f.index].Y / scale)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
