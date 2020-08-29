@@ -9,10 +9,10 @@ namespace Mechanics
     {
         public Preprocessor.Mesh mesh = new Preprocessor.Mesh();
 
-        const double elasticity = 1000000.0;    // E
-        const double poissons_ratio = 0.3;      // ν
-        const double thickness = 0.1;
-        const double unit_force = 0.5;
+        public double elasticity;       // E
+        public double poissons_ratio;   // ν
+        public double thickness;
+        public double unit_force;
         double[,] D_Matrix;
 
         int[] iFix;

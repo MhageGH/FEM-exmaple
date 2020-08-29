@@ -9,7 +9,7 @@ namespace Preprocessor
 {
     public class Mesh
     {
-        public List<Point> points = new List<Point>();
+        public List<PointF> points = new List<PointF>();
         public List<int[]> triangles = new List<int[]>();
         public List<int[]> quadrangles = new List<int[]>();
         public List<int> fixXs = new List<int>();
@@ -19,7 +19,7 @@ namespace Preprocessor
         public Mode mode = Mode.planeStress;
 
         public enum Mode { planeStress, planeStrain }
-        double TriangleArea(Point[] p)
+        double TriangleArea(PointF[] p)
         {
             if (p.Length != 3) throw new Exception("Invalid argument of SignedTriangleArea()");
             return (p[1].X * p[2].Y + p[2].X * p[0].Y + p[0].X * p[1].Y - p[2].X * p[1].Y - p[0].X * p[2].Y - p[1].X * p[0].Y) / 2;
@@ -28,7 +28,7 @@ namespace Preprocessor
         public int[] NormalizeNodeOrderOfPolygon(int[] nodes)
         {
             nodes = nodes.OrderBy(x => x).ToArray();
-            var p = new Point[3];
+            var p = new PointF[3];
             for (int i = 0; i < p.Length; ++i) p[i] = points[nodes[i]];
             var n = new int[4];
             nodes.CopyTo(n, 0);
@@ -121,8 +121,8 @@ namespace Preprocessor
                         switch (i)
                         {
                             case 0:
-                                mesh.points = new List<Point>();
-                                for (++j; words[j][0] != ""; ++j) mesh.points.Add(new Point(Convert.ToInt16(words[j][0]), Convert.ToInt16(words[j][1])));
+                                mesh.points = new List<PointF>();
+                                for (++j; words[j][0] != ""; ++j) mesh.points.Add(new PointF((float)Convert.ToDouble(words[j][0]), (float)Convert.ToDouble(words[j][1])));
                                 break;
                             case 1:
                                 mesh.triangles = new List<int[]>();

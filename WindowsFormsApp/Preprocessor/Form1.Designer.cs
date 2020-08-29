@@ -30,14 +30,12 @@
         {
             this.radioButton_node = new System.Windows.Forms.RadioButton();
             this.radioButton_triangle = new System.Windows.Forms.RadioButton();
-            this.button_save = new System.Windows.Forms.Button();
             this.radioButton_fixX = new System.Windows.Forms.RadioButton();
             this.radioButton_fixY = new System.Windows.Forms.RadioButton();
             this.radioButton_forceY = new System.Windows.Forms.RadioButton();
             this.radioButton_forceX = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButton_quadrangle = new System.Windows.Forms.RadioButton();
-            this.button_load = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButton_align = new System.Windows.Forms.RadioButton();
             this.radioButton_add = new System.Windows.Forms.RadioButton();
@@ -48,10 +46,18 @@
             this.checkBox_VisibleNodeNumber = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parameterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unitLengthmmpixelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnitLengthToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioButton_node
@@ -81,18 +87,6 @@
             this.radioButton_triangle.Text = "triangle";
             this.radioButton_triangle.UseVisualStyleBackColor = true;
             this.radioButton_triangle.CheckedChanged += new System.EventHandler(this.radioButton_triangle_CheckedChanged);
-            // 
-            // button_save
-            // 
-            this.button_save.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_save.Location = new System.Drawing.Point(535, 502);
-            this.button_save.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button_save.Name = "button_save";
-            this.button_save.Size = new System.Drawing.Size(87, 34);
-            this.button_save.TabIndex = 2;
-            this.button_save.Text = "save";
-            this.button_save.UseVisualStyleBackColor = true;
-            this.button_save.Click += new System.EventHandler(this.button_save_Click);
             // 
             // radioButton_fixX
             // 
@@ -155,7 +149,7 @@
             this.groupBox1.Controls.Add(this.radioButton_forceX);
             this.groupBox1.Controls.Add(this.radioButton_fixX);
             this.groupBox1.Controls.Add(this.radioButton_fixY);
-            this.groupBox1.Location = new System.Drawing.Point(511, 12);
+            this.groupBox1.Location = new System.Drawing.Point(511, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(142, 236);
             this.groupBox1.TabIndex = 7;
@@ -175,24 +169,12 @@
             this.radioButton_quadrangle.UseVisualStyleBackColor = true;
             this.radioButton_quadrangle.CheckedChanged += new System.EventHandler(this.radioButton_quadrangle_CheckedChanged);
             // 
-            // button_load
-            // 
-            this.button_load.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.button_load.Location = new System.Drawing.Point(535, 544);
-            this.button_load.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button_load.Name = "button_load";
-            this.button_load.Size = new System.Drawing.Size(87, 34);
-            this.button_load.TabIndex = 8;
-            this.button_load.Text = "load";
-            this.button_load.UseVisualStyleBackColor = true;
-            this.button_load.Click += new System.EventHandler(this.button_load_Click);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.radioButton_align);
             this.groupBox2.Controls.Add(this.radioButton_add);
             this.groupBox2.Controls.Add(this.radioButton_move);
-            this.groupBox2.Location = new System.Drawing.Point(511, 254);
+            this.groupBox2.Location = new System.Drawing.Point(511, 269);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(142, 120);
             this.groupBox2.TabIndex = 9;
@@ -245,7 +227,7 @@
             this.groupBox3.Controls.Add(this.checkBox_VisibleQuadrangleNumber);
             this.groupBox3.Controls.Add(this.checkBox_VisibleTriangleNumber);
             this.groupBox3.Controls.Add(this.checkBox_VisibleNodeNumber);
-            this.groupBox3.Location = new System.Drawing.Point(511, 380);
+            this.groupBox3.Location = new System.Drawing.Point(511, 395);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(142, 115);
             this.groupBox3.TabIndex = 10;
@@ -301,19 +283,76 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(175, 17);
             this.toolStripStatusLabel1.Text = "Left click to put or remove node";
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.parameterToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(665, 24);
+            this.menuStrip1.TabIndex = 12;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // parameterToolStripMenuItem
+            // 
+            this.parameterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.unitLengthmmpixelToolStripMenuItem});
+            this.parameterToolStripMenuItem.Name = "parameterToolStripMenuItem";
+            this.parameterToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            this.parameterToolStripMenuItem.Text = "Parameter";
+            // 
+            // unitLengthmmpixelToolStripMenuItem
+            // 
+            this.unitLengthmmpixelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnitLengthToolStripTextBox});
+            this.unitLengthmmpixelToolStripMenuItem.Name = "unitLengthmmpixelToolStripMenuItem";
+            this.unitLengthmmpixelToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.unitLengthmmpixelToolStripMenuItem.Text = "Unit length [mm/pixel]";
+            // 
+            // UnitLengthToolStripTextBox
+            // 
+            this.UnitLengthToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.UnitLengthToolStripTextBox.Name = "UnitLengthToolStripTextBox";
+            this.UnitLengthToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.UnitLengthToolStripTextBox.Text = "1.0";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 606);
             this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.button_load);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button_save);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
             this.Text = "Mesh Editor";
@@ -327,6 +366,8 @@
             this.groupBox3.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -336,13 +377,11 @@
 
         private System.Windows.Forms.RadioButton radioButton_node;
         private System.Windows.Forms.RadioButton radioButton_triangle;
-        private System.Windows.Forms.Button button_save;
         private System.Windows.Forms.RadioButton radioButton_fixX;
         private System.Windows.Forms.RadioButton radioButton_fixY;
         private System.Windows.Forms.RadioButton radioButton_forceY;
         private System.Windows.Forms.RadioButton radioButton_forceX;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button_load;
         private System.Windows.Forms.RadioButton radioButton_quadrangle;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButton_align;
@@ -354,6 +393,13 @@
         private System.Windows.Forms.CheckBox checkBox_VisibleQuadrangleNumber;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parameterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unitLengthmmpixelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox UnitLengthToolStripTextBox;
     }
 }
 

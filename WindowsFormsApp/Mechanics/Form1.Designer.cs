@@ -33,6 +33,17 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.solverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ElasticityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ElasticityToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.PoissonsRatioToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PoissonsRatioToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.thicknessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ThicknessToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.unitForceNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnitForceToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.mmpixelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnitLengthToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,15 +106,104 @@
             // solverToolStripMenuItem
             // 
             this.solverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.materialToolStripMenuItem,
             this.solveToolStripMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
-            this.solverToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
-            this.solverToolStripMenuItem.Text = "Solver";
+            this.solverToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.solverToolStripMenuItem.Text = "Calculation";
+            // 
+            // materialToolStripMenuItem
+            // 
+            this.materialToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ElasticityToolStripMenuItem,
+            this.PoissonsRatioToolStripMenuItem,
+            this.thicknessToolStripMenuItem,
+            this.unitForceNToolStripMenuItem,
+            this.mmpixelToolStripMenuItem});
+            this.materialToolStripMenuItem.Name = "materialToolStripMenuItem";
+            this.materialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.materialToolStripMenuItem.Text = "Parameter";
+            // 
+            // ElasticityToolStripMenuItem
+            // 
+            this.ElasticityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ElasticityToolStripTextBox});
+            this.ElasticityToolStripMenuItem.Name = "ElasticityToolStripMenuItem";
+            this.ElasticityToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.ElasticityToolStripMenuItem.Text = "Elasticity [GPa]";
+            this.ElasticityToolStripMenuItem.Click += new System.EventHandler(this.ElasticityToolStripMenuItem_Click);
+            // 
+            // ElasticityToolStripTextBox
+            // 
+            this.ElasticityToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.ElasticityToolStripTextBox.Name = "ElasticityToolStripTextBox";
+            this.ElasticityToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.ElasticityToolStripTextBox.Text = "1.0";
+            // 
+            // PoissonsRatioToolStripMenuItem
+            // 
+            this.PoissonsRatioToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PoissonsRatioToolStripTextBox});
+            this.PoissonsRatioToolStripMenuItem.Name = "PoissonsRatioToolStripMenuItem";
+            this.PoissonsRatioToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.PoissonsRatioToolStripMenuItem.Text = "Poissons ratio";
+            // 
+            // PoissonsRatioToolStripTextBox
+            // 
+            this.PoissonsRatioToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.PoissonsRatioToolStripTextBox.Name = "PoissonsRatioToolStripTextBox";
+            this.PoissonsRatioToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.PoissonsRatioToolStripTextBox.Text = "0.3";
+            // 
+            // thicknessToolStripMenuItem
+            // 
+            this.thicknessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ThicknessToolStripTextBox});
+            this.thicknessToolStripMenuItem.Name = "thicknessToolStripMenuItem";
+            this.thicknessToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.thicknessToolStripMenuItem.Text = "Thickness [mm]";
+            // 
+            // ThicknessToolStripTextBox
+            // 
+            this.ThicknessToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.ThicknessToolStripTextBox.Name = "ThicknessToolStripTextBox";
+            this.ThicknessToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.ThicknessToolStripTextBox.Text = "1.0";
+            // 
+            // unitForceNToolStripMenuItem
+            // 
+            this.unitForceNToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnitForceToolStripTextBox});
+            this.unitForceNToolStripMenuItem.Name = "unitForceNToolStripMenuItem";
+            this.unitForceNToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.unitForceNToolStripMenuItem.Text = "Unit force [N]";
+            // 
+            // UnitForceToolStripTextBox
+            // 
+            this.UnitForceToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.UnitForceToolStripTextBox.Name = "UnitForceToolStripTextBox";
+            this.UnitForceToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.UnitForceToolStripTextBox.Text = "50";
+            // 
+            // mmpixelToolStripMenuItem
+            // 
+            this.mmpixelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UnitLengthToolStripTextBox});
+            this.mmpixelToolStripMenuItem.Name = "mmpixelToolStripMenuItem";
+            this.mmpixelToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.mmpixelToolStripMenuItem.Text = "Unit length [mm/pixel]";
+            // 
+            // UnitLengthToolStripTextBox
+            // 
+            this.UnitLengthToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.UnitLengthToolStripTextBox.Name = "UnitLengthToolStripTextBox";
+            this.UnitLengthToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.UnitLengthToolStripTextBox.Text = "1.0";
             // 
             // solveToolStripMenuItem
             // 
             this.solveToolStripMenuItem.Name = "solveToolStripMenuItem";
-            this.solveToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
+            this.solveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.solveToolStripMenuItem.Text = "Solve";
             this.solveToolStripMenuItem.Click += new System.EventHandler(this.solveToolStripMenuItem_Click);
             // 
@@ -118,7 +218,7 @@
             // meshEditorToolStripMenuItem
             // 
             this.meshEditorToolStripMenuItem.Name = "meshEditorToolStripMenuItem";
-            this.meshEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.meshEditorToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.meshEditorToolStripMenuItem.Text = "Mesh Editor";
             this.meshEditorToolStripMenuItem.Click += new System.EventHandler(this.meshEditorToolStripMenuItem_Click);
             // 
@@ -302,6 +402,17 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label_state;
         private System.Windows.Forms.Label label_mesh;
+        private System.Windows.Forms.ToolStripMenuItem materialToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ElasticityToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem PoissonsRatioToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thicknessToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox ElasticityToolStripTextBox;
+        private System.Windows.Forms.ToolStripTextBox PoissonsRatioToolStripTextBox;
+        private System.Windows.Forms.ToolStripTextBox ThicknessToolStripTextBox;
+        private System.Windows.Forms.ToolStripMenuItem unitForceNToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox UnitForceToolStripTextBox;
+        private System.Windows.Forms.ToolStripMenuItem mmpixelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripTextBox UnitLengthToolStripTextBox;
     }
 }
 

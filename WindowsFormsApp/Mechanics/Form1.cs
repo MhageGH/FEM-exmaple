@@ -21,6 +21,7 @@ namespace Mechanics
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
+            var unitLength = (float)(Convert.ToDouble(UnitLengthToolStripTextBox.Text) * 1e-3);
             var values = new double[fem.mesh.points.Count];
             double max = -1.0e10, min = 1.0e10;
             if (fem.solved)
@@ -57,11 +58,11 @@ namespace Mechanics
                 for (int i = 0; i < values.Length; ++i) values[i] = max > min ? (values[i] - min) / (max - min) : max;
             }
             var gradientTriangles = new List<GradientTriangle>();
-            AddGradientTriangles(values, gradientTriangles, fem.mesh.triangles.ToArray());
+            AddGradientTriangles(values, gradientTriangles, fem.mesh.triangles.ToArray(), unitLength);
             foreach (var quadrangle in fem.mesh.quadrangles)
             {
                 var triangles = new int[2][] { new int[] { quadrangle[0], quadrangle[1], quadrangle[2] }, new int[] { quadrangle[0], quadrangle[2], quadrangle[3] }};
-                AddGradientTriangles(values, gradientTriangles, triangles);
+                AddGradientTriangles(values, gradientTriangles, triangles, unitLength);
             }
             foreach (var gradientTriangle in gradientTriangles)
             {
@@ -70,65 +71,70 @@ namespace Mechanics
             }
             foreach (var triangle in fem.mesh.triangles)
             {
-                var ps = new Point[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = fem.mesh.points[triangle[i]];
+                var ps = new PointF[3];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[triangle[i]].X*1000, fem.mesh.points[triangle[i]].Y / unitLength);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var quadrangle in fem.mesh.quadrangles)
             {
-                var ps = new Point[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = fem.mesh.points[quadrangle[i]];
+                var ps = new PointF[4];
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[quadrangle[i]].X * 1000, fem.mesh.points[quadrangle[i]].Y / unitLength);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var i in fem.mesh.fixXs)
             {
-                var tri = new Point[] { new Point(0, 0), new Point(-20, -10), new Point(-20, 10) };
-                tri = tri.Select(x => new Point(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                var tri = new PointF[] { new PointF(0, 0), new PointF(-20, -10), new PointF(-20, 10) };
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach (var i in fem.mesh.fixYs)
             {
-                var tri = new Point[] { new Point(0, 0), new Point(-10, 20), new Point(10, 20) };
-                tri = tri.Select(x => new Point(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
+                var tri = new PointF[] { new PointF(0, 0), new PointF(-10, 20), new PointF(10, 20) };
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[i].X, x.Y + fem.mesh.points[i].Y)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach(var f in fem.mesh.forceXs)
             {
-                var tri = new Point[] { new Point(0 + 50 * f.value / 2, 0), new Point(-10 + 50 * f.value / 2, -5), new Point(-10 + 50 * f.value / 2, 5) };
-                tri = tri.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
-                var line = new Point[] { new Point(0, 0), new Point(50 * f.value / 2, 0) };
-                line = line.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var tri = new PointF[] { new PointF(0 + 50 * f.value / 2, 0), new PointF(-10 + 50 * f.value / 2, -5), new PointF(-10 + 50 * f.value / 2, 5) };
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var line = new PointF[] { new PointF(0, 0), new PointF(50 * f.value / 2, 0) };
+                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
             foreach (var f in fem.mesh.forceYs)
             {
-                var tri = new Point[] { new Point(0, 0 - 50 * f.value / 2), new Point(-5, 10 - 50 * f.value / 2), new Point(5, 10 - 50 * f.value / 2) };
-                tri = tri.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
-                var line = new Point[] { new Point(0, 0), new Point(0, -50 * f.value / 2) };
-                line = line.Select(x => new Point(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var tri = new PointF[] { new PointF(0, 0 - 50 * f.value / 2), new PointF(-5, 10 - 50 * f.value / 2), new PointF(5, 10 - 50 * f.value / 2) };
+                tri = tri.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
+                var line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f.value / 2) };
+                line = line.Select(x => new PointF(x.X + fem.mesh.points[f.index].X, x.Y + fem.mesh.points[f.index].Y)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
             var bar = new GradientTriangle[]{
-                new GradientTriangle(new Point[] { new Point(530, 220), new Point(560, 220), new Point(530, 300) }, new Color[] { Color.Red, Color.Red, Color.LawnGreen }),
-                new GradientTriangle(new Point[] { new Point(560, 220), new Point(560, 300), new Point(530, 300) }, new Color[] { Color.Red, Color.LawnGreen, Color.LawnGreen }),
-                new GradientTriangle(new Point[] { new Point(530, 300), new Point(560, 300), new Point(530, 380) }, new Color[] { Color.LawnGreen, Color.LawnGreen, Color.Blue }),
-                new GradientTriangle(new Point[] { new Point(560, 300), new Point(560, 380), new Point(530, 380) }, new Color[] { Color.LawnGreen, Color.Blue, Color.Blue })
+                new GradientTriangle(new PointF[] { new PointF(530, 220), new PointF(560, 220), new PointF(530, 300) }, new Color[] { Color.Red, Color.Red, Color.LawnGreen }),
+                new GradientTriangle(new PointF[] { new PointF(560, 220), new PointF(560, 300), new PointF(530, 300) }, new Color[] { Color.Red, Color.LawnGreen, Color.LawnGreen }),
+                new GradientTriangle(new PointF[] { new PointF(530, 300), new PointF(560, 300), new PointF(530, 380) }, new Color[] { Color.LawnGreen, Color.LawnGreen, Color.Blue }),
+                new GradientTriangle(new PointF[] { new PointF(560, 300), new PointF(560, 380), new PointF(530, 380) }, new Color[] { Color.LawnGreen, Color.Blue, Color.Blue })
             };
             foreach(var t in bar) e.Graphics.FillRectangle(t.GetGradientBrush(), this.ClientRectangle);
             if (fem.solved)
             {
-                e.Graphics.DrawString(max.ToString("e2"), DefaultFont, Brushes.Black, 560, 220);
-                e.Graphics.DrawString(min.ToString("e2"), DefaultFont, Brushes.Black, 560, 380);
+                var i = toolStripMenuItem2.SelectedIndex;
+                string unit = "";
+                if (i < 2) unit = " [m]";
+                else if (i < 5) unit = "";
+                else if (i < 8) unit = " [Pa]";
+                e.Graphics.DrawString(max.ToString("e2") + unit, DefaultFont, Brushes.Black, 560, 220);
+                e.Graphics.DrawString(min.ToString("e2") + unit, DefaultFont, Brushes.Black, 560, 380);
             }
         }
 
-        private void AddGradientTriangles(double[] values, List<GradientTriangle> gradientTriangles, int[][] triangles)
+        private void AddGradientTriangles(double[] values, List<GradientTriangle> gradientTriangles, int[][] triangles, float unitLength)
         {
             foreach (var triangle in triangles)
             {
-                var points = new List<Point>();
+                var points = new List<PointF>();
                 var colors = new List<Color>();
                 foreach (var node in triangle)
                 {
@@ -138,7 +144,7 @@ namespace Mechanics
                     var s = values[node] < 0.5 ? 2 * values[node] : 2 * (values[node] - 0.5);
                     colors.Add(Color.FromArgb((int)(c0.R * (1 - s) + c1.R * s), (int)(c0.G * (1 - s) + c1.G * s), (int)(c0.B * (1 - s) + c1.B * s)));
                 }
-                gradientTriangles.Add(new GradientTriangle(points.ToArray(), colors.ToArray()));
+                gradientTriangles.Add(new GradientTriangle(points.Select(x => new PointF(x.X / unitLength, x.Y / unitLength)).ToArray(), colors.ToArray()));
             }
         }
 
@@ -155,6 +161,10 @@ namespace Mechanics
 
         private void solveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            fem.elasticity = Convert.ToDouble(ElasticityToolStripTextBox.Text)*1e+9;
+            fem.poissons_ratio = Convert.ToDouble(PoissonsRatioToolStripTextBox.Text);
+            fem.thickness = Convert.ToDouble(ThicknessToolStripTextBox.Text)*1e-3;
+            fem.unit_force = Convert.ToDouble(UnitForceToolStripTextBox.Text);
             fem.Solve();
             fem.PostProcessing();
             label_state.Text = "Solved";
@@ -171,15 +181,19 @@ namespace Mechanics
         {
             new Preprocessor.Form1().Show();
         }
+
+        private void ElasticityToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
     }
 
     class GradientTriangle
     {
-        public Point[] points;
+        public PointF[] points;
         Color[] colors;
         Color centerColor;
 
-        public GradientTriangle(Point[] points, Color[] colors)
+        public GradientTriangle(PointF[] points, Color[] colors)
         {
             this.points = points;
             this.colors = colors;
