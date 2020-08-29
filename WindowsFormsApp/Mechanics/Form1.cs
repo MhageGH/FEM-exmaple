@@ -14,7 +14,7 @@ namespace Mechanics
         Preprocessor.MeshEncoder meshEncoder;
         Form2 form2;
 
-        enum ElementType { none, triangle, quadangle }
+        enum ElementType { none, triangle, quadrangle }
         ElementType selectedElementType = ElementType.none;
         int selectedElementNumber = 0;
 
@@ -75,20 +75,24 @@ namespace Mechanics
                 if (fem.solved) e.Graphics.FillRectangle(gradientTriangle.GetGradientBrush(), this.ClientRectangle);
                 else e.Graphics.FillPolygon(Brushes.LawnGreen, gradientTriangle.points);
             }
+            var post_triangle_ps = new PointF[3];
             for (int j = 0; j < fem.mesh.triangles.Count; ++j)
             {
                 var ps = new PointF[3];
                 for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[fem.mesh.triangles[j][i]].X / scale, fem.mesh.points[fem.mesh.triangles[j][i]].Y / scale);
-                if (selectedElementType != ElementType.triangle || j != selectedElementNumber) e.Graphics.DrawPolygon(Pens.Black, ps);
+                if (selectedElementType == ElementType.triangle && j == selectedElementNumber) ps.CopyTo(post_triangle_ps, 0);
+                else e.Graphics.DrawPolygon(Pens.Black, ps);
             }
-            foreach (var quadrangle in fem.mesh.quadrangles)
+            var post_quadrangle_ps = new PointF[4];
+            for (int j = 0; j < fem.mesh.quadrangles.Count; ++j)
             {
                 var ps = new PointF[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[quadrangle[i]].X / scale, fem.mesh.points[quadrangle[i]].Y / scale);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[fem.mesh.quadrangles[j][i]].X / scale, fem.mesh.points[fem.mesh.quadrangles[j][i]].Y / scale);
+                if (selectedElementType == ElementType.quadrangle && j == selectedElementNumber) ps.CopyTo(post_quadrangle_ps, 0);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
-            if (selectedElementType == ElementType.triangle)
-                e.Graphics.DrawPolygon(new Pen(Color.Red, 3), fem.mesh.triangles[selectedElementNumber].Select(x => new PointF(fem.mesh.points[x].X / scale, fem.mesh.points[x].Y / scale)).ToArray());
+            if (selectedElementType == ElementType.triangle) e.Graphics.DrawPolygon(new Pen(Color.Red, 3), post_triangle_ps);
+            else if (selectedElementType == ElementType.quadrangle) e.Graphics.DrawPolygon(new Pen(Color.Red, 3), post_quadrangle_ps);
             foreach (var i in fem.mesh.fixXs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-20, -10), new PointF(-20, 10) };
@@ -210,13 +214,43 @@ namespace Mechanics
             var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
             for (int i = 0; i < fem.mesh.triangles.Count; ++i)
             {
-                var v = new PointF[3].Select((x, j) => new PointF(fem.mesh.points[fem.mesh.triangles[i][j]].X / scale - e.X, fem.mesh.points[fem.mesh.triangles[i][j]].Y / scale - e.Y)).ToArray();
+                var triangle = fem.mesh.triangles[i];
+                var v = new PointF[3].Select((x, j) => new PointF(fem.mesh.points[triangle[j]].X / scale - e.X, fem.mesh.points[triangle[j]].Y / scale - e.Y)).ToArray();
                 if (CrossProduct(v[0], v[1]) >= 0 && CrossProduct(v[1], v[2]) >= 0 && CrossProduct(v[2], v[0]) >= 0)
                 {
                     selectedElementType = ElementType.triangle;
                     selectedElementNumber = i;
                     this.Invalidate();
-                    break;
+                    form2.ElementTypeLabel.Text = "Triangle";
+                    form2.ElementNumberLabel.Text = i.ToString();
+                    form2.NodeNumberListLabel.Text = triangle[0].ToString() + ", " + triangle[1].ToString() + ", " + triangle[2].ToString();
+                    string s = "";
+                    for (int j = 0; j < triangle.Length; ++j) s += "(" + fem.mesh.points[triangle[j]].X.ToString() + ", " + fem.mesh.points[triangle[j]].Y.ToString() + ")" + ((j < triangle.Length - 1) ? ", " : "");
+                    form2.NodePositionListLabel.Text = s;
+                    return;
+                }
+            }
+            for (int i = 0; i < fem.mesh.quadrangles.Count; ++i)
+            {
+                var quadrangle = fem.mesh.quadrangles[i];
+                var triangles = new int[2][] { new int[] { quadrangle[0], quadrangle[1], quadrangle[2] }, new int[] { quadrangle[0], quadrangle[2], quadrangle[3] } };
+                for (int k = 0; k < triangles.Length; ++k)
+                {
+                    var triangle = triangles[k];
+                    var v = new PointF[3].Select((x, j) => new PointF(fem.mesh.points[triangle[j]].X / scale - e.X, fem.mesh.points[triangle[j]].Y / scale - e.Y)).ToArray();
+                    if (CrossProduct(v[0], v[1]) >= 0 && CrossProduct(v[1], v[2]) >= 0 && CrossProduct(v[2], v[0]) >= 0)
+                    {
+                        selectedElementType = ElementType.quadrangle;
+                        selectedElementNumber = i;
+                        this.Invalidate();
+                        form2.ElementTypeLabel.Text = "Quadrangle";
+                        form2.ElementNumberLabel.Text = i.ToString();
+                        form2.NodeNumberListLabel.Text = quadrangle[0].ToString() + ", " + quadrangle[1].ToString() + ", " + quadrangle[2].ToString() + ", " + quadrangle[3].ToString();
+                        string s = "";
+                        for (int j = 0; j < quadrangle.Length; ++j) s += "(" + fem.mesh.points[quadrangle[j]].X.ToString() + ", " + fem.mesh.points[quadrangle[j]].Y.ToString() + ")" + ((j < quadrangle.Length - 1) ? ", " : "");
+                        form2.NodePositionListLabel.Text = s;
+                        return;
+                    }
                 }
             }
         }
