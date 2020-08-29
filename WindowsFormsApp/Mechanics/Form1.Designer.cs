@@ -43,7 +43,7 @@
             this.unitForceNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.UnitForceToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.mmpixelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.UnitLengthToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.scaleToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,9 +129,8 @@
             this.ElasticityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ElasticityToolStripTextBox});
             this.ElasticityToolStripMenuItem.Name = "ElasticityToolStripMenuItem";
-            this.ElasticityToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.ElasticityToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ElasticityToolStripMenuItem.Text = "Elasticity [GPa]";
-            this.ElasticityToolStripMenuItem.Click += new System.EventHandler(this.ElasticityToolStripMenuItem_Click);
             // 
             // ElasticityToolStripTextBox
             // 
@@ -145,7 +144,7 @@
             this.PoissonsRatioToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PoissonsRatioToolStripTextBox});
             this.PoissonsRatioToolStripMenuItem.Name = "PoissonsRatioToolStripMenuItem";
-            this.PoissonsRatioToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.PoissonsRatioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.PoissonsRatioToolStripMenuItem.Text = "Poissons ratio";
             // 
             // PoissonsRatioToolStripTextBox
@@ -160,7 +159,7 @@
             this.thicknessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ThicknessToolStripTextBox});
             this.thicknessToolStripMenuItem.Name = "thicknessToolStripMenuItem";
-            this.thicknessToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.thicknessToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.thicknessToolStripMenuItem.Text = "Thickness [mm]";
             // 
             // ThicknessToolStripTextBox
@@ -175,7 +174,7 @@
             this.unitForceNToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.UnitForceToolStripTextBox});
             this.unitForceNToolStripMenuItem.Name = "unitForceNToolStripMenuItem";
-            this.unitForceNToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.unitForceNToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.unitForceNToolStripMenuItem.Text = "Unit force [N]";
             // 
             // UnitForceToolStripTextBox
@@ -188,17 +187,18 @@
             // mmpixelToolStripMenuItem
             // 
             this.mmpixelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.UnitLengthToolStripTextBox});
+            this.scaleToolStripTextBox});
             this.mmpixelToolStripMenuItem.Name = "mmpixelToolStripMenuItem";
-            this.mmpixelToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this.mmpixelToolStripMenuItem.Text = "Unit length [mm/pixel]";
+            this.mmpixelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mmpixelToolStripMenuItem.Text = "Scale [mm/pixel]";
             // 
-            // UnitLengthToolStripTextBox
+            // scaleToolStripTextBox
             // 
-            this.UnitLengthToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
-            this.UnitLengthToolStripTextBox.Name = "UnitLengthToolStripTextBox";
-            this.UnitLengthToolStripTextBox.Size = new System.Drawing.Size(100, 23);
-            this.UnitLengthToolStripTextBox.Text = "1.0";
+            this.scaleToolStripTextBox.Font = new System.Drawing.Font("Yu Gothic UI", 9F);
+            this.scaleToolStripTextBox.Name = "scaleToolStripTextBox";
+            this.scaleToolStripTextBox.Size = new System.Drawing.Size(100, 23);
+            this.scaleToolStripTextBox.Text = "1.0";
+            this.scaleToolStripTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.scaleToolStripTextBox_KeyPress);
             // 
             // solveToolStripMenuItem
             // 
@@ -412,7 +412,7 @@
         private System.Windows.Forms.ToolStripMenuItem unitForceNToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox UnitForceToolStripTextBox;
         private System.Windows.Forms.ToolStripMenuItem mmpixelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripTextBox UnitLengthToolStripTextBox;
+        private System.Windows.Forms.ToolStripTextBox scaleToolStripTextBox;
     }
 }
 

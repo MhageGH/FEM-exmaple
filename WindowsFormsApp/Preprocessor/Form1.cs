@@ -41,12 +41,12 @@ namespace Preprocessor
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
-            var unitLength = (float)(Convert.ToDouble(UnitLengthToolStripTextBox.Text) * 1e-3);
+            var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
             int index = -1;
             for (int i = 0; i < mesh.points.Count; ++i)
             {
-                var x = e.X - mesh.points[i].X / unitLength;
-                var y = e.Y - mesh.points[i].Y / unitLength;
+                var x = e.X - mesh.points[i].X / scale;
+                var y = e.Y - mesh.points[i].Y / scale;
                 var r2 = x * x + y * y;
                 if (r2 < 100)
                 {
@@ -59,7 +59,7 @@ namespace Preprocessor
                 if (radioButton_add.Checked)
                 {
                     if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) return;
-                    if (index == -1) mesh.points.Add(new PointF(e.X * unitLength, e.Y * unitLength));
+                    if (index == -1) mesh.points.Add(new PointF(e.X * scale, e.Y * scale));
                     else if (!mesh.triangles.Any(x => x.Contains(index)) && !mesh.quadrangles.Any(x => x.Contains(index))
                         && !mesh.fixXs.Contains(index) && !mesh.fixYs.Contains(index)
                         && !mesh.forceXs.Any(x => x.index == index) && !mesh.forceYs.Any(x => x.index == index))
@@ -87,7 +87,7 @@ namespace Preprocessor
                     else if (index != -1 && movingNode == -1) movingNode = index;
                     else if (index == -1 && movingNode != -1)
                     {
-                        mesh.points[movingNode] = new PointF(e.X * unitLength, e.Y * unitLength);
+                        mesh.points[movingNode] = new PointF(e.X * scale, e.Y * scale);
                         mesh.triangles = mesh.triangles.Select(x => x.Contains(movingNode) ? mesh.NormalizeNodeOrderOfPolygon(x) : x).ToList();
                         mesh.quadrangles = mesh.quadrangles.Select(x => x.Contains(movingNode) ? mesh.NormalizeNodeOrderOfPolygon(x) : x).ToList();
                         movingNode = -1;
@@ -207,80 +207,84 @@ namespace Preprocessor
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var unitLength = (float)(Convert.ToDouble(UnitLengthToolStripTextBox.Text) * 1e-3);
+            var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
             foreach (var triangle in mesh.triangles)
             {
                 var ps = new PointF[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(mesh.points[triangle[i]].X / unitLength, mesh.points[triangle[i]].Y / unitLength);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(mesh.points[triangle[i]].X / scale, mesh.points[triangle[i]].Y / scale);
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var quadrangle in mesh.quadrangles)
             {
                 var ps = new PointF[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(mesh.points[quadrangle[i]].X / unitLength, mesh.points[quadrangle[i]].Y / unitLength);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(mesh.points[quadrangle[i]].X / scale, mesh.points[quadrangle[i]].Y / scale);
                 e.Graphics.FillPolygon(Brushes.LawnGreen, ps);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
 
-            foreach (var p in mesh.points) e.Graphics.FillEllipse(Brushes.Blue, p.X / unitLength - 5, p.Y / unitLength - 5, 10, 10);
-            foreach (var i in selectedNodes) e.Graphics.FillEllipse(Brushes.Red, mesh.points[i].X / unitLength - 5, mesh.points[i].Y / unitLength - 5, 10, 10);
+            foreach (var p in mesh.points) e.Graphics.FillEllipse(Brushes.Blue, p.X / scale - 5, p.Y / scale - 5, 10, 10);
+            foreach (var i in selectedNodes) e.Graphics.FillEllipse(Brushes.Red, mesh.points[i].X / scale - 5, mesh.points[i].Y / scale - 5, 10, 10);
             if (movingNode != -1)
             {
-                e.Graphics.FillEllipse(Brushes.White, mesh.points[movingNode].X / unitLength - 5, mesh.points[movingNode].Y / unitLength - 5, 10, 10);
-                e.Graphics.DrawEllipse(Pens.Blue, mesh.points[movingNode].X / unitLength - 5, mesh.points[movingNode].Y / unitLength - 5, 10, 10);
+                e.Graphics.FillEllipse(Brushes.White, mesh.points[movingNode].X / scale - 5, mesh.points[movingNode].Y / scale - 5, 10, 10);
+                e.Graphics.DrawEllipse(Pens.Blue, mesh.points[movingNode].X / scale - 5, mesh.points[movingNode].Y / scale - 5, 10, 10);
             }
             if (baseNode != -1)
             {
-                if (alignMode == AlignMode.vertical) e.Graphics.DrawLine(Pens.Silver, mesh.points[baseNode].X / unitLength, mesh.points[baseNode].Y / unitLength - 100, mesh.points[baseNode].X / unitLength, mesh.points[baseNode].Y / unitLength + 100);
-                if (alignMode == AlignMode.horizontal) e.Graphics.DrawLine(Pens.Silver, mesh.points[baseNode].X / unitLength - 100, mesh.points[baseNode].Y / unitLength, mesh.points[baseNode].X / unitLength + 100, mesh.points[baseNode].Y / unitLength);
+                if (alignMode == AlignMode.vertical) e.Graphics.DrawLine(Pens.Silver, mesh.points[baseNode].X / scale, mesh.points[baseNode].Y / scale - 100, mesh.points[baseNode].X / scale, mesh.points[baseNode].Y / scale + 100);
+                if (alignMode == AlignMode.horizontal) e.Graphics.DrawLine(Pens.Silver, mesh.points[baseNode].X / scale - 100, mesh.points[baseNode].Y / scale, mesh.points[baseNode].X / scale + 100, mesh.points[baseNode].Y / scale);
             }
             if (checkBox_VisibleNodeNumber.Checked)
-                for (int i = 0; i < mesh.points.Count; ++i) e.Graphics.DrawString(i.ToString(), DefaultFont, Brushes.Black, mesh.points[i].X / unitLength + 5, mesh.points[i].Y / unitLength + 5);
+                for (int i = 0; i < mesh.points.Count; ++i) e.Graphics.DrawString(i.ToString(), DefaultFont, Brushes.Black, mesh.points[i].X / scale + 5, mesh.points[i].Y / scale + 5);
             if (checkBox_VisibleTriangleNumber.Checked)
                 for (int i = 0; i < mesh.triangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine + 
                     "(" + mesh.triangles[i][0].ToString() + "-" + mesh.triangles[i][1].ToString() + "-" + mesh.triangles[i][2].ToString() + ")", DefaultFont, Brushes.Black,
-                    (mesh.points[mesh.triangles[i][0]].X / unitLength + mesh.points[mesh.triangles[i][1]].X / unitLength + mesh.points[mesh.triangles[i][2]].X / unitLength) / 3, 
-                    (mesh.points[mesh.triangles[i][0]].Y / unitLength + mesh.points[mesh.triangles[i][1]].Y / unitLength + mesh.points[mesh.triangles[i][2]].Y / unitLength) / 3,
+                    (mesh.points[mesh.triangles[i][0]].X / scale + mesh.points[mesh.triangles[i][1]].X / scale + mesh.points[mesh.triangles[i][2]].X / scale) / 3, 
+                    (mesh.points[mesh.triangles[i][0]].Y / scale + mesh.points[mesh.triangles[i][1]].Y / scale + mesh.points[mesh.triangles[i][2]].Y / scale) / 3,
                     new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
             if (checkBox_VisibleQuadrangleNumber.Checked)
                 for (int i = 0; i < mesh.quadrangles.Count; ++i) e.Graphics.DrawString(i.ToString() + Environment.NewLine +
                     "(" + mesh.quadrangles[i][0].ToString() + "-" + mesh.quadrangles[i][1].ToString() + "-" + mesh.quadrangles[i][2].ToString() + "-" + mesh.quadrangles[i][3].ToString() + ")", DefaultFont, Brushes.Black,
-                    (mesh.points[mesh.quadrangles[i][0]].X / unitLength + mesh.points[mesh.quadrangles[i][1]].X / unitLength + mesh.points[mesh.quadrangles[i][2]].X / unitLength + mesh.points[mesh.quadrangles[i][3]].X / unitLength) / 4,
-                    (mesh.points[mesh.quadrangles[i][0]].Y / unitLength + mesh.points[mesh.quadrangles[i][1]].Y / unitLength + mesh.points[mesh.quadrangles[i][2]].Y / unitLength + mesh.points[mesh.quadrangles[i][3]].Y / unitLength) / 4,
+                    (mesh.points[mesh.quadrangles[i][0]].X / scale + mesh.points[mesh.quadrangles[i][1]].X / scale + mesh.points[mesh.quadrangles[i][2]].X / scale + mesh.points[mesh.quadrangles[i][3]].X / scale) / 4,
+                    (mesh.points[mesh.quadrangles[i][0]].Y / scale + mesh.points[mesh.quadrangles[i][1]].Y / scale + mesh.points[mesh.quadrangles[i][2]].Y / scale + mesh.points[mesh.quadrangles[i][3]].Y / scale) / 4,
                     new StringFormat() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
 
 
             foreach (var i in mesh.fixXs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-20, -10), new PointF(-20, 10) };
-                tri = tri.Select(x => new PointF(x.X + mesh.points[i].X / unitLength, x.Y + mesh.points[i].Y / unitLength)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + mesh.points[i].X / scale, x.Y + mesh.points[i].Y / scale)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach (var i in mesh.fixYs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-10, 20), new PointF(10, 20) };
-                tri = tri.Select(x => new PointF(x.X + mesh.points[i].X / unitLength, x.Y + mesh.points[i].Y / unitLength)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + mesh.points[i].X / scale, x.Y + mesh.points[i].Y / scale)).ToArray();
                 e.Graphics.DrawPolygon(Pens.Blue, tri);
             }
             foreach (var f in mesh.forceXs)
             {
                 var tri = new PointF[] { new PointF(0 + 50 * f.value / 2, 0), new PointF(-10 + 50 * f.value / 2, -5), new PointF(-10 + 50 * f.value / 2, 5) };
-                tri = tri.Select(x => new PointF(x.X + mesh.points[f.index].X / unitLength, x.Y + mesh.points[f.index].Y / unitLength)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + mesh.points[f.index].X / scale, x.Y + mesh.points[f.index].Y / scale)).ToArray();
                 var line = new PointF[] { new PointF(0, 0), new PointF(50 * f.value / 2, 0) };
-                line = line.Select(x => new PointF(x.X + mesh.points[f.index].X / unitLength, x.Y + mesh.points[f.index].Y / unitLength)).ToArray();
+                line = line.Select(x => new PointF(x.X + mesh.points[f.index].X / scale, x.Y + mesh.points[f.index].Y / scale)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
             foreach (var f in mesh.forceYs)
             {
                 var tri = new PointF[] { new PointF(0, 0 - 50 * f.value / 2), new PointF(-5, 10 - 50 * f.value / 2), new PointF(5, 10 - 50 * f.value / 2) };
-                tri = tri.Select(x => new PointF(x.X + mesh.points[f.index].X / unitLength, x.Y + mesh.points[f.index].Y / unitLength)).ToArray();
+                tri = tri.Select(x => new PointF(x.X + mesh.points[f.index].X / scale, x.Y + mesh.points[f.index].Y / scale)).ToArray();
                 var line = new PointF[] { new PointF(0, 0), new PointF(0, -50 * f.value / 2) };
-                line = line.Select(x => new PointF(x.X + mesh.points[f.index].X / unitLength, x.Y + mesh.points[f.index].Y / unitLength)).ToArray();
+                line = line.Select(x => new PointF(x.X + mesh.points[f.index].X / scale, x.Y + mesh.points[f.index].Y / scale)).ToArray();
                 e.Graphics.FillPolygon(Brushes.Red, tri);
                 e.Graphics.DrawLine(Pens.Red, line[0], line[1]);
             }
+            e.Graphics.DrawLine(Pens.Black, new Point(20, 565), new Point(20 + 100, 565));
+            e.Graphics.DrawLine(Pens.Black, new Point(20, 565 - 5), new Point(20, 565 + 5));
+            e.Graphics.DrawLine(Pens.Black, new Point(20 + 100, 565 - 5), new Point(20 + 100, 565 + 5));
+            e.Graphics.DrawString((scale * 1e+3 * 100).ToString("F0") + " [mm]", DefaultFont, Brushes.Black, 20 + 30, 565 - 15);
         }
 
         private void radioButton_node_CheckedChanged(object sender, EventArgs e)
@@ -394,6 +398,11 @@ namespace Preprocessor
             var sfd = new SaveFileDialog();
             sfd.FileName = "Mesh.csv";
             if (sfd.ShowDialog() == DialogResult.OK) using (var sw = new System.IO.StreamWriter(sfd.FileName)) sw.Write(meshEncoder.EncodeToCSV());
+        }
+
+        private void scaleToolStripTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter) this.Invalidate();
         }
     }
 }

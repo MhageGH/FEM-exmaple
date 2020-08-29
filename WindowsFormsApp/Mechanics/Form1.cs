@@ -21,7 +21,7 @@ namespace Mechanics
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var unitLength = (float)(Convert.ToDouble(UnitLengthToolStripTextBox.Text) * 1e-3);
+            var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
             var values = new double[fem.mesh.points.Count];
             double max = -1.0e10, min = 1.0e10;
             if (fem.solved)
@@ -58,11 +58,11 @@ namespace Mechanics
                 for (int i = 0; i < values.Length; ++i) values[i] = max > min ? (values[i] - min) / (max - min) : max;
             }
             var gradientTriangles = new List<GradientTriangle>();
-            AddGradientTriangles(values, gradientTriangles, fem.mesh.triangles.ToArray(), unitLength);
+            AddGradientTriangles(values, gradientTriangles, fem.mesh.triangles.ToArray(), scale);
             foreach (var quadrangle in fem.mesh.quadrangles)
             {
                 var triangles = new int[2][] { new int[] { quadrangle[0], quadrangle[1], quadrangle[2] }, new int[] { quadrangle[0], quadrangle[2], quadrangle[3] }};
-                AddGradientTriangles(values, gradientTriangles, triangles, unitLength);
+                AddGradientTriangles(values, gradientTriangles, triangles, scale);
             }
             foreach (var gradientTriangle in gradientTriangles)
             {
@@ -72,13 +72,13 @@ namespace Mechanics
             foreach (var triangle in fem.mesh.triangles)
             {
                 var ps = new PointF[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[triangle[i]].X*1000, fem.mesh.points[triangle[i]].Y / unitLength);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[triangle[i]].X / scale, fem.mesh.points[triangle[i]].Y / scale);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var quadrangle in fem.mesh.quadrangles)
             {
                 var ps = new PointF[4];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[quadrangle[i]].X * 1000, fem.mesh.points[quadrangle[i]].Y / unitLength);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[quadrangle[i]].X / scale, fem.mesh.points[quadrangle[i]].Y / scale);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var i in fem.mesh.fixXs)
@@ -128,6 +128,10 @@ namespace Mechanics
                 e.Graphics.DrawString(max.ToString("e2") + unit, DefaultFont, Brushes.Black, 560, 220);
                 e.Graphics.DrawString(min.ToString("e2") + unit, DefaultFont, Brushes.Black, 560, 380);
             }
+            e.Graphics.DrawLine(Pens.Black, new Point(20, 530), new Point(20 + 100, 530));
+            e.Graphics.DrawLine(Pens.Black, new Point(20, 530 - 5), new Point(20, 530 + 5));
+            e.Graphics.DrawLine(Pens.Black, new Point(20 + 100, 530 - 5), new Point(20 + 100, 530 + 5));
+            e.Graphics.DrawString((scale * 1e+3 * 100).ToString("F0") + " [mm]", DefaultFont, Brushes.Black, 20 + 30, 530 - 15);
         }
 
         private void AddGradientTriangles(double[] values, List<GradientTriangle> gradientTriangles, int[][] triangles, float unitLength)
@@ -182,8 +186,9 @@ namespace Mechanics
             new Preprocessor.Form1().Show();
         }
 
-        private void ElasticityToolStripMenuItem_Click(object sender, EventArgs e)
+        private void scaleToolStripTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (e.KeyChar == (char)Keys.Enter) this.Invalidate();
         }
     }
 
