@@ -45,6 +45,7 @@
             this.mmpixelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scaleToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.solveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.elementInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,7 +108,8 @@
             // 
             this.solverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.materialToolStripMenuItem,
-            this.solveToolStripMenuItem});
+            this.solveToolStripMenuItem,
+            this.elementInformationToolStripMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
             this.solverToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
             this.solverToolStripMenuItem.Text = "Calculation";
@@ -121,7 +123,7 @@
             this.unitForceNToolStripMenuItem,
             this.mmpixelToolStripMenuItem});
             this.materialToolStripMenuItem.Name = "materialToolStripMenuItem";
-            this.materialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.materialToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.materialToolStripMenuItem.Text = "Parameter";
             // 
             // ElasticityToolStripMenuItem
@@ -129,7 +131,7 @@
             this.ElasticityToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ElasticityToolStripTextBox});
             this.ElasticityToolStripMenuItem.Name = "ElasticityToolStripMenuItem";
-            this.ElasticityToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ElasticityToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.ElasticityToolStripMenuItem.Text = "Elasticity [GPa]";
             // 
             // ElasticityToolStripTextBox
@@ -144,7 +146,7 @@
             this.PoissonsRatioToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PoissonsRatioToolStripTextBox});
             this.PoissonsRatioToolStripMenuItem.Name = "PoissonsRatioToolStripMenuItem";
-            this.PoissonsRatioToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.PoissonsRatioToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.PoissonsRatioToolStripMenuItem.Text = "Poissons ratio";
             // 
             // PoissonsRatioToolStripTextBox
@@ -159,7 +161,7 @@
             this.thicknessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ThicknessToolStripTextBox});
             this.thicknessToolStripMenuItem.Name = "thicknessToolStripMenuItem";
-            this.thicknessToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.thicknessToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.thicknessToolStripMenuItem.Text = "Thickness [mm]";
             // 
             // ThicknessToolStripTextBox
@@ -174,7 +176,7 @@
             this.unitForceNToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.UnitForceToolStripTextBox});
             this.unitForceNToolStripMenuItem.Name = "unitForceNToolStripMenuItem";
-            this.unitForceNToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.unitForceNToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.unitForceNToolStripMenuItem.Text = "Unit force [N]";
             // 
             // UnitForceToolStripTextBox
@@ -189,7 +191,7 @@
             this.mmpixelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.scaleToolStripTextBox});
             this.mmpixelToolStripMenuItem.Name = "mmpixelToolStripMenuItem";
-            this.mmpixelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mmpixelToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.mmpixelToolStripMenuItem.Text = "Scale [mm/pixel]";
             // 
             // scaleToolStripTextBox
@@ -203,9 +205,16 @@
             // solveToolStripMenuItem
             // 
             this.solveToolStripMenuItem.Name = "solveToolStripMenuItem";
-            this.solveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.solveToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.solveToolStripMenuItem.Text = "Solve";
             this.solveToolStripMenuItem.Click += new System.EventHandler(this.solveToolStripMenuItem_Click);
+            // 
+            // elementInformationToolStripMenuItem
+            // 
+            this.elementInformationToolStripMenuItem.Name = "elementInformationToolStripMenuItem";
+            this.elementInformationToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.elementInformationToolStripMenuItem.Text = "Element information";
+            this.elementInformationToolStripMenuItem.Click += new System.EventHandler(this.elementInformationToolStripMenuItem_Click);
             // 
             // toolToolStripMenuItem
             // 
@@ -371,6 +380,7 @@
             this.Name = "Form1";
             this.Text = "Mechanical Analysis";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -413,6 +423,7 @@
         private System.Windows.Forms.ToolStripTextBox UnitForceToolStripTextBox;
         private System.Windows.Forms.ToolStripMenuItem mmpixelToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox scaleToolStripTextBox;
+        private System.Windows.Forms.ToolStripMenuItem elementInformationToolStripMenuItem;
     }
 }
 

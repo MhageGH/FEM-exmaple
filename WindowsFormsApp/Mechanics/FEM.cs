@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 
 namespace Mechanics
 {
-    class FEM
+    public class FEM
     {
         public Preprocessor.Mesh mesh = new Preprocessor.Mesh();
 

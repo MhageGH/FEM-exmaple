@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Mechanics
 {
@@ -11,6 +12,11 @@ namespace Mechanics
     {
         FEM fem;
         Preprocessor.MeshEncoder meshEncoder;
+        Form2 form2;
+
+        enum ElementType { none, triangle, quadangle }
+        ElementType selectedElementType = ElementType.none;
+        int selectedElementNumber = 0;
 
         public Form1()
         {
@@ -69,11 +75,11 @@ namespace Mechanics
                 if (fem.solved) e.Graphics.FillRectangle(gradientTriangle.GetGradientBrush(), this.ClientRectangle);
                 else e.Graphics.FillPolygon(Brushes.LawnGreen, gradientTriangle.points);
             }
-            foreach (var triangle in fem.mesh.triangles)
+            for (int j = 0; j < fem.mesh.triangles.Count; ++j)
             {
                 var ps = new PointF[3];
-                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[triangle[i]].X / scale, fem.mesh.points[triangle[i]].Y / scale);
-                e.Graphics.DrawPolygon(Pens.Black, ps);
+                for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[fem.mesh.triangles[j][i]].X / scale, fem.mesh.points[fem.mesh.triangles[j][i]].Y / scale);
+                if (selectedElementType != ElementType.triangle || j != selectedElementNumber) e.Graphics.DrawPolygon(Pens.Black, ps);
             }
             foreach (var quadrangle in fem.mesh.quadrangles)
             {
@@ -81,6 +87,8 @@ namespace Mechanics
                 for (int i = 0; i < ps.Length; ++i) ps[i] = new PointF(fem.mesh.points[quadrangle[i]].X / scale, fem.mesh.points[quadrangle[i]].Y / scale);
                 e.Graphics.DrawPolygon(Pens.Black, ps);
             }
+            if (selectedElementType == ElementType.triangle)
+                e.Graphics.DrawPolygon(new Pen(Color.Red, 3), fem.mesh.triangles[selectedElementNumber].Select(x => new PointF(fem.mesh.points[x].X / scale, fem.mesh.points[x].Y / scale)).ToArray());
             foreach (var i in fem.mesh.fixXs)
             {
                 var tri = new PointF[] { new PointF(0, 0), new PointF(-20, -10), new PointF(-20, 10) };
@@ -189,6 +197,33 @@ namespace Mechanics
         private void scaleToolStripTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter) this.Invalidate();
+        }
+
+        private void elementInformationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            form2 = new Form2(fem);
+            form2.Show();
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
+            for (int i = 0; i < fem.mesh.triangles.Count; ++i)
+            {
+                var v = new PointF[3].Select((x, j) => new PointF(fem.mesh.points[fem.mesh.triangles[i][j]].X / scale - e.X, fem.mesh.points[fem.mesh.triangles[i][j]].Y / scale - e.Y)).ToArray();
+                if (CrossProduct(v[0], v[1]) >= 0 && CrossProduct(v[1], v[2]) >= 0 && CrossProduct(v[2], v[0]) >= 0)
+                {
+                    selectedElementType = ElementType.triangle;
+                    selectedElementNumber = i;
+                    this.Invalidate();
+                    break;
+                }
+            }
+        }
+
+        float CrossProduct(PointF p0, PointF p1)
+        {
+            return p0.X*p1.Y - p0.Y * p1.X;
         }
     }
 
