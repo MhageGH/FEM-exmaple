@@ -36,6 +36,11 @@
             this.NodeNumberListLabel = new System.Windows.Forms.Label();
             this.ElementNumberLabel = new System.Windows.Forms.Label();
             this.ElementTypeLabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.PoissonsRatioLabel = new System.Windows.Forms.Label();
+            this.ElasticityLabel = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -110,11 +115,62 @@
             this.ElementTypeLabel.TabIndex = 4;
             this.ElementTypeLabel.Text = "-";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 81);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(73, 18);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Elasticity : ";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 99);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(101, 18);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Poissons ratio : ";
+            // 
+            // PoissonsRatioLabel
+            // 
+            this.PoissonsRatioLabel.AutoSize = true;
+            this.PoissonsRatioLabel.Location = new System.Drawing.Point(136, 99);
+            this.PoissonsRatioLabel.Name = "PoissonsRatioLabel";
+            this.PoissonsRatioLabel.Size = new System.Drawing.Size(13, 18);
+            this.PoissonsRatioLabel.TabIndex = 11;
+            this.PoissonsRatioLabel.Text = "-";
+            // 
+            // ElasticityLabel
+            // 
+            this.ElasticityLabel.AutoSize = true;
+            this.ElasticityLabel.Location = new System.Drawing.Point(136, 81);
+            this.ElasticityLabel.Name = "ElasticityLabel";
+            this.ElasticityLabel.Size = new System.Drawing.Size(13, 18);
+            this.ElasticityLabel.TabIndex = 10;
+            this.ElasticityLabel.Text = "-";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("メイリオ", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.label7.Location = new System.Drawing.Point(12, 144);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(164, 18);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Element stiffness matrix";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(489, 367);
+            this.ClientSize = new System.Drawing.Size(602, 433);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.PoissonsRatioLabel);
+            this.Controls.Add(this.ElasticityLabel);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.NodePositionListLabel);
             this.Controls.Add(this.NodeNumberListLabel);
             this.Controls.Add(this.ElementNumberLabel);
@@ -127,6 +183,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form2";
             this.Text = "Element information";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,5 +199,10 @@
         internal System.Windows.Forms.Label NodePositionListLabel;
         internal System.Windows.Forms.Label NodeNumberListLabel;
         internal System.Windows.Forms.Label ElementNumberLabel;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        internal System.Windows.Forms.Label PoissonsRatioLabel;
+        internal System.Windows.Forms.Label ElasticityLabel;
+        private System.Windows.Forms.Label label7;
     }
 }

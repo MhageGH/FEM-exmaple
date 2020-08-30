@@ -205,12 +205,15 @@ namespace Mechanics
 
         private void elementInformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            form2 = new Form2(fem);
+            form2 = new Form2();
             form2.Show();
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
+            fem.elasticity = Convert.ToDouble(ElasticityToolStripTextBox.Text) * 1e+9;
+            fem.poissons_ratio = Convert.ToDouble(PoissonsRatioToolStripTextBox.Text);
+            fem.thickness = Convert.ToDouble(ThicknessToolStripTextBox.Text) * 1e-3;
             var scale = (float)(Convert.ToDouble(scaleToolStripTextBox.Text) * 1e-3);
             for (int i = 0; i < fem.mesh.triangles.Count; ++i)
             {
@@ -221,12 +224,8 @@ namespace Mechanics
                     selectedElementType = ElementType.triangle;
                     selectedElementNumber = i;
                     this.Invalidate();
-                    form2.ElementTypeLabel.Text = "Triangle";
-                    form2.ElementNumberLabel.Text = i.ToString();
-                    form2.NodeNumberListLabel.Text = triangle[0].ToString() + ", " + triangle[1].ToString() + ", " + triangle[2].ToString();
-                    string s = "";
-                    for (int j = 0; j < triangle.Length; ++j) s += "(" + fem.mesh.points[triangle[j]].X.ToString() + ", " + fem.mesh.points[triangle[j]].Y.ToString() + ")" + ((j < triangle.Length - 1) ? ", " : "");
-                    form2.NodePositionListLabel.Text = s;
+                    if (form2 == null) return;
+                    ElementInformationUpdate();
                     return;
                 }
             }
@@ -243,12 +242,8 @@ namespace Mechanics
                         selectedElementType = ElementType.quadrangle;
                         selectedElementNumber = i;
                         this.Invalidate();
-                        form2.ElementTypeLabel.Text = "Quadrangle";
-                        form2.ElementNumberLabel.Text = i.ToString();
-                        form2.NodeNumberListLabel.Text = quadrangle[0].ToString() + ", " + quadrangle[1].ToString() + ", " + quadrangle[2].ToString() + ", " + quadrangle[3].ToString();
-                        string s = "";
-                        for (int j = 0; j < quadrangle.Length; ++j) s += "(" + fem.mesh.points[quadrangle[j]].X.ToString() + ", " + fem.mesh.points[quadrangle[j]].Y.ToString() + ")" + ((j < quadrangle.Length - 1) ? ", " : "");
-                        form2.NodePositionListLabel.Text = s;
+                        if (form2 == null) return;
+                        ElementInformationUpdate();
                         return;
                     }
                 }
@@ -258,6 +253,34 @@ namespace Mechanics
         float CrossProduct(PointF p0, PointF p1)
         {
             return p0.X*p1.Y - p0.Y * p1.X;
+        }
+
+        void ElementInformationUpdate()
+        {
+            int[] element = new int[0];
+            if (selectedElementType == ElementType.triangle)
+            {
+                element = fem.mesh.triangles[selectedElementNumber];
+                form2.ElementTypeLabel.Text = "Triangle";
+                if (fem.solved) form2.matrix = fem.matrixesOfTriangle.StiffnessMatrixes[selectedElementNumber];
+            }
+            else if (selectedElementType == ElementType.quadrangle)
+            {
+                element = fem.mesh.quadrangles[selectedElementNumber];
+                form2.ElementTypeLabel.Text = "Quadrangle";
+                if (fem.solved) form2.matrix = fem.matrixesOfQuadrangle.StiffnessMatrixes[selectedElementNumber];
+            }
+            form2.ElementNumberLabel.Text = selectedElementNumber.ToString();
+            string s = "";
+            for (int i = 0; i < element.Length; ++i) s += element[i].ToString() + (i < element.Length - 1 ? ", " : "");
+            form2.NodeNumberListLabel.Text = s;
+            s = "(x [mm], y [mm]) = ";
+            for (int i = 0; i < element.Length; ++i) 
+                s += "(" + (fem.mesh.points[element[i]].X * 1e3).ToString("F0") + ", " + (fem.mesh.points[element[i]].Y * 1e3).ToString("F0") + ")" + (i < element.Length - 1 ? ", " : "");
+            form2.NodePositionListLabel.Text = s;
+            form2.ElasticityLabel.Text = (fem.elasticity * 1e-9).ToString() + " [GPa]";
+            form2.PoissonsRatioLabel.Text = fem.poissons_ratio.ToString();
+            form2.Invalidate();
         }
     }
 

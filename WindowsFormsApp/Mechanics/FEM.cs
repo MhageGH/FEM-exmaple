@@ -19,8 +19,8 @@ namespace Mechanics
         int[] iForce;
         double[] reduced_displacements; //δ_A : unknown quantity in reduced space which doesn't include coordinates of fixed nodes. 
         double[] reduced_forces;        // f_A
-        MatrixesOfTriangle matrixesOfTriangle;
-        MatrixesOfQuadrangle matrixesOfQuadrangle;
+        public MatrixesOfTriangle matrixesOfTriangle;
+        public MatrixesOfQuadrangle matrixesOfQuadrangle;
 
         public double[] displacements;  // δ
         public double[][] strains;      // ε_x, ε_y, γ_xy
@@ -166,7 +166,7 @@ namespace Mechanics
         double[][,] StiffnessMatrixes { get; }  // K_e
     }
 
-    class MatrixesOfTriangle : IMatrixesOfElement
+    public class MatrixesOfTriangle : IMatrixesOfElement
     {
         Preprocessor.Mesh mesh;
 
@@ -220,7 +220,7 @@ namespace Mechanics
         }
     }
 
-    class MatrixesOfQuadrangle : IMatrixesOfElement
+    public class MatrixesOfQuadrangle : IMatrixesOfElement
     {
         Preprocessor.Mesh mesh;
 
