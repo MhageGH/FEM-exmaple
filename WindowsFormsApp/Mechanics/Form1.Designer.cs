@@ -63,6 +63,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label_state = new System.Windows.Forms.Label();
             this.label_mesh = new System.Windows.Forms.Label();
+            this.stiffnessMatrixToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -109,7 +110,8 @@
             this.solverToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.materialToolStripMenuItem,
             this.solveToolStripMenuItem,
-            this.elementInformationToolStripMenuItem});
+            this.elementInformationToolStripMenuItem,
+            this.stiffnessMatrixToolStripMenuItem});
             this.solverToolStripMenuItem.Name = "solverToolStripMenuItem";
             this.solverToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
             this.solverToolStripMenuItem.Text = "Calculation";
@@ -363,6 +365,13 @@
             this.label_mesh.TabIndex = 16;
             this.label_mesh.Text = "-";
             // 
+            // stiffnessMatrixToolStripMenuItem
+            // 
+            this.stiffnessMatrixToolStripMenuItem.Name = "stiffnessMatrixToolStripMenuItem";
+            this.stiffnessMatrixToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.stiffnessMatrixToolStripMenuItem.Text = "Stiffness matrix";
+            this.stiffnessMatrixToolStripMenuItem.Click += new System.EventHandler(this.stiffnessMatrixToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -424,6 +433,7 @@
         private System.Windows.Forms.ToolStripMenuItem mmpixelToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox scaleToolStripTextBox;
         private System.Windows.Forms.ToolStripMenuItem elementInformationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stiffnessMatrixToolStripMenuItem;
     }
 }
 

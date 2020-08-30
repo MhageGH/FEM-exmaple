@@ -21,6 +21,7 @@ namespace Mechanics
         double[] reduced_forces;        // f_A
         public MatrixesOfTriangle matrixesOfTriangle;
         public MatrixesOfQuadrangle matrixesOfQuadrangle;
+        public double[,] globalStiffnessMatrix;
 
         public double[] displacements;  // δ
         public double[][] strains;      // ε_x, ε_y, γ_xy
@@ -33,13 +34,13 @@ namespace Mechanics
             GetD_Matrix();
             matrixesOfTriangle = new MatrixesOfTriangle(mesh, D_Matrix, thickness);
             matrixesOfQuadrangle = new MatrixesOfQuadrangle(mesh, D_Matrix, thickness);
-            var overallStiffnessMatrix = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K
+            globalStiffnessMatrix = new double[mesh.points.Count * 2, mesh.points.Count * 2];    // K
             for (int i = 0; i < matrixesOfTriangle.StiffnessMatrixes.Length; ++i) for (int j = 0; j < 3; ++j) for (int k = 0; k < 3; ++k) for (int l = 0; l < 2; ++l)
-                            overallStiffnessMatrix[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += matrixesOfTriangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
+                            globalStiffnessMatrix[2 * mesh.triangles[i][j] + l, 2 * mesh.triangles[i][k] + l] += matrixesOfTriangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
             for (int i = 0; i < matrixesOfQuadrangle.StiffnessMatrixes.Length; ++i) for (int j = 0; j < 4; ++j) for (int k = 0; k < 4; ++k) for (int l = 0; l < 2; ++l)
-                            overallStiffnessMatrix[2 * mesh.quadrangles[i][j] + l, 2 * mesh.quadrangles[i][k] + l] += matrixesOfQuadrangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
+                            globalStiffnessMatrix[2 * mesh.quadrangles[i][j] + l, 2 * mesh.quadrangles[i][k] + l] += matrixesOfQuadrangle.StiffnessMatrixes[i][2 * j + l, 2 * k + l];
             var reducedStifnessMatrix = new double[reduced_forces.Length, reduced_forces.Length];    // K_AA
-            for (int i = 0; i < reducedStifnessMatrix.GetLength(0); ++i) for (int j = 0; j < reducedStifnessMatrix.GetLength(1); ++j) reducedStifnessMatrix[i, j] = overallStiffnessMatrix[iForce[i], iForce[j]];    // because displacements of fixed nodes are 0.
+            for (int i = 0; i < reducedStifnessMatrix.GetLength(0); ++i) for (int j = 0; j < reducedStifnessMatrix.GetLength(1); ++j) reducedStifnessMatrix[i, j] = globalStiffnessMatrix[iForce[i], iForce[j]];    // because displacements of fixed nodes are 0.
             reduced_displacements = SolveSimultaneousEquations(reducedStifnessMatrix, reduced_forces); // δ_A = f_A / K_AA
             solved = true;
         }

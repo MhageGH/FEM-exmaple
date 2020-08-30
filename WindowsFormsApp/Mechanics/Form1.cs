@@ -13,6 +13,7 @@ namespace Mechanics
         FEM fem;
         Preprocessor.MeshEncoder meshEncoder;
         Form2 form2;
+        Form3 form3;
 
         enum ElementType { none, triangle, quadrangle }
         ElementType selectedElementType = ElementType.none;
@@ -281,6 +282,13 @@ namespace Mechanics
             form2.ElasticityLabel.Text = (fem.elasticity * 1e-9).ToString() + " [GPa]";
             form2.PoissonsRatioLabel.Text = fem.poissons_ratio.ToString();
             form2.Invalidate();
+        }
+
+        private void stiffnessMatrixToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            form3 = new Form3();
+            form3.Show();
+            if (fem.solved) form3.matrix = fem.globalStiffnessMatrix;
         }
     }
 
