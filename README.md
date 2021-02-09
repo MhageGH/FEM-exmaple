@@ -1,5 +1,5 @@
 ## ---Notice---
-If you can't open example mesh file, please change line feed code in the file from LF (for UNIX) to CR LF (for Windows).
+If you can't open example mesh file, please change line feed code in the file from LF (for UNIX) to CR LF (for Windows) by a text editor.
 
 # Mechanical Analysis
 Two-dimensional elasticity analysis.<br>
