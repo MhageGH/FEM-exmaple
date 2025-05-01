@@ -43,9 +43,9 @@
             this.label1.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label1.Location = new System.Drawing.Point(241, 457);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 18);
+            this.label1.Size = new System.Drawing.Size(55, 18);
             this.label1.TabIndex = 0;
-            this.label1.Text = "T = 0";
+            this.label1.Text = "T = 100";
             // 
             // label2
             // 
@@ -63,9 +63,9 @@
             this.label3.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label3.Location = new System.Drawing.Point(217, 29);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(87, 18);
+            this.label3.Size = new System.Drawing.Size(41, 18);
             this.label3.TabIndex = 2;
-            this.label3.Text = "T = sin(πx/4)";
+            this.label3.Text = "T = 0";
             // 
             // label4
             // 
@@ -73,9 +73,9 @@
             this.label4.Font = new System.Drawing.Font("メイリオ", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.label4.Location = new System.Drawing.Point(453, 244);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(54, 18);
+            this.label4.Size = new System.Drawing.Size(41, 18);
             this.label4.TabIndex = 3;
-            this.label4.Text = "q_n = 0";
+            this.label4.Text = "T = 0";
             // 
             // label5
             // 
